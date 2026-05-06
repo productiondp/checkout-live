@@ -29,6 +29,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import TerminalLayout from "@/components/layout/TerminalLayout";
 import MeetupPreviewModal from "@/components/modals/MeetupPreviewModal";
+import MomentumView from "@/components/modals/MomentumView";
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -91,6 +92,7 @@ function MarketplaceContent() {
   });
 
   const [activeFilterDropdown, setActiveFilterDropdown] = useState<string | null>(null);
+  const [selectedPost, setSelectedPost] = useState<{ id: string, type: string } | null>(null);
 
   const router = useRouter();
   const supabase = createClient();
@@ -110,6 +112,17 @@ function MarketplaceContent() {
           .order('created_at', { ascending: false });
 
         if (postsError) throw postsError;
+
+        // Fetch user connections to show Chat buttons
+        const { data: connectionsData } = await supabase
+          .from('connections')
+          .select('sender_id, receiver_id')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .eq('status', 'ACCEPTED');
+
+        const connectedUserIds = new Set((connectionsData || []).map(c => 
+          c.sender_id === user.id ? c.receiver_id : c.sender_id
+        ));
 
         const unified: MarketplaceItem[] = (postsData || []).map(p => {
           // Normalize type
@@ -138,8 +151,9 @@ function MarketplaceContent() {
               isVerified: !!p.profiles?.full_name
             },
             metadata: p.metadata,
-            status: 'IDLE'
-          };
+            status: 'IDLE',
+            isConnected: connectedUserIds.has(p.profiles?.id)
+          } as any;
         });
 
         // Auto-sort by Relevance + Match
@@ -293,13 +307,15 @@ function MarketplaceContent() {
                 </h3>
  
                 {isLoading ? (
-                  <div className={cn("space-y-4", (viewMode === "grid" || viewMode === "map") && "grid grid-cols-1 md:grid-cols-2 gap-6 space-y-0")}>
+                  <div className={cn("space-y-4", (viewMode === "grid" || viewMode === "map") && "grid grid-cols-1 md:grid-cols-3 gap-6 space-y-0")}>
                     {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-48 bg-black/[0.02] rounded-[2rem] animate-pulse" />)}
                   </div>
                 ) : otherItems.length > 0 ? (
                   <div className={cn(
                     "transition-all duration-500",
-                    viewMode === "list" ? "space-y-4 md:space-y-6" : "grid grid-cols-1 md:grid-cols-2 gap-6"
+                    viewMode === "list" ? "space-y-4 md:space-y-6" : 
+                    viewMode === "map" ? "grid grid-cols-1 md:grid-cols-2 gap-6" :
+                    "grid grid-cols-1 md:grid-cols-3 gap-6"
                   )}>
                     {otherItems.map((item, idx) => (
                       <OpportunityCard key={item.id} item={item} index={idx} viewMode={viewMode === 'list' ? 'list' : 'grid'} />
@@ -327,19 +343,27 @@ function MarketplaceContent() {
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                 className="hidden lg:block lg:w-1/2 h-[calc(100vh-160px)] sticky top-[64px] border-l border-black/[0.03] bg-black overflow-hidden"
               >
-                <MarketplaceMiniMap items={filteredItems} />
+                <MarketplaceMiniMap items={filteredItems} onSelectPost={setSelectedPost} />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
+
+        <MomentumView 
+          isOpen={!!selectedPost} 
+          onClose={() => setSelectedPost(null)}
+          postId={selectedPost?.id}
+          type={selectedPost?.type as any}
+        />
       </div>
     </TerminalLayout>
   );
 }
 
-function MarketplaceMiniMap({ items }: { items: MarketplaceItem[] }) {
+function MarketplaceMiniMap({ items, onSelectPost }: { items: MarketplaceItem[], onSelectPost: (post: any) => void }) {
   const mapContainer = React.useRef<HTMLDivElement>(null);
   const map = React.useRef<any>(null);
+  const markersRef = React.useRef<maplibregl.Marker[]>([]);
 
   React.useEffect(() => {
     if (!mapContainer.current) return;
@@ -359,8 +383,8 @@ function MarketplaceMiniMap({ items }: { items: MarketplaceItem[] }) {
     if (!map.current) return;
 
     // Clear markers
-    const existing = document.querySelectorAll('.marketplace-marker');
-    existing.forEach(m => m.remove());
+    markersRef.current.forEach(m => m.remove());
+    markersRef.current = [];
 
     items.forEach(item => {
       // Simulate/Use geo
@@ -370,28 +394,65 @@ function MarketplaceMiniMap({ items }: { items: MarketplaceItem[] }) {
       const el = document.createElement('div');
       el.className = 'marketplace-marker';
       
-      const color = item.type === 'REQUIREMENT' ? '#F59E0B' : item.type === 'MEETUP' ? '#4F46E5' : '#E53935';
+      const rawType = item.type.toUpperCase();
+      const isReq = rawType === 'REQUIREMENT';
+      const isEvent = rawType === 'MEETUP';
       
+      const color = isReq ? '#FF9500' : isEvent ? '#FF3B30' : '#34C759';
+      const icon = isReq ? '🎯' : isEvent ? '🔥' : '👤';
+      
+      const shapeStyle = isEvent 
+        ? `clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);` 
+        : isReq 
+        ? `transform: rotate(45deg); border-radius: 8px;` 
+        : `border-radius: 9999px;`;
+
+      const innerContentStyle = isReq ? `transform: rotate(-45deg);` : "";
+
+      const hasRealAvatar = item.author.avatar && item.author.avatar.length > 20;
+      const iconHtml = hasRealAvatar 
+        ? `<div class="h-full w-full overflow-hidden border-2 border-white shadow-xl bg-white" style="${shapeStyle} box-shadow: 0 0 15px ${color}80">
+             <img src="${item.author.avatar}" class="h-full w-full object-cover" style="${innerContentStyle}" />
+           </div>`
+        : `<div class="h-full w-full border-2 border-white flex items-center justify-center text-white shadow-xl transition-all" style="background-color: ${color}; box-shadow: 0 0 15px ${color}80; ${shapeStyle}">
+             <span style="${innerContentStyle}" class="text-[14px]">${icon}</span>
+           </div>`;
+
       el.innerHTML = `
-        <div class="relative group cursor-pointer">
-          <div class="h-10 w-10 rounded-2xl overflow-hidden border-2 border-white shadow-xl transition-all group-hover:scale-110" style="background: ${color}">
-            <img src="${item.author.avatar}" class="h-full w-full object-cover grayscale group-hover:grayscale-0" />
-          </div>
-          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all pointer-events-none">
-            <div class="bg-black/90 backdrop-blur-md px-3 py-1.5 rounded-lg whitespace-nowrap shadow-2xl">
+        <div class="relative group cursor-pointer h-9 w-9 transition-all hover:scale-125 z-10">
+          ${iconHtml}
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-20">
+            <div class="bg-black/90 backdrop-blur-md px-3 py-1.5 rounded-lg whitespace-nowrap shadow-2xl border border-white/10">
               <p class="text-[9px] font-black uppercase text-white">${item.title}</p>
+              <p class="text-[7px] font-bold text-white/40 uppercase tracking-widest">${item.author.name}</p>
             </div>
           </div>
         </div>
       `;
 
-      new maplibregl.Marker(el)
+      el.style.pointerEvents = 'auto';
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        onSelectPost({ id: item.id, type: item.type });
+      });
+
+      const marker = new maplibregl.Marker({ element: el })
         .setLngLat([lng, lat])
         .addTo(map.current);
+        
+      markersRef.current.push(marker);
     });
   }, [items]);
 
-  return <div ref={mapContainer} className="w-full h-full" />;
+  return (
+    <div ref={mapContainer} className="w-full h-full">
+      <style>{`
+        .maplibregl-marker {
+          cursor: pointer;
+        }
+      `}</style>
+    </div>
+  );
 }
 
 function SmartFilter({ icon: Icon, label, value, options, onChange, active, onToggle }: any) {
@@ -440,6 +501,7 @@ function SmartFilter({ icon: Icon, label, value, options, onChange, active, onTo
 function OpportunityCard({ item, isPinned, index, viewMode }: { item: MarketplaceItem; isPinned?: boolean; index?: number; viewMode?: "list" | "grid" }) {
   const router = useRouter();
   const { user: authUser } = useAuth();
+  const { setOverlayChatId, setOverlayOpen } = useChatStore();
   const [joinStatus, setJoinStatus] = useState<any>('IDLE');
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
@@ -455,6 +517,7 @@ function OpportunityCard({ item, isPinned, index, viewMode }: { item: Marketplac
   }, [item.id, authUser?.id, item.type]);
 
   const getCTA = () => {
+    if ((item as any).isConnected) return { label: 'Chat', color: 'bg-emerald-600 text-white hover:bg-black' };
     switch(item.type) {
       case 'REQUIREMENT': return { label: 'Respond', color: 'bg-black text-white hover:bg-[#E53935]' };
       case 'PARTNER': 
@@ -554,19 +617,21 @@ function OpportunityCard({ item, isPinned, index, viewMode }: { item: Marketplac
                    setIsPreviewOpen(true);
                  }
                } else {
-                 router.push(`/chat?user=${item.author.id}`); 
+                 setOverlayChatId(item.author.id);
+                 setOverlayOpen(true);
                }
              }}
              className={cn(
                "h-12 md:h-14 w-full md:px-8 rounded-2xl text-[10px] md:text-[11px] font-black uppercase tracking-[0.1em] shadow-xl transition-all flex items-center justify-center gap-3", 
-               item.type === 'MEETUP' && joinStatus === 'JOINED' ? "bg-emerald-600 text-white shadow-emerald-600/20" : cta.color
+               (item as any).isConnected ? "bg-emerald-600 text-white" :
+               (item.type === 'MEETUP' && joinStatus === 'JOINED' ? "bg-emerald-600 text-white shadow-emerald-600/20" : cta.color)
              )}
            >
-              {item.type === 'MEETUP' ? (
+              {((item as any).isConnected) ? "Chat Now" : (item.type === 'MEETUP' ? (
                 joinStatus === 'JOINED' ? "You're in  Chat open" :
                 joinStatus === 'REQUESTED' ? "Awaiting Approval" :
                 joinStatus === 'FULL' ? "Meetup Full" : "Join Meetup"
-              ) : cta.label}
+              ) : cta.label)}
               <ArrowRight size={16} strokeWidth={3} />
            </motion.button>
         </div>
@@ -642,7 +707,8 @@ function OpportunityCard({ item, isPinned, index, viewMode }: { item: Marketplac
                    setIsPreviewOpen(true);
                 }
              } else {
-               router.push(`/chat?user=${item.author?.id}`); 
+               setOverlayChatId(item.author?.id);
+               setOverlayOpen(true);
              }
            }}
            className={cn(
@@ -650,11 +716,11 @@ function OpportunityCard({ item, isPinned, index, viewMode }: { item: Marketplac
               item.type === 'MEETUP' && joinStatus === 'JOINED' ? "bg-emerald-600 text-white" : cta.color
            )}
          >
-            {item.type === 'MEETUP' ? (
+            {((item as any).isConnected) ? "Chat Now" : (item.type === 'MEETUP' ? (
                joinStatus === 'JOINED' ? "You're in  Chat open" :
                joinStatus === 'REQUESTED' ? "Awaiting Approval" :
                joinStatus === 'FULL' ? "Meetup Full" : "Join Meetup"
-            ) : cta.label}
+            ) : cta.label)}
             <ArrowRight size={14} strokeWidth={3} />
          </motion.button>
          <div className="flex items-center justify-between">

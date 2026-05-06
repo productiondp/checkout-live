@@ -5,6 +5,7 @@ import DesktopSidebar from "./DesktopSidebar";
 import UnifiedTopbar from "./UnifiedTopbar";
 import MobileNavbar from "./MobileNavbar";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import FloatingChat from "@/components/chat/FloatingChat";
 
 interface TerminalLayoutProps {
   children: React.ReactNode;
@@ -44,6 +45,7 @@ export default function TerminalLayout({ children, topbarChildren, rightSidebar 
            {/* MOBILE BOTTOM NAV */}
            <MobileNavbar />
         </div>
+        <FloatingChat />
       </div>
     </ProtectedRoute>
   );

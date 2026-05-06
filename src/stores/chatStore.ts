@@ -28,6 +28,10 @@ interface ChatState {
   typing: Record<string, string[]>; // conversationId -> userIds[]
   isLoading: boolean;
   
+  // Overlay State (Chat Head)
+  overlayChatId: string | null;
+  isOverlayOpen: boolean;
+  
   // Actions
   setConversations: (convs: Conversation[]) => void;
   setActiveId: (id: string | null) => void;
@@ -35,6 +39,8 @@ interface ChatState {
   setMessages: (convId: string, msgs: ChatMessage[]) => void;
   setTyping: (convId: string, userIds: string[]) => void;
   setLoading: (loading: boolean) => void;
+  setOverlayChatId: (id: string | null) => void;
+  setOverlayOpen: (open: boolean) => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -43,10 +49,16 @@ export const useChatStore = create<ChatState>((set) => ({
   messages: {},
   typing: {},
   isLoading: false,
-
+  overlayChatId: null,
+  isOverlayOpen: false,
+  
   setConversations: (conversations) => set({ conversations }),
   
   setActiveId: (activeId) => set({ activeId }),
+
+  setOverlayChatId: (overlayChatId) => set({ overlayChatId }),
+  
+  setOverlayOpen: (isOverlayOpen) => set({ isOverlayOpen }),
   
   addMessage: (convId, msg) => set((state) => {
     const existing = state.messages[convId] || [];

@@ -21,16 +21,22 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { createClient } from "@/utils/supabase/client";
 import { useSearchParams } from "next/navigation";
+import dynamic from "next/dynamic";
+import { AnimatePresence, motion } from "framer-motion";
+
+const MomentumView = dynamic(() => import("@/components/modals/MomentumView"), { ssr: false });
 
 function MapContent() {
   const searchParams = useSearchParams();
-  const [activeLayer, setActiveLayer] = useState<"Partners" | "Businesses" | "Events">("Partners");
+  const [activeLayer, setActiveLayer] = useState<"All" | "Partners" | "Businesses" | "Events" | "Requirements">("All");
   const [mapError, setMapError] = useState<string | null>(null);
   const [markers, setMarkers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedPost, setSelectedPost] = useState<{ id: string, type: any } | null>(null);
   
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<maplibregl.Marker[]>([]);
   const supabase = createClient();
 
   // Parse target location from URL
@@ -80,27 +86,32 @@ function MapContent() {
 
         // Map All Posts
         (posts || []).forEach((p, idx) => {
-          // Normalize type for map layers
-          let nodeType: "Partners" | "Businesses" | "Events" = "Partners";
-          if (p.type === 'MEETUP') nodeType = "Events";
-          else if (p.type === 'REQUIREMENT') nodeType = "Partners";
-          else if (p.type === 'PARTNER' || p.type === 'PARTNERSHIP') nodeType = "Partners";
+          const rawType = (p.type || "").toUpperCase();
+          let nodeType: "Partners" | "Businesses" | "Events" | "Requirements" = "Partners";
+          
+          if (rawType === 'MEETUP') nodeType = "Events";
+          else if (rawType === 'REQUIREMENT' || rawType === 'PARTNERSHIP') nodeType = "Requirements";
+          else if (rawType === 'PARTNER') nodeType = "Partners";
 
-          // Use real geo if exists, otherwise simulate proximity to hub
           const lat = p.metadata?.geo?.lat || (HUB_LAT + (Math.random() - 0.5) * 0.05);
           const lng = p.metadata?.geo?.lng || (HUB_LNG + (Math.random() - 0.5) * 0.05);
+
+          const color = nodeType === 'Events' ? '#FF3B30' : nodeType === 'Businesses' ? '#5856D6' : nodeType === 'Requirements' ? '#FF9500' : '#34C759';
+          const icon = nodeType === 'Events' ? '🔥' : nodeType === 'Businesses' ? '🏢' : nodeType === 'Requirements' ? '🎯' : '👤';
 
           nodes.push({
             id: p.id,
             type: nodeType,
-            subType: p.type,
+            subType: rawType,
             lat,
             lng,
             title: p.title || "Opportunity",
             content: p.content,
             author: p.author?.full_name || "Member",
             avatar: p.author?.avatar_url,
-            isRealGeo: !!p.metadata?.geo
+            isRealGeo: !!p.metadata?.geo,
+            markerColor: color,
+            markerIcon: icon
           });
         });
 
@@ -109,6 +120,8 @@ function MapContent() {
           const isBusiness = p.role === 'BUSINESS';
           const lat = HUB_LAT + (Math.random() - 0.5) * 0.08;
           const lng = HUB_LNG + (Math.random() - 0.5) * 0.08;
+          const color = isBusiness ? '#5856D6' : '#34C759';
+          const icon = isBusiness ? '🏢' : '👤';
 
           nodes.push({
             id: p.id,
@@ -119,10 +132,14 @@ function MapContent() {
             title: p.full_name,
             content: p.bio,
             avatar: p.avatar_url,
-            isProfile: true
+            isProfile: true,
+            markerColor: color,
+            markerIcon: icon
           });
         });
 
+        console.log("[MAP] Node Discovery Complete");
+        console.table(nodes.map(n => ({ id: n.id, type: n.type, color: n.markerColor })));
         setMarkers(nodes);
       } catch (err) {
         console.error('[MAP_DATA_ERROR]', err);
@@ -177,11 +194,17 @@ function MapContent() {
   const [mapSearchQuery, setMapSearchQuery] = useState("");
 
   const filteredMarkers = useMemo(() => {
-    if (!mapSearchQuery) return markers.filter(m => m.type === activeLayer);
-    return markers.filter(m => 
-      m.type === activeLayer && 
-      (m.title.toLowerCase().includes(mapSearchQuery.toLowerCase()) || 
-       m.content.toLowerCase().includes(mapSearchQuery.toLowerCase()))
+    let base = markers;
+    if (activeLayer !== 'All') {
+      base = markers.filter(m => m.type === activeLayer);
+    }
+    
+    if (!mapSearchQuery) return base;
+    
+    const q = mapSearchQuery.toLowerCase();
+    return base.filter(m => 
+      m.title.toLowerCase().includes(q) || 
+      m.content?.toLowerCase().includes(q)
     );
   }, [markers, activeLayer, mapSearchQuery]);
 
@@ -189,19 +212,36 @@ function MapContent() {
   useEffect(() => {
     if (!map.current) return;
 
-    // Clear existing markers
-    const currentMarkers = document.querySelectorAll('.mapboxgl-marker');
-    currentMarkers.forEach(m => m.remove());
+    // Clear existing markers via official Ref tracking
+    markersRef.current.forEach(m => m.remove());
+    markersRef.current = [];
 
     filteredMarkers.forEach(node => {
       const el = document.createElement('div');
       el.className = 'custom-marker';
       
-      // Use avatar if available, otherwise type-based icon
-      const iconHtml = node.avatar 
-        ? `<img src="${node.avatar}" class="h-full w-full object-cover rounded-full border-2 border-white/20 shadow-xl" />`
-        : `<div class="h-full w-full rounded-full flex items-center justify-center bg-${activeLayer === 'Events' ? '[#E53935]' : activeLayer === 'Businesses' ? 'indigo-500' : 'emerald-500'} text-white shadow-xl">
-            ${activeLayer === 'Events' ? '🔥' : activeLayer === 'Businesses' ? '🏢' : '👤'}
+      // Determine geometry based on node type
+      const isEvent = node.type === 'Events';
+      const isBusiness = node.type === 'Businesses';
+      const isReq = node.type === 'Requirements';
+      
+      const shapeStyle = isEvent 
+        ? `clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);` 
+        : isReq 
+        ? `transform: rotate(45deg); border-radius: 8px;` 
+        : isBusiness 
+        ? `border-radius: 12px;` 
+        : `border-radius: 9999px;`;
+
+      const innerContentStyle = isReq ? `transform: rotate(-45deg);` : "";
+
+      const hasRealAvatar = node.avatar && node.avatar.length > 20;
+      const iconHtml = hasRealAvatar 
+        ? `<div class="h-full w-full overflow-hidden border-2 border-white shadow-xl bg-white" style="${shapeStyle} box-shadow: 0 0 15px ${node.markerColor}80">
+             <img src="${node.avatar}" class="h-full w-full object-cover" style="${innerContentStyle}" />
+           </div>`
+        : `<div class="h-full w-full border-2 border-white flex items-center justify-center text-white shadow-xl transition-all" style="background-color: ${node.markerColor}; box-shadow: 0 0 15px ${node.markerColor}80; ${shapeStyle}">
+             <span style="${innerContentStyle}" class="text-lg">${node.markerIcon}</span>
            </div>`;
 
       el.innerHTML = `
@@ -255,38 +295,56 @@ function MapContent() {
         className: 'custom-map-popup'
       }).setDOMContent(popupContent);
 
-      const marker = new maplibregl.Marker(el)
+      const marker = new maplibregl.Marker({ element: el })
         .setLngLat([node.lng, node.lat])
         .addTo(map.current!);
 
-      // Click to open popup
+      markersRef.current.push(marker);
+
+      // Click to open popup or full view
+      el.style.pointerEvents = 'auto';
+      el.style.zIndex = '10';
+      
       el.addEventListener('click', (e) => {
         e.stopPropagation();
-        popup.setLngLat([node.lng, node.lat]).addTo(map.current!);
+        console.log(`[MAP_INTERACT] Node ${node.id} (${node.type})`);
         
-        // Add listeners to popup buttons after it's added to DOM
-        setTimeout(() => {
-          const connectBtn = document.querySelector('.btn-connect');
-          const responseBtn = document.querySelector('.btn-response');
+        if (node.isProfile) {
+          popup.setLngLat([node.lng, node.lat]).addTo(map.current!);
           
-          connectBtn?.addEventListener('click', () => {
-             alert(`Connection request sent to ${node.title}`);
-             popup.remove();
-          });
-          
-          responseBtn?.addEventListener('click', () => {
-             alert(`Response recorded for ${node.title}`);
-             popup.remove();
-          });
-        }, 100);
+          // Add listeners to popup buttons (scoped to content)
+          setTimeout(() => {
+            const connectBtn = popupContent.querySelector('.btn-connect');
+            if (connectBtn) connectBtn.addEventListener('click', () => {
+               alert(`Connection request sent to ${node.title}`);
+               popup.remove();
+            });
+          }, 100);
+        } else {
+          // Launch Full Feed Experience for posts
+          console.log(`[MAP_OPEN_POST] Launching Momentum for ${node.id}`);
+          setSelectedPost({ id: node.id, type: node.subType });
+        }
       });
     });
   }, [filteredMarkers, activeLayer]);
 
   return (
     <div className="h-[calc(100vh-64px)] flex flex-col bg-[#0A0A0B] overflow-hidden selection:bg-[#E53935]/10">
-      
-      {/* HEADER / FILTERS */}
+      <style>{`
+        .maplibregl-popup {
+          z-index: 9999 !important;
+        }
+        .maplibregl-popup-content {
+          padding: 0;
+          background: transparent;
+          border: none;
+          box-shadow: none;
+        }
+        .maplibregl-popup-tip {
+          display: none;
+        }
+      `}</style>
       <div className="p-6 border-b border-white/[0.03] bg-black/40 backdrop-blur-3xl z-30">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
@@ -294,13 +352,13 @@ function MapContent() {
             <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mt-1">Live Node: Trivandrum</p>
           </div>
 
-          <div className="flex items-center gap-4 bg-white/[0.03] p-1.5 rounded-xl border border-white/[0.05]">
-            {(["Partners", "Businesses", "Events"] as const).map((layer) => (
+          <div className="flex items-center gap-4 bg-white/[0.03] p-1.5 rounded-xl border border-white/[0.05] overflow-x-auto no-scrollbar max-w-full">
+            {(["All", "Partners", "Businesses", "Events", "Requirements"] as const).map((layer) => (
               <button
                 key={layer}
                 onClick={() => setActiveLayer(layer)}
                 className={cn(
-                  "px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                  "px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all shrink-0",
                   activeLayer === layer 
                     ? "bg-white text-black shadow-xl" 
                     : "text-white/30 hover:text-white"
@@ -319,10 +377,26 @@ function MapContent() {
                 placeholder="Search Location..." 
                 value={mapSearchQuery}
                 onChange={(e) => setMapSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    // Trigger FlyTo for the searched location
+                    fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(mapSearchQuery)}&limit=1`)
+                      .then(res => res.json())
+                      .then(data => {
+                        if (data.features?.length > 0) {
+                          const [lng, lat] = data.features[0].geometry.coordinates;
+                          map.current?.flyTo({ center: [lng, lat], zoom: 14, animate: true });
+                        }
+                      });
+                  }
+                }}
                 className="h-11 pl-10 pr-6 bg-white/[0.03] border border-transparent rounded-lg text-[11px] font-bold outline-none focus:bg-white/[0.08] focus:border-[#E53935]/20 text-white transition-all w-[240px]"
               />
             </div>
-            <button className="h-11 w-11 bg-[#E53935] text-white rounded-lg flex items-center justify-center hover:bg-[#D32F2F] transition-all shadow-xl shadow-[#E53935]/10">
+            <button 
+              onClick={() => setActiveLayer("All")}
+              className="h-11 w-11 bg-[#E53935] text-white rounded-lg flex items-center justify-center hover:bg-[#D32F2F] transition-all shadow-xl shadow-[#E53935]/10"
+            >
               <Filter size={18} />
             </button>
           </div>
@@ -373,6 +447,30 @@ function MapContent() {
               <p className="text-[15px] font-medium text-white leading-tight tracking-tight">"Interactive Map API Active. High-density network activity identified across <span className="text-[#E53935] font-bold">Trivandrum</span>."</p>
            </div>
         </div>
+
+        {/* MOMENTUM VIEW OVERLAY */}
+        <AnimatePresence>
+          {selectedPost && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto py-10"
+              onClick={(e) => {
+                // Close if clicking the backdrop
+                if (e.target === e.currentTarget) setSelectedPost(null);
+              }}
+            >
+              <div className="w-full max-w-4xl relative z-[10000]">
+                <MomentumView 
+                  postId={selectedPost.id} 
+                  type={selectedPost.type} 
+                  onClose={() => setSelectedPost(null)} 
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

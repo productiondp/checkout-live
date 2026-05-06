@@ -37,7 +37,7 @@ const TYPE_CONFIG = {
     icon: Target,
     color: "bg-[#1D1D1F]",
     shadow: "shadow-black/10",
-    steps: 6,
+    steps: 7,
     cta: "Post Requirement"
   },
   PARTNERSHIP: {
@@ -45,7 +45,7 @@ const TYPE_CONFIG = {
     icon: Sparkles,
     color: "bg-[#34C759]",
     shadow: "shadow-emerald-500/20",
-    steps: 7,
+    steps: 8,
     cta: "Post Partner Opportunity"
   },
   MEETUP: {
@@ -122,6 +122,72 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
 
   const supabase = createClient();
 
+  const DRAFT_KEY = "checkout_post_draft";
+
+  // LOAD DRAFT
+  useEffect(() => {
+    if (isOpen && !editPost) {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        try {
+          const draft = JSON.parse(saved);
+          if (draft.content) setContent(draft.content);
+          if (draft.type) setType(draft.type);
+          if (draft.industry) setIndustry(draft.industry);
+          if (draft.focusAreas) setFocusAreas(draft.focusAreas);
+          if (draft.experienceLevel) setExperienceLevel(draft.experienceLevel);
+          if (draft.commitment) setCommitment(draft.commitment);
+          if (draft.stage) setStage(draft.stage);
+          if (draft.timeline) setTimeline(draft.timeline);
+          if (draft.budget) setBudget(draft.budget);
+          if (draft.budgetType) setBudgetType(draft.budgetType);
+          if (draft.location) setLocation(draft.location);
+          if (draft.workType) setWorkType(draft.workType);
+          if (draft.weeklyHours) setWeeklyHours(draft.weeklyHours);
+          
+          // Meetup recovery
+          if (draft.meetupSubtype) setMeetupSubtype(draft.meetupSubtype);
+          if (draft.meetupGeo) setMeetupGeo(draft.meetupGeo);
+          if (draft.meetupCapacity) setMeetupCapacity(draft.meetupCapacity);
+          if (draft.meetupPrice) setMeetupPrice(draft.meetupPrice);
+          if (draft.meetupFormat) setMeetupFormat(draft.meetupFormat);
+          if (draft.meetupAccess) setMeetupAccess(draft.meetupAccess);
+          if (draft.meetupTime) setMeetupTime(draft.meetupTime);
+          if (draft.meetupDate) setMeetupDate(draft.meetupDate);
+          if (draft.meetupDuration) setMeetupDuration(draft.meetupDuration);
+          if (draft.meetupAgenda) setMeetupAgenda(draft.meetupAgenda);
+          if (draft.meetupTarget) setMeetupTarget(draft.meetupTarget);
+          
+          if (draft.currentStep) setCurrentStep(draft.currentStep);
+        } catch (e) {
+          console.error("Draft Recovery Failed:", e);
+        }
+      }
+    }
+  }, [isOpen, editPost]);
+
+  // SAVE DRAFT
+  useEffect(() => {
+    if (isOpen && !editPost) {
+      const draft = {
+        content, type, industry, focusAreas, experienceLevel,
+        commitment, stage, timeline, budget, budgetType,
+        location, workType, weeklyHours, currentStep,
+        meetupSubtype, meetupGeo, meetupCapacity, meetupPrice,
+        meetupFormat, meetupAccess, meetupTime, meetupDate,
+        meetupDuration, meetupAgenda, meetupTarget
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    }
+  }, [
+    isOpen, content, type, industry, focusAreas, experienceLevel,
+    commitment, stage, timeline, budget, budgetType,
+    location, workType, weeklyHours, currentStep,
+    meetupSubtype, meetupGeo, meetupCapacity, meetupPrice,
+    meetupFormat, meetupAccess, meetupTime, meetupDate,
+    meetupDuration, meetupAgenda, meetupTarget
+  ]);
+
   // RESET LOGIC
   useEffect(() => {
     if (isOpen) {
@@ -136,11 +202,6 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
           setMeetupTime(editPost.dateTime?.split(' ')[1] || "");
           setMeetupPrice(editPost.payment_type || "Free");
         }
-      } else {
-        setContent("");
-        setIndustry("");
-        setFocusAreas([]);
-        setCurrentStep(1);
       }
     }
   }, [isOpen, editPost]);
@@ -206,6 +267,27 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
     setCoachTip(currentTip);
     setSuggestedIndustry(detectedTaxo);
   }, [intentId, suggestions, score, currentTip, detectedTaxo]);
+
+  // NEW: Requirement Geo-Resolution
+  const [requirementGeo, setRequirementGeo] = useState<{ lat: number, lng: number } | null>(null);
+  
+  useEffect(() => {
+    if (type !== 'MEETUP' && location && location !== 'Remote') {
+      const timer = setTimeout(async () => {
+        try {
+          const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(location + ", Trivandrum")}&limit=1`);
+          const data = await res.json();
+          if (data.features?.length > 0) {
+            const [lng, lat] = data.features[0].geometry.coordinates;
+            setRequirementGeo({ lat, lng });
+          }
+        } catch (err) {
+          console.error("Requirement Geo-tagging failed", err);
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [location, type]);
 
   // SMART: LOCATION SEARCH (PHOTON API)
   useEffect(() => {
@@ -323,7 +405,7 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
         duration: type === 'MEETUP' ? meetupDuration : null,
         meetup_type: type === 'MEETUP' ? meetupSubtype : null,
         advisor_id: selectedAdvisor?.id,
-        geo: type === 'MEETUP' ? { lat: meetupGeo.lat, lng: meetupGeo.lng } : null,
+        geo: type === 'MEETUP' ? { lat: meetupGeo.lat, lng: meetupGeo.lng } : (requirementGeo || (location === 'Remote' ? null : { lat: HUB_LAT, lng: HUB_LNG, is_approximate: true })),
         access: type === 'MEETUP' ? meetupAccess : 'OPEN',
         agenda: type === 'MEETUP' ? meetupAgenda : null,
         target_audience: type === 'MEETUP' ? meetupTarget : null,
@@ -338,6 +420,7 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
       if (postErr) throw postErr;
       
       setSubmissionState('SUCCESS');
+      localStorage.removeItem(DRAFT_KEY);
       
       // Register for auto-scroll and highlight in Feed
       localStorage.setItem('checkout_last_post', JSON.stringify({
@@ -807,12 +890,37 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                     )}
                     {currentStep === 6 && (
                       <div className="space-y-6">
+                        <h3 className="text-2xl font-black tracking-tight">Project Location</h3>
+                        <div className="flex p-1 bg-slate-50 rounded-xl border border-black/[0.03] mb-4">
+                           {['Remote', 'On-site'].map(l => (
+                             <button key={l} onClick={() => setLocation(l === 'Remote' ? 'Remote' : '')} className={cn("flex-1 h-12 rounded-lg text-[10px] font-black uppercase transition-all", (l === 'Remote' && location === 'Remote') || (l === 'On-site' && location !== 'Remote') ? "bg-white text-black shadow-sm" : "text-slate-400")}>{l}</button>
+                           ))}
+                        </div>
+                        
+                        {location !== 'Remote' && (
+                          <div className="space-y-4">
+                            <div className="relative">
+                              <input 
+                                value={location} 
+                                onChange={(e) => setLocation(e.target.value)} 
+                                placeholder="Enter city or specific area..." 
+                                className="w-full h-16 pl-12 pr-6 bg-slate-50 rounded-2xl font-bold border-none focus:ring-2 focus:ring-black/5" 
+                              />
+                              <SearchIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                            </div>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">This anchors your requirement to the Discovery Map</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {currentStep === 7 && (
+                      <div className="space-y-6">
                         <h3 className="text-2xl font-black tracking-tight">Review</h3>
                         <div className="p-6 bg-slate-50 rounded-[2rem] border space-y-4">
                            <p className="text-sm font-bold text-slate-800 italic">"{content}"</p>
                            <div className="grid grid-cols-2 gap-4">
                               <div><p className="text-[9px] font-black uppercase text-slate-300">Budget</p><p className="text-[11px] font-black uppercase">{budget}</p></div>
-                              <div><p className="text-[9px] font-black uppercase text-slate-300">Timeline</p><p className="text-[11px] font-black uppercase">{timeline}</p></div>
+                              <div><p className="text-[9px] font-black uppercase text-slate-300">Location</p><p className="text-[11px] font-black uppercase">{location}</p></div>
                            </div>
                         </div>
                       </div>
@@ -866,12 +974,36 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                     )}
                     {currentStep === 7 && (
                       <div className="space-y-6">
+                        <h3 className="text-2xl font-black tracking-tight">Location</h3>
+                        <div className="flex p-1 bg-slate-50 rounded-xl border border-black/[0.03] mb-4">
+                           {['Remote', 'On-site'].map(l => (
+                             <button key={l} onClick={() => setLocation(l === 'Remote' ? 'Remote' : '')} className={cn("flex-1 h-12 rounded-lg text-[10px] font-black uppercase transition-all", (l === 'Remote' && location === 'Remote') || (l === 'On-site' && location !== 'Remote') ? "bg-white text-black shadow-sm" : "text-slate-400")}>{l}</button>
+                           ))}
+                        </div>
+                        
+                        {location !== 'Remote' && (
+                          <div className="space-y-4">
+                            <div className="relative">
+                              <input 
+                                value={location} 
+                                onChange={(e) => setLocation(e.target.value)} 
+                                placeholder="Enter city or specific area..." 
+                                className="w-full h-16 pl-12 pr-6 bg-slate-50 rounded-2xl font-bold border-none focus:ring-2 focus:ring-black/5" 
+                              />
+                              <SearchIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {currentStep === 8 && (
+                      <div className="space-y-6">
                         <h3 className="text-2xl font-black tracking-tight">Review</h3>
                         <div className="p-6 bg-slate-50 rounded-[2rem] border space-y-4">
                            <p className="text-sm font-bold text-slate-800 italic">"{content}"</p>
                            <div className="grid grid-cols-2 gap-4">
                               <div><p className="text-[9px] font-black uppercase text-slate-300">Stage</p><p className="text-[11px] font-black uppercase">{stage}</p></div>
-                              <div><p className="text-[9px] font-black uppercase text-slate-300">Hours</p><p className="text-[11px] font-black uppercase">{weeklyHours || 'Flexible'}</p></div>
+                              <div><p className="text-[9px] font-black uppercase text-slate-300">Location</p><p className="text-[11px] font-black uppercase">{location}</p></div>
                            </div>
                         </div>
                       </div>
@@ -880,7 +1012,20 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                 )}
 
                 {/* NAVIGATION */}
-                <div className="pt-4 flex flex-col gap-4">
+                <div className="pt-4 flex flex-col gap-6">
+                   {/* Step Indicator */}
+                   <div className="flex items-center justify-center gap-2">
+                      {Array.from({ length: config.steps }).map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={cn(
+                            "h-1.5 transition-all duration-300 rounded-full",
+                            currentStep === i + 1 ? "w-8 bg-black" : "w-1.5 bg-slate-200"
+                          )} 
+                        />
+                      ))}
+                   </div>
+
                    {error && (
                       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3">
                          <AlertCircle className="text-[#E53935]" size={16} /><p className="text-[10px] font-black uppercase text-[#E53935]">{error}</p>
@@ -892,9 +1037,10 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                       )}
                       {currentStep < config.steps ? (
                         <button onClick={() => {
+                          console.log(`[POST_MODAL] Moving to Step ${currentStep + 1}`);
                           if (currentStep === 1 && !content.trim()) { setError("Tell us what this is about first"); return; }
-                          if (currentStep === 2 && !industry) { setError("Please pick a category"); return; }
-                          setError(null); setCurrentStep(prev => prev + 1);
+                          setError(null); 
+                          setCurrentStep(prev => prev + 1);
                         }} className={cn("flex-1 h-16 text-white rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-3", config.color)}>Next<ArrowRight size={18} /></button>
                       ) : (
                         <button onClick={handlePost} disabled={submissionState !== null} className={cn("flex-1 h-16 text-white rounded-2xl text-[12px] font-black uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-3 group", config.color)}>{submissionState ? <Activity className="animate-spin" size={18} /> : <Zap size={18} />}{config.cta}</button>
