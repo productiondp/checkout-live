@@ -37,7 +37,7 @@ export default function CreatorProfilePage({ params }: { params: { id: string } 
             bio: "I am a professional content creator specializing in high-end fashion, commercial modeling, and user-generated content for lifestyle brands. I've worked with top-tier agencies and always deliver exceptional quality.",
             specialties: ["Fashion Modeling", "Commercial Modeling", "Editorial", "Beauty / Makeup", "UGC Creator"],
             availability: "AVAILABLE THIS WEEK",
-            rate_card: { hourly: "150", daily: "1000", custom: "Contact for bulk content" },
+            rate_card: "Hourly Rate: $150/hr\nDaily Rate: $1000/day\nContact for bulk content packages and custom deliverables.",
             portfolio_images: [
               "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=900",
               "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=900",
