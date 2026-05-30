@@ -28,19 +28,53 @@ export default function CreatorProfilePage({ params }: { params: { id: string } 
   useEffect(() => {
     const fetchCreatorProfile = async () => {
       setLoading(true);
+      
+      // Handle mock data for demo feed
+      if (params.id.startsWith("mock-")) {
+        setTimeout(() => {
+          setCreatorData({
+            id: params.id,
+            bio: "I am a professional content creator specializing in high-end fashion, commercial modeling, and user-generated content for lifestyle brands. I've worked with top-tier agencies and always deliver exceptional quality.",
+            specialties: ["Fashion Modeling", "Commercial Modeling", "Editorial", "Beauty / Makeup", "UGC Creator"],
+            availability: "AVAILABLE THIS WEEK",
+            rate_card: { hourly: "150", daily: "1000", custom: "Contact for bulk content" },
+            portfolio_images: [
+              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=900",
+              "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=900",
+              "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=900",
+              "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=900"
+            ],
+            video_links: ["https://youtube.com/watch?v=dQw4w9WgXcQ"],
+            measurements: { height: "5'9\"", bust: "34\"", waist: "24\"", hips: "35\"", shoe: "8" },
+            social_links: { instagram: "https://instagram.com/creator", youtube: "https://youtube.com/creator" },
+            profiles: {
+              full_name: params.id === "mock-1" ? "Sarah Jenkins" : params.id === "mock-2" ? "Rajat Menon" : "Priya Patel",
+              location: "Los Angeles, CA",
+              avatar_url: null
+            },
+            trust_score: params.id === "mock-1" ? 95 : 88,
+            is_verified: true,
+            category: "Model / Creator"
+          });
+          setLoading(false);
+        }, 500);
+        return;
+      }
+
       try {
         const { data } = await supabase
           .from("creator_profiles")
-          .select("*")
+          .select("*, profiles(*)")
           .eq("id", params.id)
           .maybeSingle();
 
+        const local = localStorage.getItem(`creator_profile_${params.id}`);
+        const localData = local ? JSON.parse(local) : {};
+
         if (data) {
-          setCreatorData(data);
+          setCreatorData({ ...data, ...localData });
         } else {
-          // Try localStorage fallback
-          const local = localStorage.getItem(`creator_profile_${params.id}`);
-          if (local) setCreatorData(JSON.parse(local));
+          if (local) setCreatorData(localData);
         }
       } catch (e) {
         const local = localStorage.getItem(`creator_profile_${params.id}`);

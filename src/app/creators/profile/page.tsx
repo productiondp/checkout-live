@@ -42,11 +42,14 @@ export default function MyCreatorProfilePage() {
           .select("*")
           .eq("id", userId)
           .maybeSingle();
+          
+        const local = localStorage.getItem(`creator_profile_${userId}`);
+        const localData = local ? JSON.parse(local) : {};
+
         if (data) {
-          setCreatorData(data);
+          setCreatorData({ ...data, ...localData }); // Merge so local payload overrides missing db columns
         } else {
-          const local = localStorage.getItem(`creator_profile_${userId}`);
-          if (local) setCreatorData(JSON.parse(local));
+          if (local) setCreatorData(localData);
         }
       } catch {
         const local = localStorage.getItem(`creator_profile_${userId}`);

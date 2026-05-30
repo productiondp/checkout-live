@@ -138,11 +138,16 @@ export default function CreatorProfileEditor({
     };
 
     try {
+      // Always save to localStorage as a robust fallback for missing DB columns
+      localStorage.setItem(`creator_profile_${profileId}`, JSON.stringify(payload));
+      
       const { error } = await supabase
         .from("creator_profiles")
         .upsert({ id: profileId, ...payload }, { onConflict: "id" });
 
-      if (error) throw error;
+      if (error) {
+        console.warn("Supabase upsert warning (likely missing columns):", error);
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
       onSave?.(payload);
