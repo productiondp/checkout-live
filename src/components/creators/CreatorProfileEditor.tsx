@@ -136,6 +136,7 @@ export default function CreatorProfileEditor({
       localStorage.setItem(`creator_profile_${profileId}`, JSON.stringify(payload));
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
+      onSave?.(payload);
     } finally {
       setSaving(false);
     }

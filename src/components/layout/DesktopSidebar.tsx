@@ -50,7 +50,7 @@ export default function DesktopSidebar() {
       items: [
         { label: "Marketplace", icon: ShoppingBag, href: "/marketplace" },
         { label: "Advisors", icon: Target, href: "/advisors" },
-        { label: "Content Creation", icon: Compass, href: "/creators" },
+        { label: "Creator Library", icon: Compass, href: "/creators" },
         { label: "Meetups", icon: LayoutGrid, href: "/meetup" },
       ]
     },
