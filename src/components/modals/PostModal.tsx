@@ -703,8 +703,8 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                 {currentStep === 2 && (
                    <div className="space-y-6">
                       <h3 className="text-2xl md:text-3xl font-black tracking-tight">Pick a category</h3>
-                      <div className="grid grid-cols-2 gap-2">
-                        {INDUSTRY_DATA.slice(0, 8).map(i => (
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                        {INDUSTRY_DATA.map(i => (
                            <button
                              key={i.id}
                              onClick={() => { setIndustry(i.id); setFocusAreas([]); }}
@@ -921,9 +921,9 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                     {currentStep === 4 && (
                       <div className="space-y-6">
                         <h3 className="text-2xl font-black tracking-tight">Timeline</h3>
-                        <div className="grid grid-cols-1 gap-3">
-                           {['ASAP', 'Within 7 Days', 'Flexible'].map(t => (
-                             <button key={t} onClick={() => setTimeline(t)} className={cn("h-16 px-8 rounded-xl flex items-center justify-between border transition-all", timeline === t ? "bg-black text-white" : "bg-white text-slate-400")}><span className="text-[12px] font-black uppercase tracking-widest">{t}</span>{timeline === t && <CheckCircle2 size={20} />}</button>
+                        <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                           {['ASAP / Immediate', 'Within 7 Days', 'Within 30 Days', 'Long-term / Ongoing', 'Event Specific Date', 'Flexible / Discuss Later'].map(t => (
+                             <button key={t} onClick={() => setTimeline(t)} className={cn("h-16 px-8 rounded-xl flex items-center justify-between border transition-all shrink-0", timeline === t ? "bg-black text-white" : "bg-white text-slate-400")}><span className="text-[12px] font-black uppercase tracking-widest">{t}</span>{timeline === t && <CheckCircle2 size={20} />}</button>
                            ))}
                         </div>
                       </div>
@@ -931,20 +931,22 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                     {currentStep === 5 && (
                       <div className="space-y-6">
                         <h3 className="text-2xl font-black tracking-tight">Budget</h3>
-                        <div className="flex p-1 bg-slate-50 rounded-xl border">
-                           {['Fixed', 'Hourly', 'Open'].map(b => (
-                             <button key={b} onClick={() => setBudgetType(b)} className={cn("flex-1 h-12 rounded-lg text-[10px] font-black uppercase transition-all", budgetType === b ? "bg-white text-black shadow-sm" : "text-slate-400")}>{b}</button>
+                        <div className="flex p-1 bg-slate-50 rounded-xl border flex-wrap gap-1">
+                           {['Fixed', 'Hourly', 'Open', 'Barter / Free', 'Rev-Share'].map(b => (
+                             <button key={b} onClick={() => setBudgetType(b)} className={cn("flex-1 min-w-[80px] h-12 rounded-lg text-[10px] font-black uppercase transition-all", budgetType === b ? "bg-white text-black shadow-sm" : "text-slate-400")}>{b}</button>
                            ))}
                         </div>
-                        <input value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="Amount" className="w-full h-16 bg-slate-50 rounded-xl px-6 font-black text-lg" />
+                        {budgetType !== 'Open' && budgetType !== 'Barter / Free' && budgetType !== 'Rev-Share' && (
+                           <input value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="Amount (e.g. ₹10,000 or $500)" className="w-full h-16 bg-slate-50 rounded-xl px-6 font-black text-lg" />
+                        )}
                       </div>
                     )}
                     {currentStep === 6 && (
                       <div className="space-y-6">
                         <h3 className="text-2xl font-black tracking-tight">Project Location</h3>
                         <div className="flex p-1 bg-slate-50 rounded-xl border border-black/[0.03] mb-4">
-                           {['Remote', 'On-site'].map(l => (
-                             <button key={l} onClick={() => setLocation(l === 'Remote' ? 'Remote' : '')} className={cn("flex-1 h-12 rounded-lg text-[10px] font-black uppercase transition-all", (l === 'Remote' && location === 'Remote') || (l === 'On-site' && location !== 'Remote') ? "bg-white text-black shadow-sm" : "text-slate-400")}>{l}</button>
+                           {['Remote / Online', 'Specific Location'].map(l => (
+                             <button key={l} onClick={() => setLocation(l === 'Remote / Online' ? 'Remote' : '')} className={cn("flex-1 h-12 rounded-lg text-[10px] font-black uppercase transition-all", (l === 'Remote / Online' && location === 'Remote') || (l === 'Specific Location' && location !== 'Remote') ? "bg-white text-black shadow-sm" : "text-slate-400")}>{l}</button>
                            ))}
                         </div>
                         
@@ -954,8 +956,9 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                               <input 
                                 value={location} 
                                 onChange={(e) => setLocation(e.target.value)} 
-                                placeholder="Enter city or specific area..." 
+                                placeholder="e.g. Kochi, Studio, or Hybrid..." 
                                 className="w-full h-16 pl-12 pr-6 bg-slate-50 rounded-2xl font-bold border-none focus:ring-2 focus:ring-black/5" 
+
                               />
                               <SearchIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
                             </div>
@@ -967,11 +970,17 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                     {currentStep === 7 && (
                       <div className="space-y-6">
                         <h3 className="text-2xl font-black tracking-tight">Review</h3>
-                        <div className="p-6 bg-slate-50 rounded-[2rem] border space-y-4">
-                           <p className="text-sm font-bold text-slate-800 italic">"{content}"</p>
-                           <div className="grid grid-cols-2 gap-4">
-                              <div><p className="text-[9px] font-black uppercase text-slate-300">Budget</p><p className="text-[11px] font-black uppercase">{budget}</p></div>
-                              <div><p className="text-[9px] font-black uppercase text-slate-300">Location</p><p className="text-[11px] font-black uppercase">{location}</p></div>
+                        <div className="p-6 bg-slate-50 rounded-[2rem] border space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar">
+                           <div className="border-b pb-4">
+                             <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Requirement Details</p>
+                             <p className="text-[13px] font-medium text-slate-800 whitespace-pre-wrap italic">"{content}"</p>
+                           </div>
+                           <div className="grid grid-cols-2 gap-4 pt-2">
+                              <div><p className="text-[9px] font-black uppercase text-slate-400">Category</p><p className="text-[11px] font-black uppercase text-[#1D1D1F]">{getIndustryById(industry || '')?.label || 'General'}</p></div>
+                              <div><p className="text-[9px] font-black uppercase text-slate-400">Skills</p><p className="text-[11px] font-black uppercase text-[#1D1D1F] truncate">{focusAreas.join(', ') || 'Any'}</p></div>
+                              <div><p className="text-[9px] font-black uppercase text-slate-400">Timeline</p><p className="text-[11px] font-black uppercase text-[#1D1D1F]">{timeline}</p></div>
+                              <div><p className="text-[9px] font-black uppercase text-slate-400">Budget</p><p className="text-[11px] font-black uppercase text-[#1D1D1F]">{budgetType === 'Open' || budgetType === 'Barter / Free' || budgetType === 'Rev-Share' ? budgetType : `${budgetType} - ${budget}`}</p></div>
+                              <div><p className="text-[9px] font-black uppercase text-slate-400">Location</p><p className="text-[11px] font-black uppercase text-[#1D1D1F] truncate">{location}</p></div>
                            </div>
                         </div>
                       </div>
