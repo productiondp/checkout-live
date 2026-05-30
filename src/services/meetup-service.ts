@@ -10,7 +10,7 @@ export class MeetupService {
     // 1. Get meetup details
     const { data: meetup, error: fetchError } = await supabase
       .from('posts')
-      .select('room_id, max_slots, author_id, title, status, metadata')
+      .select('room_id, max_slots, author_id, title, status')
       .eq('id', meetupId)
       .single();
 

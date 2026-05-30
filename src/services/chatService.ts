@@ -33,7 +33,7 @@ export const ChatService = {
         .eq('connection_id', c.id)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single()
+        .maybeSingle()
     );
     
     const msgResults = await Promise.allSettled(msgPromises);
