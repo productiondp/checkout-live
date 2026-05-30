@@ -580,17 +580,47 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                                           className="absolute bottom-full left-0 mb-3 w-72 bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_40px_80px_rgba(0,0,0,0.2)] border border-black/[0.03] p-5 z-[200] space-y-2 backdrop-blur-xl"
                                         >
                                           <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 px-2 pb-2">Select to Apply</p>
-                                          {(getIntentConfig(detectedIntent)?.suggestions.includes(s) ? (
-                                            s === 'Equity Offered' ? ['1-5%', '5-10%', '10-20%', 'Open to Discuss'] :
-                                            s === 'Budget / Salary' ? ['₹10k - ₹30k', '₹30k - ₹70k', '₹70k+', 'Commission Only'] :
-                                            s === 'Experience Required' ? ['Junior (1-2y)', 'Mid (3-5y)', 'Senior (5y+)', 'Expert'] :
-                                            s === 'Growth Objective' ? ['User Acquisition', 'Brand Awareness', 'Revenue Growth', 'Retention'] :
-                                            ['Option 1', 'Option 2', 'Option 3']
-                                          ) : (s === "What are you solving for?" ? [
-                                            "Product Market Fit", "Technical Scalability", "Operational Efficiency", "Market Expansion", "Customer Acquisition"
-                                          ] : [
-                                            "Launch MVP (30 Days)", "Secure First 100 Users", "Hire Core Team", "Validate Model", "Optimize Strategy"
-                                          ])).map(option => (
+                                          {(getIntentConfig(detectedIntent)?.suggestions.includes(s) || s === "What are you solving for?") ? (
+                                            (() => {
+                                              switch(s) {
+                                                // HIRING
+                                                case 'Role Responsibility': return ['Lead Development', 'Design UI/UX', 'Manage Campaigns', 'Content Creation', 'Sales & Outreach'];
+                                                case 'Experience Required': return ['Junior (1-2y)', 'Mid (3-5y)', 'Senior (5y+)', 'Expert / Lead'];
+                                                case 'Budget / Salary': return ['₹10k - ₹30k/mo', '₹30k - ₹70k/mo', '₹70k+/mo', 'Commission / Revenue Share'];
+                                                case 'Tech Stack': return ['React / Node', 'Python / AI', 'Figma', 'Adobe CC', 'No-Code / Bubble'];
+                                                // GROWTH
+                                                case 'Target Audience': return ['B2B Enterprises', 'D2C Consumers', 'Gen-Z', 'Local Businesses', 'Creators / Influencers'];
+                                                case 'Growth Objective': return ['User Acquisition', 'Brand Awareness', 'Revenue Growth', 'Retention', 'Lead Generation'];
+                                                case 'Current Metrics': return ['Pre-launch', '1k+ Users', '₹1M+ ARR', 'Seed Funded'];
+                                                case 'Channels': return ['Instagram / TikTok', 'LinkedIn B2B', 'SEO / Blog', 'Paid Ads (Meta/Google)'];
+                                                // FUNDING
+                                                case 'Equity Offered': return ['1-5%', '5-10%', '10-20%', 'Open to Discuss'];
+                                                case 'Fund Usage': return ['Product Development', 'Marketing & Sales', 'Hiring Key Roles', 'Working Capital'];
+                                                case 'Traction So Far': return ['Idea Stage', 'MVP Ready', 'Paying Customers', 'Profitable'];
+                                                case 'Pitch Deck Link': return ['Ready (Will DM)', 'Currently Building', 'Not Needed'];
+                                                // MENTORSHIP
+                                                case 'Specific Problem': return ['Go-To-Market', 'Fundraising', 'Technical Architecture', 'Career Growth'];
+                                                case 'Frequency': return ['One-time Call', 'Weekly Check-ins', 'Monthly Syncs', 'As needed'];
+                                                case 'Ideal Mentor Profile': return ['Ex-Founder', 'Senior Executive', 'Domain Expert', 'Investor'];
+                                                case 'Expectation': return ['Actionable Feedback', 'Network Intro', 'Strategy Review', 'Skill Building'];
+                                                // PARTNERSHIP
+                                                case 'Equity Split': return ['50/50', 'Minority Stake', 'Vesting over 4 years', 'Open to Discuss'];
+                                                case 'Commitment Level': return ['Full-time', 'Part-time', 'Advising', 'Weekend Hacker'];
+                                                case 'Shared Vision': return ['Build to Sell', 'Lifestyle Business', 'Global Scale', 'Social Impact'];
+                                                case 'Complementary Skills': return ['I build, you sell', 'I sell, you build', 'Co-builders', 'Operations + Product'];
+                                                // COLLABORATION
+                                                case 'Deliverables': return ['1 Instagram Reel', '2 TikToks', 'YouTube Integration', 'UGC Photos', 'Event Appearance'];
+                                                case 'Timeline': return ['ASAP', 'Within 7 Days', 'Within 1 Month', 'Ongoing Campaign'];
+                                                case 'Budget / Barter': return ['Paid Cash', 'Free Product (Barter)', 'Revenue Share', 'Paid + Free Product'];
+                                                case 'Target Demographics': return ['Gen-Z (18-24)', 'Millennials (25-34)', 'Tech Enthusiasts', 'Local Kochi Audience'];
+                                                // DEFAULT
+                                                case 'What are you solving for?': return ["Product Market Fit", "Technical Scalability", "Operational Efficiency", "Market Expansion", "Customer Acquisition"];
+                                                default: return ["Option 1", "Option 2", "Option 3"];
+                                              }
+                                            })()
+                                          ) : (
+                                            ["Launch MVP (30 Days)", "Secure First 100 Users", "Hire Core Team", "Validate Model", "Optimize Strategy"]
+                                          )).map(option => (
                                             <button
                                               key={option}
                                               onClick={() => {
