@@ -10,7 +10,7 @@ export default function CreatorsDiscoveryFeed() {
   const [role, setRole] = useState<"CREATOR" | "BUSINESS">("BUSINESS"); // Toggle for demo/admin view
 
   return (
-    <div className="p-6 md:p-12 max-w-7xl mx-auto space-y-12">
+    <div className="space-y-8 pb-20 mt-8">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">

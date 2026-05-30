@@ -8,9 +8,7 @@ export default function CreatorsLayout({
 }) {
   return (
     <TerminalLayout>
-      <div className="py-6">
-        {children}
-      </div>
+      {children}
     </TerminalLayout>
   );
 }
