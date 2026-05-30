@@ -5,7 +5,10 @@ import { Sparkles, BrainCircuit, Target, CheckCircle2, ArrowRight, Loader2 } fro
 import Button from "@/components/ui/Button";
 import { createClient } from '@/utils/supabase/client';
 
+import { useAuth } from '@/hooks/useAuth';
+
 export default function CreatorAIAgentPage() {
+  const { user } = useAuth();
   const [chatInput, setChatInput] = useState("");
   const [messages, setMessages] = useState<{role: string, content: string}[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -14,7 +17,6 @@ export default function CreatorAIAgentPage() {
 
   useEffect(() => {
     async function loadAgentData() {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       // Fetch real AI Insights from the database

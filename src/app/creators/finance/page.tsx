@@ -5,7 +5,10 @@ import { DollarSign, ArrowUpRight, ArrowDownRight, Clock, ShieldCheck, FileText,
 import Button from "@/components/ui/Button";
 import { createClient } from '@/utils/supabase/client';
 
+import { useAuth } from '@/hooks/useAuth';
+
 export default function CreatorFinanceDashboard() {
+  const { user } = useAuth();
   const [isAccountConnected, setIsAccountConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [financials, setFinancials] = useState({
@@ -19,7 +22,6 @@ export default function CreatorFinanceDashboard() {
   useEffect(() => {
     async function loadFinanceData() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
         // 1. Check Connected Account Status

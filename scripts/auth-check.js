@@ -18,7 +18,7 @@ const FORBIDDEN_PATTERNS = [
       "src/utils/supabase/server.ts", 
       "src/app/home/page.tsx",
       "src/actions/profile.ts",
-      "src/app/api/profile",
+      "src/app/api",
       "src/rpc/modules/profile.ts"
     ]
   },
