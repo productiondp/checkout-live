@@ -594,45 +594,45 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                                                 // HIRING
                                                 case 'Role Responsibility': 
                                                   if (content.toLowerCase().includes('model') || content.toLowerCase().includes('shoot') || content.toLowerCase().includes('actor')) {
-                                                    return ['Modeling / Acting', 'Fashion Shoot', 'Brand Ambassador', 'UGC Content Creation', 'Promo Video'];
+                                                    return ['Modeling / Acting', 'Fashion Shoot', 'Brand Ambassador', 'UGC Content Creation', 'Promo Video', 'Voiceover / Audio', 'Event Hosting', 'Product Demo'];
                                                   }
-                                                  return ['Lead Development', 'Design UI/UX', 'Manage Campaigns', 'Content Creation', 'Sales & Outreach'];
-                                                case 'Experience Required': return ['Junior (1-2y)', 'Mid (3-5y)', 'Senior (5y+)', 'Expert / Lead'];
-                                                case 'Budget / Salary': return ['₹10k - ₹30k/mo', '₹30k - ₹70k/mo', '₹70k+/mo', 'Commission / Revenue Share'];
-                                                case 'Tech Stack': return ['React / Node', 'Python / AI', 'Figma', 'Adobe CC', 'No-Code / Bubble'];
-                                                case 'Shoot Location': return ['Studio Shoot', 'Outdoor Location', 'Self-Shot / UGC', 'Live Event'];
+                                                  return ['Lead Development', 'Design UI/UX', 'Manage Campaigns', 'Content Creation', 'Sales & Outreach', 'Operations & Admin', 'Data Analytics', 'Customer Support'];
+                                                case 'Experience Required': return ['Intern / Fresher', 'Junior (1-2y)', 'Mid-level (3-5y)', 'Senior (5-8y)', 'Lead (8y+)', 'Expert / Principal', 'Freelancer (Any)', 'Open to All'];
+                                                case 'Budget / Salary': return ['₹5k - ₹15k/mo', '₹15k - ₹30k/mo', '₹30k - ₹70k/mo', '₹70k - ₹1.5L/mo', '₹1.5L+/mo', 'Commission / Revenue Share', 'Project-based Fixed', 'Equity Only (No Cash)'];
+                                                case 'Tech Stack': return ['React / Node.js', 'Python / AI / ML', 'Figma / UI Design', 'Adobe CC / Video', 'No-Code / Bubble', 'Mobile (iOS/Android)', 'Java / Spring', 'AWS / DevOps'];
+                                                case 'Shoot Location': return ['Studio Shoot', 'Outdoor Location', 'Self-Shot / UGC', 'Live Event', 'Remote / Virtual', 'On-Site / Office', 'Retail Store', 'Café / Lounge'];
                                                 // GROWTH
-                                                case 'Target Audience': return ['B2B Enterprises', 'D2C Consumers', 'Gen-Z', 'Local Businesses', 'Creators / Influencers'];
-                                                case 'Growth Objective': return ['User Acquisition', 'Brand Awareness', 'Revenue Growth', 'Retention', 'Lead Generation'];
-                                                case 'Current Metrics': return ['Pre-launch', '1k+ Users', '₹1M+ ARR', 'Seed Funded'];
-                                                case 'Channels': return ['Instagram / TikTok', 'LinkedIn B2B', 'SEO / Blog', 'Paid Ads (Meta/Google)'];
+                                                case 'Target Audience': return ['B2B Enterprises', 'D2C Consumers', 'Gen-Z (18-24)', 'Millennials (25-34)', 'Local Businesses', 'Creators / Influencers', 'Parents & Families', 'High Net Worth (HNI)'];
+                                                case 'Growth Objective': return ['User Acquisition', 'Brand Awareness', 'Revenue Growth', 'Retention & Loyalty', 'Lead Generation', 'App Installs', 'Website Traffic', 'Viral / Organic Reach'];
+                                                case 'Current Metrics': return ['Pre-launch / Idea', '100+ Beta Users', '1k+ Active Users', '10k+ Monthly Traffic', '₹1M+ ARR', 'Seed Funded', 'Bootstrapped & Profitable', 'Pre-revenue MVP'];
+                                                case 'Channels': return ['Instagram / TikTok', 'LinkedIn B2B', 'SEO / Organic Search', 'Paid Ads (Meta/Google)', 'Email Marketing', 'Cold Calling / Sales', 'PR / Media Outreach', 'Affiliate / Partnerships'];
                                                 // FUNDING
-                                                case 'Equity Offered': return ['1-5%', '5-10%', '10-20%', 'Open to Discuss'];
-                                                case 'Fund Usage': return ['Product Development', 'Marketing & Sales', 'Hiring Key Roles', 'Working Capital'];
-                                                case 'Traction So Far': return ['Idea Stage', 'MVP Ready', 'Paying Customers', 'Profitable'];
-                                                case 'Pitch Deck Link': return ['Ready (Will DM)', 'Currently Building', 'Not Needed'];
+                                                case 'Equity Offered': return ['1-5% (Advisory/Early)', '5-10% (Founding Member)', '10-20% (Co-founder)', '20-50% (Equal Partner)', 'Less than 1%', 'Open to Discuss', 'Stock Options (ESOPs)', 'Revenue Share Only'];
+                                                case 'Fund Usage': return ['Product Development', 'Marketing & Sales', 'Hiring Key Roles', 'Working Capital', 'Scaling Infrastructure', 'Legal & Compliance', 'Inventory / Supply', 'R&D / Patents'];
+                                                case 'Traction So Far': return ['Idea Stage', 'MVP Ready (Testing)', 'Early Paying Customers', 'Consistent Monthly Growth', 'Profitable & Scaling', 'Raised Friends & Family', 'Government Grants Won', 'B2B Pilots Secured'];
+                                                case 'Pitch Deck Link': return ['Ready (Will share in DM)', 'Currently Building it', 'Available on Request', 'Draft version available', 'Not Needed / Informal', 'Looking for help to build', 'Financial Model Ready', 'Executive Summary Only'];
                                                 // MENTORSHIP
-                                                case 'Specific Problem': return ['Go-To-Market', 'Fundraising', 'Technical Architecture', 'Career Growth'];
-                                                case 'Frequency': return ['One-time Call', 'Weekly Check-ins', 'Monthly Syncs', 'As needed'];
-                                                case 'Ideal Mentor Profile': return ['Ex-Founder', 'Senior Executive', 'Domain Expert', 'Investor'];
-                                                case 'Expectation': return ['Actionable Feedback', 'Network Intro', 'Strategy Review', 'Skill Building'];
+                                                case 'Specific Problem': return ['Go-To-Market Strategy', 'Fundraising & Pitching', 'Technical Architecture', 'Career Growth / Pivot', 'Hiring & Culture', 'Sales & Conversion', 'Scaling Operations', 'Legal / Compliance Advice'];
+                                                case 'Frequency': return ['One-time Call', 'Weekly Check-ins', 'Bi-weekly Syncs', 'Monthly Syncs', 'As needed / Casual', 'Quarterly Review', 'Paid Advisory Board', 'Text / Email Only'];
+                                                case 'Ideal Mentor Profile': return ['Ex-Founder / Ex-CEO', 'Senior Executive (MNC)', 'Domain / Tech Expert', 'Angel Investor / VC', 'Marketing / Sales Leader', 'Product Manager', 'Academic / Researcher', 'Industry Veteran'];
+                                                case 'Expectation': return ['Actionable Feedback', 'Network Introductions', 'Strategy & Code Review', 'Skill Building / Coaching', 'Mock Pitch Practice', 'Accountability Partner', 'Co-founder Matching', 'Brainstorming / Ideation'];
                                                 // PARTNERSHIP
-                                                case 'Equity Split': return ['50/50', 'Minority Stake', 'Vesting over 4 years', 'Open to Discuss'];
-                                                case 'Commitment Level': return ['Full-time', 'Part-time', 'Advising', 'Weekend Hacker'];
-                                                case 'Shared Vision': return ['Build to Sell', 'Lifestyle Business', 'Global Scale', 'Social Impact'];
-                                                case 'Complementary Skills': return ['I build, you sell', 'I sell, you build', 'Co-builders', 'Operations + Product'];
+                                                case 'Equity Split': return ['50/50 Equal Split', 'Minority Stake (10-30%)', 'Majority Stake (51%+)', 'Vesting over 4 years', 'Performance based equity', 'Dynamic Slicing Pie', 'Open to Discuss', 'Fixed Profit Share'];
+                                                case 'Commitment Level': return ['Full-time (40h+)', 'Part-time (20h)', 'Weekend Hacker', 'Advising (2-5h)', 'Project-based only', 'Flexible / Asynchronous', 'Capital Partner Only', 'Sweat Equity Partner'];
+                                                case 'Shared Vision': return ['Build to Sell (Acquisition)', 'Lifestyle / Indie Business', 'Global Unicorn Scale', 'Social / Climate Impact', 'Local Market Dominance', 'Cashflow / Dividend focus', 'Open Source / Community', 'Franchise / Expansion'];
+                                                case 'Complementary Skills': return ['I build, you sell', 'I sell, you build', 'Co-builders (Tech+Tech)', 'Operations + Product', 'Design + Engineering', 'Marketing + Finance', 'Content + Distribution', 'Hardware + Software'];
                                                 // COLLABORATION
-                                                case 'Deliverables': return ['1 Instagram Reel', '2 TikToks', 'YouTube Integration', 'UGC Photos', 'Event Appearance'];
-                                                case 'Timeline': return ['ASAP', 'Within 7 Days', 'Within 1 Month', 'Ongoing Campaign'];
-                                                case 'Budget / Barter': return ['Paid Cash', 'Free Product (Barter)', 'Revenue Share', 'Paid + Free Product'];
-                                                case 'Target Demographics': return ['Gen-Z (18-24)', 'Millennials (25-34)', 'Tech Enthusiasts', 'Local Kochi Audience'];
+                                                case 'Deliverables': return ['1-2 Instagram Reels', '3+ TikToks / Shorts', 'YouTube Integration', 'UGC Photos & Video', 'Event Appearance', 'Podcast Guest Spot', 'Newsletter Feature', 'Dedicated Blog Post'];
+                                                case 'Timeline': return ['ASAP / This Week', 'Within 14 Days', 'Within 1 Month', 'Next Quarter', 'Ongoing Monthly Campaign', 'One-off Launch Day', 'Seasonal / Festival', 'Flexible Timeline'];
+                                                case 'Budget / Barter': return ['Paid Cash (Fixed)', 'Free Product (Barter)', 'Revenue Share / Affiliate', 'Paid + Free Product', 'Travel & Stay Covered', 'Mutual Shoutout', 'Equity / Long-term', 'Commission on Sales'];
+                                                case 'Target Demographics': return ['Gen-Z (18-24)', 'Millennials (25-34)', 'Tech & Gadget Enthusiasts', 'Fashion & Beauty', 'Local Kochi / Kerala', 'Global English Speaking', 'Fitness & Wellness', 'Founders & Professionals'];
                                                 // DEFAULT
                                                 case 'What are you solving for?': 
                                                   if (content.toLowerCase().includes('model') || content.toLowerCase().includes('shoot') || content.toLowerCase().includes('actor') || content.toLowerCase().includes('creator')) {
-                                                    return ["Brand Awareness", "Content Portfolio", "Product Launch Campaign", "Social Media Growth", "E-commerce Catalog"];
+                                                    return ["Brand Awareness", "Content Portfolio", "Product Launch Campaign", "Social Media Growth", "E-commerce Catalog", "Viral Reach", "Event Promotion", "Engagement Boost"];
                                                   }
-                                                  return ["Product Market Fit", "Technical Scalability", "Operational Efficiency", "Market Expansion", "Customer Acquisition"];
-                                                default: return ["Option 1", "Option 2", "Option 3"];
+                                                  return ["Product Market Fit", "Technical Scalability", "Operational Efficiency", "Market Expansion", "Customer Acquisition", "Process Automation", "Team Productivity", "Cost Optimization"];
+                                                default: return ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"];
                                               }
                                             })()
                                           ) : (
