@@ -44,43 +44,20 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         table: 'messages'
       }, (payload) => {
         const msg = payload.new as any;
-        addMessage(msg.conversation_id, msg);
-        
-        // Auto-refresh conversations to update last_message_at
-        ChatService.getConversations(user.id).then(setConversations);
-      })
-      .subscribe();
-
-    // Listen for TYPING STATUS
-    const typingSub = supabase
-      .channel(`chat_typing_${user.id}`)
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'typing_status'
-      }, (payload) => {
-        // Refresh typing list for active convo (simplification for v2.0)
-        if (activeId) {
-          supabase
-            .from('typing_status')
-            .select('user_id')
-            .eq('conversation_id', activeId)
-            .neq('user_id', user.id)
-            .then(({ data }) => {
-              setTyping(activeId, (data || []).map(d => d.user_id));
-            });
+        if (msg.sender_id === user.id || msg.receiver_id === user.id) {
+          addMessage(msg.connection_id, msg);
+          ChatService.getConversations(user.id).then(setConversations);
         }
       })
       .subscribe();
 
-    // Listen for NEW CONVERSATIONS (when YOU are added as a member)
-    const membershipSub = supabase
-      .channel('chat_memberships')
+    // Listen for NEW CONNECTIONS
+    const connSub = supabase
+      .channel('chat_connections')
       .on('postgres_changes', {
-        event: 'INSERT',
+        event: '*',
         schema: 'public',
-        table: 'conversation_members',
-        filter: `user_id=eq.${user.id}`
+        table: 'connections'
       }, () => {
         ChatService.getConversations(user.id).then(setConversations);
       })
@@ -92,7 +69,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       .on('postgres_changes', {
         event: 'UPDATE',
         schema: 'public',
-        table: 'conversation_members'
+        table: 'messages'
       }, () => {
         ChatService.getConversations(user.id).then(setConversations);
       })
@@ -100,9 +77,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       supabase.removeChannel(messageSub);
-      supabase.removeChannel(typingSub);
+      supabase.removeChannel(connSub);
       supabase.removeChannel(readSub);
-      supabase.removeChannel(membershipSub);
     };
   }, [user?.id, addMessage, setConversations, activeId, setTyping]);
 

@@ -65,7 +65,7 @@ export default function ChatPage() {
   const handleClearHistory = async () => {
     if (!activeId) return;
     if (confirm("Are you sure you want to clear all messages in this chat?")) {
-      const { error } = await supabase.from('messages').delete().eq('conversation_id', activeId);
+      const { error } = await supabase.from('messages').delete().eq('connection_id', activeId);
       if (error) alert(error.message);
       else {
         setMessages(activeId, []);
@@ -77,7 +77,8 @@ export default function ChatPage() {
   const handleDeleteChat = async () => {
     if (!activeId || !user) return;
     if (confirm("Delete this conversation?")) {
-      const { error } = await supabase.from('conversation_members').delete().eq('conversation_id', activeId).eq('user_id', user.id);
+      // For V1 Schema, deleting conversation means deleting the connection
+      const { error } = await supabase.from('connections').delete().eq('id', activeId);
       if (error) alert(error.message);
       else {
         setActiveId(null);

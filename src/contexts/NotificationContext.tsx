@@ -58,9 +58,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     }
 
     try {
-      // 1. Unread Messages Count (Smart RPC)
-      const { data: unreadCount, error: unreadErr } = await supabase
-        .rpc('get_unread_message_count', { p_user_id: user.id });
+      // 1. Unread Messages Count (Standard Query fallback)
+      const { count: unreadCount, error: unreadErr } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('receiver_id', user.id)
+        .eq('is_read', false);
       
       if (unreadErr) throw unreadErr;
       setUnreadMessagesCount(Number(unreadCount) || 0);
@@ -108,11 +111,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         event: '*',
         schema: 'public',
         table: 'connections'
-      }, () => fetchCounts())
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'conversation_members'
       }, () => fetchCounts())
       .subscribe();
 

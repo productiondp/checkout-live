@@ -5,179 +5,132 @@ const supabase = createClient();
 export const ChatService = {
   // 1. CONVERSATION MANAGEMENT
   async getConversations(userId: string) {
-    const { data, error } = await supabase
-      .from('conversation_members')
-      .select(`
-        conversation:conversations (
-          *,
-          last_message_content,
-          last_message_sender_id,
-          members:conversation_members (
-            user_id,
-            last_read_at,
-            profile:profiles (id, full_name, avatar_url)
-          )
-        )
-      `)
-      .eq('user_id', userId);
-
-    if (error) throw error;
-    
-    return (data || []).map(d => {
-      const conv = d.conversation as any;
-      if (conv.type === 'DM') {
-        const partner = conv.members?.find((m: any) => m.user_id !== userId)?.profile;
-        conv.title = partner?.full_name || "Account";
-        conv.avatar_url = partner?.avatar_url;
-      }
-      return conv;
-    }).sort((a, b) => new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime());
-  },
-
-  /**
-   * LEGACY BRIDGE: Ensures old connections appear in the new system
-   */
-  async syncLegacyConnections(userId: string) {
-    console.log(`[ChatSync] Starting sync for user: ${userId}`);
-    const { data: connections, error: cErr } = await supabase
+    const { data: conns, error } = await supabase
       .from('connections')
-      .select('id, sender_id, receiver_id')
+      .select('id, sender_id, receiver_id, status, updated_at')
       .eq('status', 'ACCEPTED')
       .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
 
-    if (cErr) {
-      console.error("[ChatSync] Connection fetch failed:", cErr);
-      return;
-    }
+    if (error) throw error;
+    if (!conns || conns.length === 0) return [];
 
-    console.log(`[ChatSync] Found ${connections?.length || 0} legacy connections to check.`);
+    // Collect all partner IDs
+    const partnerIds = conns.map((c: any) => c.sender_id === userId ? c.receiver_id : c.sender_id);
+    
+    // Fetch profiles
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, full_name, avatar_url')
+      .in('id', partnerIds);
+      
+    const profileMap = (profiles || []).reduce((acc: any, p: any) => ({ ...acc, [p.id]: p }), {});
 
-    if (!connections) return;
+    // Fetch latest message per connection
+    const connIds = conns.map((c: any) => c.id);
+    const { data: msgs } = await supabase
+      .from('messages')
+      .select('connection_id, content, sender_id, created_at')
+      .in('connection_id', connIds)
+      .order('created_at', { ascending: false });
 
-    for (const conn of connections) {
-      try {
-        const partnerId = conn.sender_id === userId ? conn.receiver_id : conn.sender_id;
-        await this.ensureDirectConversation(userId, partnerId);
-      } catch (e) {
-        console.warn(`[ChatSync] Failed to sync connection ${conn.id}:`, e);
-      }
-    }
+    return conns.map((conn: any) => {
+      const partnerId = conn.sender_id === userId ? conn.receiver_id : conn.sender_id;
+      const partner = profileMap[partnerId];
+      const connMsgs = (msgs || []).filter((m: any) => m.connection_id === conn.id);
+      const lastMsg = connMsgs.length > 0 ? connMsgs[0] : null;
+
+      return {
+        id: conn.id,
+        title: partner?.full_name || "Partner",
+        avatar_url: partner?.avatar_url,
+        last_message_content: lastMsg?.content || "No messages yet",
+        last_message_at: lastMsg?.created_at || conn.updated_at,
+        last_message_sender_id: lastMsg?.sender_id,
+        members: [
+          { user_id: userId },
+          { user_id: partnerId }
+        ]
+      };
+    }).sort((a: any, b: any) => new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime());
+  },
+
+  async syncLegacyConnections(userId: string) {
+    // No-op for V1. We use connections as the single source of truth.
   },
 
   async ensureDirectConversation(userId: string, partnerId: string) {
-    // 1. Robust Search
-    const { data: convs } = await supabase
-      .from('conversations')
-      .select('*, members:conversation_members(user_id)')
-      .eq('type', 'DM');
-
-    // Find a conversation where BOTH are members
-    const existing = convs?.find(c => {
-      const uids = (c.members || []).map((m: any) => m.user_id);
-      return uids.includes(userId) && uids.includes(partnerId);
-    });
-
-    if (existing) return existing;
-    
-    // 2. Create if absolutely not found
-    console.log(`[ChatService] Creating new DM for ${userId} and ${partnerId}`);
-    const { data: conv, error: cErr } = await supabase
-      .from('conversations')
-      .insert({ type: 'DM', created_by: userId })
-      .select()
+    const { data } = await supabase
+      .from('connections')
+      .select('*')
+      .or(`and(sender_id.eq.${userId},receiver_id.eq.${partnerId}),and(sender_id.eq.${partnerId},receiver_id.eq.${userId})`)
       .single();
-
-    if (cErr) throw cErr;
-
-    // Add members
-    await supabase.from('conversation_members').insert([
-      { conversation_id: conv.id, user_id: userId },
-      { conversation_id: conv.id, user_id: partnerId }
-    ]);
-
-    return conv;
+      
+    if (data) return data;
+    throw new Error("You must connect with this user first before chatting.");
   },
 
   // 2. MESSAGING
   async sendMessage(convId: string, senderId: string, content: string, type: 'TEXT' | 'MEDIA' | 'VOICE' = 'TEXT', metadata: any = {}) {
+    const { data: conn } = await supabase.from('connections').select('sender_id, receiver_id').eq('id', convId).single();
+    if (!conn) throw new Error("Connection not found");
+    
+    const receiverId = conn.sender_id === senderId ? conn.receiver_id : conn.sender_id;
+
     const { data, error } = await supabase
       .from('messages')
       .insert({
-        conversation_id: convId,
+        connection_id: convId,
         sender_id: senderId,
+        receiver_id: receiverId,
         content,
-        type,
-        metadata
+        is_read: false
       })
       .select()
       .single();
 
     if (error) throw error;
 
-    // Update conversation heartbeat
     await supabase
-      .from('conversations')
-      .update({ last_message_at: new Date().toISOString() })
+      .from('connections')
+      .update({ updated_at: new Date().toISOString() })
       .eq('id', convId);
 
-    return data;
+    return {
+      ...data,
+      metadata: metadata,
+      type: 'TEXT'
+    };
   },
 
   async getMessages(convId: string, limit = 50, offset = 0) {
-    // 1. Primary Fetch (Official Schema)
     const { data, error } = await supabase
       .from('messages')
       .select('*')
-      .eq('conversation_id', convId)
+      .eq('connection_id', convId)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error) throw error;
-
-    // 2. Recovery Fetch (Orphaned Messages)
-    // If we have few messages, check if there are legacy ones for this conversation's participants
-    if ((data || []).length < 5) {
-      const { data: conv } = await supabase.from('conversations').select('*, members:conversation_members(user_id)').eq('id', convId).single();
-      if (conv && conv.type === 'DM') {
-        const uids = conv.members.map((m: any) => m.user_id);
-        const { data: legacy } = await supabase
-          .from('messages')
-          .select('*')
-          .is('conversation_id', null)
-          .in('sender_id', uids)
-          .in('receiver_id', uids)
-          .order('created_at', { ascending: false });
-
-        if (legacy && legacy.length > 0) {
-          // AUTO-HEAL: Update legacy messages to the new conversation_id
-          await supabase.from('messages').update({ conversation_id: convId }).is('conversation_id', null).in('sender_id', uids).in('receiver_id', uids);
-          return [...(data || []), ...legacy].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-        }
-      }
-    }
-
-    return (data || []).reverse();
+    
+    return (data || []).map((m: any) => ({
+       ...m,
+       metadata: m.metadata || {},
+       type: m.type || 'TEXT'
+    })).reverse();
   },
 
   // 3. TYPING & PRESENCE
   async setTypingStatus(convId: string, userId: string, isTyping: boolean) {
-    if (isTyping) {
-      await supabase
-        .from('typing_status')
-        .upsert({ conversation_id: convId, user_id: userId, updated_at: new Date().toISOString() });
-    } else {
-      await supabase
-        .from('typing_status')
-        .delete()
-        .match({ conversation_id: convId, user_id: userId });
-    }
+    // Stub for UI compatibility
   },
 
   // 4. READ RECEIPTS
   async markAsRead(convId: string, userId: string) {
     await supabase
-      .from('conversation_members')
-      .update({ last_read_at: new Date().toISOString() })
-      .match({ conversation_id: convId, user_id: userId });
+      .from('messages')
+      .update({ is_read: true })
+      .eq('connection_id', convId)
+      .eq('receiver_id', userId)
+      .eq('is_read', false);
   }
 };
