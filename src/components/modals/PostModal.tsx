@@ -232,7 +232,7 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
       sug.push(`Relation to ${authUser.industry}`);
     }
 
-    const filteredSuggestions = sug.filter(s => !content.includes(s)).slice(0, 3);
+    const filteredSuggestions = sug.filter(s => !content.includes(s.replace('?', ''))).slice(0, 3);
 
     // 3. Clarity & Taxonomy
     let sIndustry = null;
