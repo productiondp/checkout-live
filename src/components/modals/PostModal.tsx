@@ -580,7 +580,7 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                                           className="absolute bottom-full left-0 mb-3 w-72 bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_40px_80px_rgba(0,0,0,0.2)] border border-black/[0.03] p-5 z-[200] space-y-2 backdrop-blur-xl"
                                         >
                                           <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 px-2 pb-2">Select to Apply</p>
-                                          {(getIntentConfig(detectedIntent)?.suggestions.includes(s) || s === "What are you solving for?") ? (
+                                          {( (getIntentConfig(detectedIntent)?.suggestions.includes(s) || s === "What are you solving for?") ? (
                                             (() => {
                                               switch(s) {
                                                 // HIRING
@@ -620,7 +620,7 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                                             })()
                                           ) : (
                                             ["Launch MVP (30 Days)", "Secure First 100 Users", "Hire Core Team", "Validate Model", "Optimize Strategy"]
-                                          )).map(option => (
+                                          ) ).map(option => (
                                             <button
                                               key={option}
                                               onClick={() => {
