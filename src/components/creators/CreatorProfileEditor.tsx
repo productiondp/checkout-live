@@ -109,13 +109,29 @@ export default function CreatorProfileEditor({
 
   const handleSave = async () => {
     setSaving(true);
+    
+    // Auto-save pending inputs if they forgot to press '+'
+    let finalPhotos = [...portfolioImages];
+    if (imageUrlInput.trim() && !finalPhotos.includes(imageUrlInput.trim())) {
+      finalPhotos.push(imageUrlInput.trim());
+      setImageUrlInput("");
+      setPortfolioImages(finalPhotos);
+    }
+    
+    let finalVideos = [...videoLinks];
+    if (videoInput.trim() && !finalVideos.includes(videoInput.trim())) {
+      finalVideos.push(videoInput.trim());
+      setVideoInput("");
+      setVideoLinks(finalVideos);
+    }
+
     const payload = {
       bio,
       specialties,
       availability,
       rate_card: rateCard,
-      portfolio_images: portfolioImages,
-      video_links: videoLinks,
+      portfolio_images: finalPhotos,
+      video_links: finalVideos,
       social_links: socials,
       measurements,
       updated_at: new Date().toISOString()
