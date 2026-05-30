@@ -77,10 +77,24 @@ export default function CreatorsDiscoveryFeed() {
 
         {role === "BUSINESS" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {creators.length === 0 ? (
-              <p className="text-slate-400 font-medium col-span-full">No creators found. Set up a profile to appear here.</p>
-            ) : (
-              creators.map((creator, i) => {
+            {(() => {
+              const MOCK_CREATORS = [
+                { id: "mock-1", profiles: { full_name: "Sarah Jenkins" }, specialties: ["Photographer & UGC"], trust_score: 95, is_verified: true, portfolio_images: ["https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800"] },
+                { id: "mock-2", profiles: { full_name: "Rajat Menon" }, specialties: ["Motion Designer"], trust_score: 88, is_verified: true, portfolio_images: ["https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=800"] },
+                { id: "mock-3", profiles: { full_name: "Priya Patel" }, specialties: ["Influencer"], trust_score: 70, is_verified: false, portfolio_images: ["https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=800"] }
+              ];
+              
+              const displayCreators = [...creators];
+              if (displayCreators.length < 3) {
+                const needed = 3 - displayCreators.length;
+                displayCreators.push(...MOCK_CREATORS.slice(0, needed));
+              }
+
+              if (displayCreators.length === 0) {
+                return <p className="text-slate-400 font-medium col-span-full">No creators found. Set up a profile to appear here.</p>;
+              }
+
+              return displayCreators.map((creator, i) => {
                 const name = creator.profiles?.full_name || "Creator";
                 const cat = creator.specialties?.[0] || creator.category || "Creator";
                 const match = 80 + Math.floor(Math.random() * 20); // Random high match for demo
@@ -133,8 +147,8 @@ export default function CreatorsDiscoveryFeed() {
                     </div>
                   </Link>
                 );
-              })
-            )}
+              });
+            })()}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
