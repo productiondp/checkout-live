@@ -25,19 +25,25 @@ export const ChatService = {
       
     const profileMap = (profiles || []).reduce((acc: any, p: any) => ({ ...acc, [p.id]: p }), {});
 
-    // Fetch latest message per connection
-    const connIds = conns.map((c: any) => c.id);
-    const { data: msgs } = await supabase
-      .from('messages')
-      .select('connection_id, content, sender_id, created_at')
-      .in('connection_id', connIds)
-      .order('created_at', { ascending: false });
+    // Fetch latest message per connection in parallel
+    const msgPromises = conns.map((c: any) => 
+      supabase
+        .from('messages')
+        .select('connection_id, content, sender_id, created_at')
+        .eq('connection_id', c.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
+    );
+    
+    const msgResults = await Promise.allSettled(msgPromises);
 
-    return conns.map((conn: any) => {
+    return conns.map((conn: any, index: number) => {
       const partnerId = conn.sender_id === userId ? conn.receiver_id : conn.sender_id;
       const partner = profileMap[partnerId];
-      const connMsgs = (msgs || []).filter((m: any) => m.connection_id === conn.id);
-      const lastMsg = connMsgs.length > 0 ? connMsgs[0] : null;
+      
+      const msgRes = msgResults[index];
+      const lastMsg = msgRes.status === 'fulfilled' && msgRes.value.data ? msgRes.value.data : null;
 
       return {
         id: conn.id,
