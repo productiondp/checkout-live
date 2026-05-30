@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Compass, Search, Briefcase, User, Settings, Star } from "lucide-react";
+import { Compass, Search, Briefcase, User, Settings, Star, Edit3 } from "lucide-react";
 
 export default function CreatorsLayout({
   children,
