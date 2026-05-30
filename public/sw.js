@@ -89,6 +89,6 @@ self.addEventListener('fetch', (event) => {
   // ── HTML Pages: Network-First (critical for auth state accuracy) ────────
   // Never return stale HTML — auth redirects must always be live
   event.respondWith(
-    fetch(request).catch(() => caches.match(request))
+    fetch(request).catch(() => caches.match(request).then(cached => cached || new Response('Network Error', { status: 503 })))
   );
 });

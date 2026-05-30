@@ -27,6 +27,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useChatStore } from '@/stores/chatStore';
 import { ChatService } from '@/services/chatService';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'next/navigation';
 import TerminalLayout from '@/components/layout/TerminalLayout';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { createClient } from '@/utils/supabase/client';
@@ -41,9 +42,13 @@ export default function ChatPage() {
     setActiveId, 
     addMessage, 
     setMessages, 
+    setConversations,
     typing,
     isLoading 
   } = useChatStore();
+
+  const searchParams = useSearchParams();
+  const initialUserId = searchParams.get('user');
 
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -99,6 +104,23 @@ export default function ChatPage() {
   const activeTyping = useMemo(() => 
     activeId ? (typing[activeId] || []) : []
   , [activeId, typing]);
+
+  // Handle URL user parameter
+  useEffect(() => {
+    if (initialUserId && user?.id) {
+      ChatService.ensureDirectConversation(user.id, initialUserId)
+        .then((conn) => {
+          if (conn && conn.id) {
+            setActiveId(conn.id);
+            // Re-fetch conversations to immediately show this user in the sidebar
+            ChatService.getConversations(user.id).then(setConversations);
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to init chat from URL:", err);
+        });
+    }
+  }, [initialUserId, user?.id, setActiveId, setConversations]);
 
   // Load messages when conversation changes
   useEffect(() => {
