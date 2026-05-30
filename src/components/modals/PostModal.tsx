@@ -719,11 +719,34 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                                key={area}
                                onClick={() => {
                                  if (focusAreas.includes(area)) setFocusAreas(prev => prev.filter(a => a !== area));
-                                 else if (focusAreas.length < 3) setFocusAreas(prev => [...prev, area]);
+                                 else if (focusAreas.length < 5) setFocusAreas(prev => [...prev, area]);
                                }}
                                className={cn("px-5 py-3 rounded-xl text-[10px] font-black uppercase transition-all border", focusAreas.includes(area) ? "bg-black text-white border-black" : "bg-white text-slate-400 border-black/[0.05]")}
                              >{area}</button>
                            ))}
+                           {/* Render any custom areas that are not in the default list */}
+                           {focusAreas.filter(a => !getIndustryById(industry)?.focusAreas.includes(a)).map(area => (
+                             <button
+                               key={area}
+                               onClick={() => setFocusAreas(prev => prev.filter(a => a !== area))}
+                               className="px-5 py-3 rounded-xl text-[10px] font-black uppercase transition-all border bg-black text-white border-black"
+                             >{area}</button>
+                           ))}
+                           <input 
+                             placeholder="+ Custom Skill"
+                             maxLength={25}
+                             className="px-4 py-3 rounded-xl text-[10px] font-black uppercase transition-all border bg-slate-50 border-black/[0.05] w-32 outline-none focus:border-black focus:bg-white"
+                             onKeyDown={(e) => {
+                               if (e.key === 'Enter') {
+                                 e.preventDefault();
+                                 const val = e.currentTarget.value.trim();
+                                 if (val && !focusAreas.includes(val) && focusAreas.length < 5) {
+                                   setFocusAreas(prev => [...prev, val]);
+                                   e.currentTarget.value = '';
+                                 }
+                               }
+                             }}
+                           />
                         </div>
                       )}
                    </div>
