@@ -159,6 +159,26 @@ function AuthContent() {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!formData.email) {
+      setError("Please enter your email address first to reset your password.");
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
+        redirectTo: `${window.location.origin}?mode=reset`,
+      });
+      if (error) throw error;
+      setError("Password reset link sent! Please check your inbox.");
+    } catch (err: any) {
+      setError(err.message || "Failed to send reset email.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#FFFFFF] text-[#000000] font-sans selection:bg-[#E53935]/10 relative overflow-x-hidden">
       <LandingHeader 
@@ -287,7 +307,7 @@ function AuthContent() {
                                </div>
                             )}
                             <div className="space-y-1.5"><label className="text-[11px] lg:text-[12px] font-bold text-gray-900 ml-1">Email</label><input type="email" name="email" value={formData.email} onChange={handleInput} placeholder="name@company.com" className="w-full h-11 lg:h-12 px-5 bg-white border border-gray-300 rounded-lg focus:border-[#E53935] outline-none transition-all font-medium text-sm lg:text-[14px]" required /></div>
-                            <div className="space-y-1.5"><label className="text-[11px] lg:text-[12px] font-bold text-gray-900 ml-1">Password</label><div className="relative group"><input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleInput} placeholder="••••••" className="w-full h-11 lg:h-12 px-5 bg-white border border-gray-300 rounded-lg focus:border-[#E53935] outline-none transition-all font-medium text-sm lg:text-[14px] pr-12" required /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#E53935] transition-all p-1">{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></div>
+                            <div className="space-y-1.5"><div className="flex justify-between items-center ml-1 pr-1"><label className="text-[11px] lg:text-[12px] font-bold text-gray-900">Password</label>{mode === "signin" && <button type="button" onClick={handleResetPassword} className="text-[10px] lg:text-[11px] font-bold text-[#E53935] hover:underline focus:outline-none">Forgot password?</button>}</div><div className="relative group"><input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleInput} placeholder="••••••" className="w-full h-11 lg:h-12 px-5 bg-white border border-gray-300 rounded-lg focus:border-[#E53935] outline-none transition-all font-medium text-sm lg:text-[14px] pr-12" required /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#E53935] transition-all p-1 focus:outline-none">{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></div>
                             {error && <p className="text-red-600 text-[10px] lg:text-xs font-bold px-1">{error}</p>}
                             <button type="submit" disabled={isLoading} className="w-full h-12 lg:h-14 bg-[#E53935] text-white font-bold rounded-xl shadow-lg hover:bg-[#D32F2F] transition-all flex items-center justify-center gap-3 mt-4 lg:mt-6">{isLoading ? <Loader2 size={18} className="animate-spin" /> : (mode === "signup" ? "Agree & join" : "Sign in")}</button>
                          </form>
