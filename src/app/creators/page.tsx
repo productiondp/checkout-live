@@ -24,8 +24,7 @@ export default function CreatorsDiscoveryFeed() {
             location
           )
         `)
-        .order('trust_score', { ascending: false })
-        .limit(20);
+        .order('trust_score', { ascending: false });
       
       if (data) setCreators(data);
     }
