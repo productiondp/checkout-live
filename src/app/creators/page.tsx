@@ -57,9 +57,6 @@ export default function TalentNetworkPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="h-11 px-6 bg-[#E53935] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-[#1D1D1F] transition-all flex items-center gap-2 shadow-lg shadow-red-500/20">
-            <Plus size={16} /> Add Talent
-          </button>
           <button className="h-11 px-6 bg-white border border-slate-200 text-slate-600 rounded-xl text-[11px] font-black uppercase tracking-widest hover:border-[#E53935] hover:text-[#E53935] transition-all flex items-center gap-2">
             <Sparkles size={16} /> Add Casting Call
           </button>
