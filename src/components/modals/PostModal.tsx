@@ -212,11 +212,19 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
     const id = detectIntent(content);
     const config = getIntentConfig(id);
 
+    const lowContent = content.toLowerCase();
+
     // 2. Contextual Suggestions
     let sug: string[] = ["What are you solving for?", "Add Objective"];
-    if (config && id !== 'GENERAL') sug = [...config.suggestions, "What are you solving for?"];
+    if (config && id !== 'GENERAL') {
+      sug = [...config.suggestions, "What are you solving for?"];
+      
+      // CREATOR ADAPTATION
+      if (lowContent.includes('model') || lowContent.includes('shoot') || lowContent.includes('actor') || lowContent.includes('creator')) {
+        sug = sug.map(s => s === 'Tech Stack' ? 'Shoot Location' : s);
+      }
+    }
     
-    const lowContent = content.toLowerCase();
     if (lowContent.includes("developer") || lowContent.includes("build") || lowContent.includes("mvp")) {
       if (!sug.includes("Strategic Roadmap")) sug.push("Strategic Roadmap");
     }
@@ -584,10 +592,15 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                                             (() => {
                                               switch(s) {
                                                 // HIRING
-                                                case 'Role Responsibility': return ['Lead Development', 'Design UI/UX', 'Manage Campaigns', 'Content Creation', 'Sales & Outreach'];
+                                                case 'Role Responsibility': 
+                                                  if (content.toLowerCase().includes('model') || content.toLowerCase().includes('shoot') || content.toLowerCase().includes('actor')) {
+                                                    return ['Modeling / Acting', 'Fashion Shoot', 'Brand Ambassador', 'UGC Content Creation', 'Promo Video'];
+                                                  }
+                                                  return ['Lead Development', 'Design UI/UX', 'Manage Campaigns', 'Content Creation', 'Sales & Outreach'];
                                                 case 'Experience Required': return ['Junior (1-2y)', 'Mid (3-5y)', 'Senior (5y+)', 'Expert / Lead'];
                                                 case 'Budget / Salary': return ['₹10k - ₹30k/mo', '₹30k - ₹70k/mo', '₹70k+/mo', 'Commission / Revenue Share'];
                                                 case 'Tech Stack': return ['React / Node', 'Python / AI', 'Figma', 'Adobe CC', 'No-Code / Bubble'];
+                                                case 'Shoot Location': return ['Studio Shoot', 'Outdoor Location', 'Self-Shot / UGC', 'Live Event'];
                                                 // GROWTH
                                                 case 'Target Audience': return ['B2B Enterprises', 'D2C Consumers', 'Gen-Z', 'Local Businesses', 'Creators / Influencers'];
                                                 case 'Growth Objective': return ['User Acquisition', 'Brand Awareness', 'Revenue Growth', 'Retention', 'Lead Generation'];
