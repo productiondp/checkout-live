@@ -19,7 +19,7 @@ import { DEFAULT_AVATAR } from "@/utils/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useChatStore } from "@/stores/chatStore";
-
+import { cn } from "@/lib/utils";
 interface MomentumViewProps {
   type: 'REQUIREMENT' | 'PARTNERSHIP' | 'MEETUP';
   postId: string;
