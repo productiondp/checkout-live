@@ -20,10 +20,15 @@ export default async function Home() {
   let initialProfile = null;
 
   try {
+    // Resolve base URL for SSR fetch (Vercel support)
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
+                    (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 
+                    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'));
+
     //  Concurrent fetching for maximum speed
     const [postsRes, profileRes] = await Promise.all([
       // Fetch from our Edge API (cached at Vercel Edge)
-      fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/public-feed`, {
+      fetch(`${baseUrl}/api/public-feed`, {
         next: { revalidate: 60, tags: ['public-feed'] }
       }).catch(err => {
         console.warn("[HOME] Edge Feed fetch failed:", err.message);
