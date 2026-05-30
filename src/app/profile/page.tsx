@@ -408,13 +408,19 @@ export default function PremiumProfilePage() {
                       </div>
 
                       {/* ACTION HUB */}
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-wrap items-center gap-4">
                          <button 
                             onClick={() => setShowEditModal(true)} 
                             className="h-16 px-10 bg-white text-[#0A0A0A] rounded-[8px] font-black text-[11px] uppercase  shadow-2xl hover:bg-[#E53935] hover:text-white transition-all transform hover:-translate-y-1 active:scale-95"
                          >
                            Edit Profile
                          </button>
+                         <Link 
+                            href="/creators/profile" 
+                            className="flex items-center h-16 px-10 bg-[#E53935] text-white rounded-[8px] font-black text-[11px] uppercase shadow-2xl hover:bg-white hover:text-[#E53935] transition-all transform hover:-translate-y-1 active:scale-95"
+                         >
+                           Creator Profile
+                         </Link>
                          <button 
                             onClick={() => setShowSettingsModal(true)} 
                             className="h-16 w-16 bg-white/5 backdrop-blur-md border border-white/10 rounded-[8px] flex items-center justify-center text-white hover:bg-white hover:text-[#0A0A0A] transition-all overflow-hidden relative group"
