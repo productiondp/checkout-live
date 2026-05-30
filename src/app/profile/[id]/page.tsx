@@ -56,6 +56,7 @@ function ProfileContent() {
   const { user: authUser } = useAuth();
   const profileId = params.id as string;
   const [profile, setProfile] = useState<any>(null);
+  const [creatorData, setCreatorData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const supabase = createClient();
@@ -81,6 +82,23 @@ function ProfileContent() {
           match: data.match_score || 95,
           primaryIntent: data.primaryIntent || "Growth & Scaling"
         });
+
+        if (data.role?.toUpperCase() === "CREATOR") {
+          const { data: creatorData } = await supabase
+            .from("creator_profiles")
+            .select("*")
+            .eq("id", profileId)
+            .maybeSingle();
+            
+          const local = localStorage.getItem(`creator_profile_${profileId}`);
+          const localData = local ? JSON.parse(local) : {};
+          
+          if (creatorData) {
+            setCreatorData({ ...creatorData, ...localData });
+          } else if (localData) {
+            setCreatorData(localData);
+          }
+        }
       }
 
       const { data: posts } = await supabase
@@ -293,63 +311,145 @@ function ProfileContent() {
                     ))}
                  </div>
 
-                 {/* PUBLIC STRATEGIC ROADMAP */}
-                 <div className="space-y-8">
-                    {/* Network Intent */}
-                    <div className="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm relative overflow-hidden group">
-                       <div className="absolute top-0 right-0 w-32 h-32 bg-[#E53935]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                       <div className="flex items-center justify-between mb-8">
-                          <div>
-                             <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
-                                <Target size={16} className="text-[#E53935]" /> Core Network Mission
+                 {/* OVERVIEW TAB CONTENT */}
+                 {activeTab === "Overview" && (
+                   <div className="space-y-8">
+                     {creatorData ? (
+                       /* CREATOR PORTFOLIO VIEW */
+                       <div className="space-y-8">
+                         {/* Specialties */}
+                         {creatorData.specialties && creatorData.specialties.length > 0 && (
+                           <div className="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm relative overflow-hidden">
+                             <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                               <Award size={16} className="text-[#E53935]" /> Creator Specialties
                              </h3>
-                             <p className="text-xl font-bold text-[#1D1D1F]">{profile.primaryIntent}</p>
-                          </div>
-                       </div>
-                       <p className="text-[13px] text-slate-400 font-medium leading-relaxed">
-                          This partner's primary intent defines their strategic feed. Advisors and opportunities are prioritized based on this mission.
-                       </p>
-                    </div>
+                             <div className="flex flex-wrap gap-2">
+                               {creatorData.specialties.map((s: string) => (
+                                 <span key={s} className="px-4 py-2 bg-black/5 text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#E53935] hover:text-white transition-all">
+                                   {s}
+                                 </span>
+                               ))}
+                             </div>
+                           </div>
+                         )}
 
-                    {/* Strategic Roadmap List */}
-                    <div className="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm relative overflow-hidden">
-                       <div className="flex items-center justify-between mb-10 pb-6 border-b border-slate-50">
-                          <div>
-                             <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                                <Activity size={16} className="text-[#E53935]" /> Strategic Roadmap
+                         {/* Portfolio Images */}
+                         {creatorData.portfolio_images && creatorData.portfolio_images.length > 0 && (
+                           <div className="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm">
+                             <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                               <ImageIcon size={16} className="text-[#E53935]" /> Portfolio Highlights
                              </h3>
-                          </div>
-                       </div>
+                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                               {creatorData.portfolio_images.map((img: string, i: number) => (
+                                 <div key={i} className="aspect-[4/5] rounded-2xl overflow-hidden bg-slate-100 group relative">
+                                   <img src={img} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                 </div>
+                               ))}
+                             </div>
+                           </div>
+                         )}
 
-                       <div className="space-y-5">
-                          {dependencyList.length > 0 ? dependencyList.map(dep => (
-                             <div key={dep.id} className="p-8 bg-slate-50/50 border border-slate-50 rounded-3xl flex items-center justify-between group hover:bg-white hover:shadow-xl hover:border-[#E53935]/20 transition-all duration-500">
-                                <div className="flex items-center gap-6">
-                                   <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-slate-400 shadow-sm border border-slate-100 group-hover:bg-[#E53935] group-hover:text-white transition-all duration-500">
-                                      {dep.type === "Hiring" && <Briefcase size={22} />}
-                                      {dep.type === "Partnership" && <Users size={22} />}
-                                      {dep.type === "Investment" && <TrendingUp size={22} />}
-                                      {dep.type === "Technology" && <Database size={22} />}
-                                      {dep.type === "Procurement" && <ShoppingBag size={22} />}
-                                   </div>
-                                   <div>
-                                      <div className="flex items-center gap-3 mb-2">
-                                         <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[8px] font-bold uppercase rounded-[4px] tracking-widest">{dep.type}</span>
-                                         <h4 className="text-[14px] font-bold text-[#1D1D1F] line-clamp-1">{dep.content}</h4>
+                         {/* Video Links */}
+                         {creatorData.video_links && creatorData.video_links.length > 0 && (
+                           <div className="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm">
+                             <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                               <Play size={16} className="text-[#E53935]" /> Featured Content
+                             </h3>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                               {creatorData.video_links.map((link: string, i: number) => {
+                                  const ytMatch = link.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+                                  const thumb = ytMatch ? `https://img.youtube.com/vi/${ytMatch[1]}/mqdefault.jpg` : null;
+                                  return (
+                                    <a key={i} href={link} target="_blank" rel="noopener noreferrer" className="group relative aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center">
+                                      {thumb ? (
+                                        <img src={thumb} alt="" className="w-full h-full object-cover opacity-50 group-hover:opacity-30 transition-opacity" />
+                                      ) : (
+                                        <div className="absolute inset-0 bg-gradient-to-br from-black to-slate-900" />
+                                      )}
+                                      <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="h-12 w-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:scale-110 group-hover:bg-[#E53935] transition-all">
+                                          <Play size={20} className="ml-1" fill="currentColor" />
+                                        </div>
                                       </div>
-                                      <p className="text-[11px] font-medium text-slate-400">Active Priority</p>
-                                   </div>
-                                </div>
+                                    </a>
+                                  );
+                               })}
                              </div>
-                          )) : (
-                             <div className="py-20 text-center opacity-30">
-                                <Sparkles size={40} className="mx-auto mb-4 text-[#1D1D1F]" />
-                                <p className="text-[11px] font-bold text-[#1D1D1F] uppercase tracking-widest italic">No active strategic objectives</p>
-                             </div>
-                          )}
+                           </div>
+                         )}
+
+                         {/* Rate Card */}
+                         {creatorData.rate_card && (
+                           <div className="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm">
+                             <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                               <FileText size={16} className="text-[#E53935]" /> Standard Rates
+                             </h3>
+                             <p className="text-sm font-medium text-slate-700 leading-relaxed whitespace-pre-line">{creatorData.rate_card}</p>
+                           </div>
+                         )}
                        </div>
-                    </div>
-                 </div>
+                     ) : (
+                       /* DEFAULT B2B VIEW (Strategic Roadmap) */
+                       <>
+                         {/* Network Intent */}
+                         <div className="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#E53935]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                            <div className="flex items-center justify-between mb-8">
+                               <div>
+                                  <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                                     <Target size={16} className="text-[#E53935]" /> Core Network Mission
+                                  </h3>
+                                  <p className="text-xl font-bold text-[#1D1D1F]">{profile.primaryIntent}</p>
+                               </div>
+                            </div>
+                            <p className="text-[13px] text-slate-400 font-medium leading-relaxed">
+                               This partner's primary intent defines their strategic feed. Advisors and opportunities are prioritized based on this mission.
+                            </p>
+                         </div>
+
+                         {/* Strategic Roadmap List */}
+                         <div className="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm relative overflow-hidden">
+                            <div className="flex items-center justify-between mb-10 pb-6 border-b border-slate-50">
+                               <div>
+                                  <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                                     <Activity size={16} className="text-[#E53935]" /> Strategic Roadmap
+                                  </h3>
+                               </div>
+                            </div>
+
+                            <div className="space-y-5">
+                               {dependencyList.length > 0 ? dependencyList.map(dep => (
+                                  <div key={dep.id} className="p-8 bg-slate-50/50 border border-slate-50 rounded-3xl flex items-center justify-between group hover:bg-white hover:shadow-xl hover:border-[#E53935]/20 transition-all duration-500">
+                                     <div className="flex items-center gap-6">
+                                        <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-slate-400 shadow-sm border border-slate-100 group-hover:bg-[#E53935] group-hover:text-white transition-all duration-500">
+                                           {dep.type === "Hiring" && <Briefcase size={22} />}
+                                           {dep.type === "Partnership" && <Users size={22} />}
+                                           {dep.type === "Investment" && <TrendingUp size={22} />}
+                                           {dep.type === "Technology" && <Database size={22} />}
+                                           {dep.type === "Procurement" && <ShoppingBag size={22} />}
+                                        </div>
+                                        <div>
+                                           <div className="flex items-center gap-3 mb-2">
+                                              <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[8px] font-bold uppercase rounded-[4px] tracking-widest">{dep.type}</span>
+                                              <h4 className="text-[14px] font-bold text-[#1D1D1F] line-clamp-1">{dep.content}</h4>
+                                           </div>
+                                           <p className="text-[11px] font-medium text-slate-400">Active Priority</p>
+                                        </div>
+                                     </div>
+                                  </div>
+                               )) : (
+                                  <div className="py-20 text-center opacity-30">
+                                     <Sparkles size={40} className="mx-auto mb-4 text-[#1D1D1F]" />
+                                     <p className="text-[11px] font-bold text-[#1D1D1F] uppercase tracking-widest italic">No active strategic objectives</p>
+                                  </div>
+                               )}
+                            </div>
+                         </div>
+                       </>
+                     )}
+                   </div>
+                 )}
 
               </div>
 
