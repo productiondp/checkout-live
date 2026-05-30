@@ -24,15 +24,21 @@ export const ROLE_TO_INDUSTRY: Record<string, string[]> = {
   "designer": ["Creative Arts", "Design"],
   "writer": ["Media & Publishing"],
   "editor": ["Media & Publishing"],
-  "photographer": ["Media & Entertainment"],
-  "filmmaker": ["Media & Entertainment"],
+  "photographer": ["Media & Entertainment", "Creator Economy"],
+  "filmmaker": ["Media & Entertainment", "Creator Economy"],
   "musician": ["Media & Entertainment"],
   "animator": ["Creative Arts", "Technology"],
   "journalist": ["Media & Publishing"],
   "architect": ["Architecture & Planning"],
   "interior designer": ["Architecture & Planning", "Design"],
   "fashion designer": ["Fashion & Apparel"],
-  "model": ["Fashion & Apparel"],
+  "model": ["Fashion & Apparel", "Creator Economy"],
+  "actor": ["Media & Entertainment"],
+  "influencer": ["Creator Economy", "Media & Entertainment"],
+  "content creator": ["Creator Economy"],
+  "youtuber": ["Creator Economy", "Media & Entertainment"],
+  "streamer": ["Creator Economy", "Media & Entertainment"],
+  "tiktoker": ["Creator Economy", "Media & Entertainment"],
   
   // --- BUSINESS, FINANCE & LEGAL ---
   "founder": ["Entrepreneurship"],
@@ -132,7 +138,7 @@ export const ALL_INDUSTRIES = [
   "Technology", "Software", "Engineering", "Data Science", "Artificial Intelligence", 
   "Security", "Infrastructure", "Web3", "Business", "Operations", "IT Services", 
   "Manufacturing", "Creative Arts", "Design", "Media & Publishing", "Media & Entertainment", 
-  "Architecture & Planning", "Fashion & Apparel", "Entrepreneurship", "Management", 
+  "Creator Economy", "Architecture & Planning", "Fashion & Apparel", "Entrepreneurship", "Management", 
   "Finance", "Advisory", "Legal Services", "Human Resources", "Marketing & Advertising", 
   "Sales & Commerce", "Banking", "Real Estate", "Healthcare", "Pharmaceuticals", 
   "Wellness", "Sports", "Education", "Academia", "Science", "Construction", 
@@ -158,9 +164,10 @@ export const INDUSTRY_TO_FOCUS: Record<string, string[]> = {
   "Creative Arts": ["Fine Art", "Illustration", "Music", "Animation", "Film"],
   "Design": ["Graphic", "Industrial", "UX/UI", "Brand", "Product Design"],
   "Media & Publishing": ["Content", "Copywriting", "Journalism", "Books", "Editing"],
-  "Media & Entertainment": ["Film", "Music", "Events", "Streaming", "Production"],
+  "Media & Entertainment": ["Film", "Music", "Events", "Streaming", "Production", "Acting", "Talent"],
+  "Creator Economy": ["Brand Deals", "Sponsorships", "Content Creation", "Audience Growth", "Monetization", "Merch", "Collabs"],
   "Architecture & Planning": ["Urban Planning", "Structural", "Interior", "BIM", "Sustainability"],
-  "Fashion & Apparel": ["Retail", "Textiles", "Styling", "Luxury", "E-commerce"],
+  "Fashion & Apparel": ["Retail", "Textiles", "Styling", "Luxury", "E-commerce", "Modeling", "Photoshoots"],
   "Entrepreneurship": ["Startups", "Venture", "Innovation", "Scaling", "Equity"],
   "Management": ["Leadership", "Executive", "Strategy", "Culture", "Change Mgmt"],
   "Finance": ["Investment", "Audit", "Tax", "Wealth Mgmt", "Capital Markets"],
@@ -202,7 +209,8 @@ export const GLOBAL_TRENDING_FOCUS = [
   "Strategy", "Scaling", "Funding", "Hiring", "Branding", "Content", "Networking", 
   "Product", "Growth", "Ads", "SEO", "PR", "Investment", "Compliance", "IP", 
   "Research", "Telehealth", "EdTech", "Mentorship", "Sustainability", "Innovation",
-  "Design", "UX/UI", "Analytics", "Automation", "E-commerce", "B2B", "Crypto", "Web3"
+  "Design", "UX/UI", "Analytics", "Automation", "E-commerce", "B2B", "Crypto", "Web3",
+  "Collabs", "Sponsorships", "Content Creation"
 ];
 
 export interface DetectionResult {
