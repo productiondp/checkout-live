@@ -627,12 +627,20 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                                                 case 'Budget / Barter': return ['Paid Cash', 'Free Product (Barter)', 'Revenue Share', 'Paid + Free Product'];
                                                 case 'Target Demographics': return ['Gen-Z (18-24)', 'Millennials (25-34)', 'Tech Enthusiasts', 'Local Kochi Audience'];
                                                 // DEFAULT
-                                                case 'What are you solving for?': return ["Product Market Fit", "Technical Scalability", "Operational Efficiency", "Market Expansion", "Customer Acquisition"];
+                                                case 'What are you solving for?': 
+                                                  if (content.toLowerCase().includes('model') || content.toLowerCase().includes('shoot') || content.toLowerCase().includes('actor') || content.toLowerCase().includes('creator')) {
+                                                    return ["Brand Awareness", "Content Portfolio", "Product Launch Campaign", "Social Media Growth", "E-commerce Catalog"];
+                                                  }
+                                                  return ["Product Market Fit", "Technical Scalability", "Operational Efficiency", "Market Expansion", "Customer Acquisition"];
                                                 default: return ["Option 1", "Option 2", "Option 3"];
                                               }
                                             })()
                                           ) : (
-                                            ["Launch MVP (30 Days)", "Secure First 100 Users", "Hire Core Team", "Validate Model", "Optimize Strategy"]
+                                            (content.toLowerCase().includes('model') || content.toLowerCase().includes('shoot') || content.toLowerCase().includes('actor') || content.toLowerCase().includes('creator')) ? [
+                                              "Launch Fashion Brand", "Build Portfolio", "Find Brand Ambassadors", "Shoot Summer Campaign", "Grow Instagram"
+                                            ] : [
+                                              "Launch MVP (30 Days)", "Secure First 100 Users", "Hire Core Team", "Validate Model", "Optimize Strategy"
+                                            ]
                                           ) ).map(option => (
                                             <button
                                               key={option}
