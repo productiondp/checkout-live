@@ -59,6 +59,11 @@ export const INDUSTRY_DATA: IndustryFocus[] = [
     focusAreas: ["Film Production", "YouTube Content", "Podcasting", "Acting", "Script Writing"]
   },
   {
+    id: "creator_economy",
+    label: "Creator Economy",
+    focusAreas: ["Brand Deals", "Sponsorships", "Content Creation", "Audience Growth", "Monetization", "Merch", "Collabs", "Modeling"]
+  },
+  {
     id: "tourism_hospitality",
     label: "Tourism & Hospitality",
     focusAreas: ["Tour Planning", "Travel Guide", "Homestay Management", "Hotel Operations", "Event Hosting"]
@@ -123,7 +128,7 @@ export const getAllFocusAreas = () => INDUSTRY_DATA.flatMap(i => i.focusAreas);
  * INTENT ENGINE (V1.0)
  * Detects the core objective of a post to provide targeted tools.
  */
-export type IntentType = 'HIRING' | 'GROWTH' | 'FUNDING' | 'MENTORSHIP' | 'PARTNERSHIP' | 'GENERAL';
+export type IntentType = 'HIRING' | 'GROWTH' | 'FUNDING' | 'MENTORSHIP' | 'PARTNERSHIP' | 'COLLABORATION' | 'GENERAL';
 
 export interface IntentConfig {
   id: IntentType;
@@ -168,6 +173,13 @@ export const INTENT_DATA: IntentConfig[] = [
     keywords: ['co-founder', 'partner', 'vision', 'collaboration', 'joint venture', 'strategic', 'synergy'],
     suggestions: ['Equity Split', 'Commitment Level', 'Shared Vision', 'Complementary Skills'],
     color: 'text-rose-500'
+  },
+  {
+    id: 'COLLABORATION',
+    label: 'Brand Deals & Collabs',
+    keywords: ['collab', 'sponsor', 'sponsorship', 'brand deal', 'influencer', 'promote', 'shoutout', 'shoot', 'modeling', 'ugc'],
+    suggestions: ['Deliverables', 'Timeline', 'Budget / Barter', 'Target Demographics'],
+    color: 'text-fuchsia-500'
   }
 ];
 
@@ -209,6 +221,7 @@ export const detectTaxonomy = (text: string) => {
   // 1. High-Precision Direct Rules (Confidence: 100)
   const directRules = [
     { keys: ["wedding", "photography", "photographer", "camera", "drone"], ind: "media_entertainment", foc: "Photography" },
+    { keys: ["influencer", "brand deal", "collab", "sponsorship", "ugc", "modeling", "model"], ind: "creator_economy", foc: "Brand Deals" },
     { keys: ["ayurveda", "doctor", "medicine", "clinic"], ind: "health_wellness", foc: "Ayurveda" },
     { keys: ["gst", "tax", "audit", "ca", "accounting"], ind: "finance_legal", foc: "Taxation (GST/India)" },
     { keys: ["startup", "build", "mvp", "product"], ind: "business_startups", foc: "Startup Building" },

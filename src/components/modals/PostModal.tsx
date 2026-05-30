@@ -518,9 +518,9 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder={
-                              type === 'MEETUP' ? "E.g. Coffee & Code at Kochi Marina..." : 
-                              type === 'PARTNERSHIP' ? "E.g. Building a fintech startup for Kerala..." : 
-                              "E.g. Need a senior dev for a 2-week sprint..."
+                              type === 'MEETUP' ? (authUser?.role === 'CREATOR' ? "E.g. Content Creator Meetup at Fort Kochi..." : "E.g. Coffee & Code at Kochi Marina...") : 
+                              type === 'PARTNERSHIP' ? (authUser?.role === 'CREATOR' ? "E.g. Looking for a videographer for a 3-day shoot..." : "E.g. Building a fintech startup for Kerala...") : 
+                              (authUser?.role === 'CREATOR' ? "E.g. Open for brand deals and UGC content..." : "E.g. Need a senior dev for a 2-week sprint...")
                             }
                             type={type}
                             className="min-h-[220px] md:min-h-[260px] text-base md:text-lg p-6 md:p-8 bg-slate-50 border-none rounded-[2rem] md:rounded-[2.5rem] focus:ring-4 focus:ring-black/5 transition-all"
