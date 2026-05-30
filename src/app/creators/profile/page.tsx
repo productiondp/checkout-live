@@ -104,7 +104,7 @@ export default function MyCreatorProfilePage() {
   };
 
   return (
-    <div className="space-y-6 pb-20 mt-8">
+    <div className="px-4 lg:px-8 space-y-6 pb-20 mt-8 max-w-[1200px] mx-auto">
 
       {/* Header */}
       <div className="flex items-center justify-between">
