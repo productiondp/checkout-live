@@ -47,7 +47,7 @@ export default function HomeFeed({
   onCreate
 }: HomeFeedProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const insights = useUserSuccess(user?.id);
   const { unreadMessagesCount, pendingRequestsCount } = useNotifications();
   
@@ -115,45 +115,105 @@ export default function HomeFeed({
     }
   }, [posts, currentUserId, newlyCreatedPostId]);
 
-  // --- STEP 5: MATCH ENGINE & SCORING ---
+  // --- MATCH ENGINE: uses profile (has industry, intents, expertise) ---
   const processedPosts = React.useMemo(() => {
-    if (!user) return posts;
+    if (!posts.length) return [];
 
-    const userLat = user.location?.lat || 9.9312; // Fallback to Kochi
-    const userLng = user.location?.lng || 76.2673;
+    // Pull real profile fields — profile has industry, intents, expertise
+    // user is the raw Supabase User (auth only), profile is the full DB record
+    const authProfile = (user as any)?.profile || profile;
 
-    const userProfile = {
-      id: user.id,
-      role: user.role || 'PROFESSIONAL',
-      industry: user.industry,
-      intents: user.intents || [],
-      skills: user.skills || [],
-      location: user.location
+    const userLat = authProfile?.location_lat || 9.9312;
+    const userLng = authProfile?.location_lng || 76.2673;
+
+    // Build a rich user context from profile
+    const userCtx = {
+      id: currentUserId || (user as any)?.id,
+      role: authProfile?.role || 'PROFESSIONAL',
+      industry: authProfile?.industry || null,
+      // expertise is the skills array in profile
+      skills: authProfile?.expertise || authProfile?.skills || [],
+      // intents: what user has declared they want (HIRING, COLLABORATION, etc.)
+      intents: authProfile?.intents || [],
+      // objectives: free-text goals user typed during onboarding/posts
+      objectives: authProfile?.objectives || authProfile?.bio || '',
+      // focus_areas from metadata if stored
+      focus_areas: authProfile?.metadata?.focus_areas || [],
+      location: authProfile?.location || null,
     };
 
     const processed = posts.map((post, i) => {
-      const { score, label: customLabel, tier, signals, actionScore, ctaHint, nudge, successProbability } = calculateMatchScore(userProfile, post, i, intentMode);
-      
+      // Build rich match score using all signals
+      const { score, label: customLabel, tier, signals, actionScore, ctaHint, nudge, successProbability } 
+        = calculateMatchScore(userCtx, post, i, intentMode);
+
       const postLat = post.metadata?.geo?.lat;
       const postLng = post.metadata?.geo?.lng;
       const distance = calculateDistance(userLat, userLng, postLat, postLng);
 
+      // --- COMPUTE EXTRA MATCH SIGNALS INLINE ---
+      let bonusScore = 0;
+      const bonusSignals: string[] = [];
+      const postText = `${post.title || ''} ${post.content || ''}`.toLowerCase();
+
+      // 1. Industry match
+      if (userCtx.industry && post.industry && 
+          post.industry.toLowerCase() === userCtx.industry.toLowerCase()) {
+        bonusScore += 0.30;
+        bonusSignals.push('Industry Match');
+      }
+
+      // 2. Focus areas / skills overlap (from post metadata OR skills_required)
+      const postFocus: string[] = post.metadata?.focus_areas || post.skills_required || [];
+      const userSkills = userCtx.skills;
+      const focusOverlap = userSkills.filter((s: string) => 
+        postFocus.some((f: string) => f.toLowerCase() === s.toLowerCase()) ||
+        postText.includes(s.toLowerCase())
+      );
+      if (focusOverlap.length > 0) {
+        bonusScore += Math.min(0.30, focusOverlap.length * 0.10);
+        bonusSignals.push(`${focusOverlap.length} Skill${focusOverlap.length > 1 ? 's' : ''} Match`);
+      }
+
+      // 3. Intent alignment (user intents vs post type/content)
+      const postIntent = (post.metadata?.intent || post.type || '').toUpperCase();
+      const userIntents = userCtx.intents.map((i: string) => i.toUpperCase());
+      if (userIntents.some((intent: string) => postIntent.includes(intent) || postText.includes(intent.toLowerCase()))) {
+        bonusScore += 0.15;
+        bonusSignals.push('Intent Aligned');
+      }
+
+      // 4. Objective keyword match (user's bio/objectives vs post content)
+      if (userCtx.objectives) {
+        const objWords = userCtx.objectives.toLowerCase().split(/\s+/).filter((w: string) => w.length > 4);
+        const objMatches = objWords.filter((w: string) => postText.includes(w));
+        if (objMatches.length >= 2) {
+          bonusScore += 0.10;
+          bonusSignals.push('Goal Aligned');
+        }
+      }
+
+      const finalActionScore = Math.min(1, (actionScore || 0) + bonusScore);
+      const allSignals = [...(signals || []), ...bonusSignals].slice(0, 3);
+      const finalTier = finalActionScore > 0.7 ? 1 : finalActionScore > 0.4 ? 2 : 3;
+
       return {
         ...post,
-        authorName: post.author?.full_name || post.authorName || "Member",
-        relevanceScore: score,
+        authorName: post.author?.full_name || post.authorName || 'Member',
+        relevanceScore: Math.round(finalActionScore * 100),
         relevanceLabel: customLabel || null,
-        relevanceSignals: signals,
-        actionScore,
+        relevanceSignals: allSignals,
+        actionScore: finalActionScore,
         ctaHint,
         nudge,
-        tier,
+        tier: finalTier,
         successProbability,
-        distance
+        distance,
+        _isOwnPost: (post.author_id || post.author?.id) === currentUserId,
       };
     });
 
-    //  V1.10 FEED GUARDRAILS 
+    // Apply guardrails
     const guarded = SignalGuard.applyFeedGuardrails(processed, {
       maxTopOpportunities: 3,
       neutralRatio: 0.35
@@ -161,17 +221,29 @@ export default function HomeFeed({
 
     return guarded
       .filter((post: any) => {
-        const authorId = post.author_id || post.author?.id;
-        if (authorId === user.id) return true;
-        
-        // STRICT FILTERING FOR NON-SMART MODES
+        // Always show user's own posts
+        if (post._isOwnPost) return true;
+
+        // Non-SMART mode: type filter
         if (intentMode !== 'SMART' && post.type !== intentMode) return false;
-        
-        // Removed the strict relevanceScore > 0 filter to ensure feed is populated
-        // even if match parameters are not yet fully synced for a new user.
+
+        // If user has a profile with industry/skills set, only show relevant posts
+        // A post is "matched" if it has any signal: industry, skill, intent, or objective match
+        if (userCtx.industry || userCtx.skills.length > 0 || userCtx.intents.length > 0) {
+          // Show posts that have at least some relevance signal (tier 1 or 2), 
+          // or are from other users (tier 3 = very weak but still visible)
+          // This prevents completely empty feeds while still prioritizing matches
+          return post.relevanceScore > 5; // at least 5% relevance
+        }
+
+        // New user with no profile yet: show everything
         return true;
       })
       .sort((a: any, b: any) => {
+        // Own posts always first
+        if (a._isOwnPost && !b._isOwnPost) return -1;
+        if (!a._isOwnPost && b._isOwnPost) return 1;
+
         if (sortMode === 'LATEST') {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         }
@@ -180,11 +252,11 @@ export default function HomeFeed({
           if (b.distance === null) return -1;
           return a.distance - b.distance;
         }
-        // DEFAULT: RELEVANT
+        // DEFAULT (RELEVANT): tier first, then actionScore
         if (a.tier !== b.tier) return a.tier - b.tier;
         return (b.actionScore || 0) - (a.actionScore || 0);
       });
-  }, [posts, user, intentMode, sortMode]);
+  }, [posts, user, profile, currentUserId, intentMode, sortMode]);
 
   const dailyPriorities = processedPosts
     .filter(p => p.tier === 1 && p.actionScore > 0.6 && p.author_id !== currentUserId)
