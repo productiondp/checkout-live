@@ -105,8 +105,10 @@ export default function MatchesPage() {
             }
           };
         });
-        setAllProfiles(mapped);
-        const avgScore = mapped.length > 0 ? Math.round(mapped.reduce((acc, p) => acc + (p.metadata?.match_score || 0), 0) / mapped.length) : 0;
+        // Deduplicate profiles to prevent UI ghosts if the database has dirty rows with the same name
+        const uniqueProfiles = Array.from(new Map(mapped.map(p => [p.full_name, p])).values());
+        setAllProfiles(uniqueProfiles);
+        const avgScore = uniqueProfiles.length > 0 ? Math.round(uniqueProfiles.reduce((acc, p) => acc + (p.metadata?.match_score || 0), 0) / uniqueProfiles.length) : 0;
         setStats({
           activeCount: profiles.length,
           yourScore: authUser.matchScore || avgScore || 85,
