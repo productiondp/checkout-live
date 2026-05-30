@@ -489,136 +489,78 @@ export default function HomeFeed({
 
                   {isNew && (
                     <motion.div 
-                      initial={{ opacity: 0, scale: 0.98, y: 30 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      className="relative px-[5%] mb-12"
+                      initial={{ opacity: 0, y: -16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -16 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                      className="relative px-[5%] mb-8"
                     >
-                      <div className="bg-gradient-to-br from-[#121214] to-[#0A0A0B] rounded-[32px] p-10 lg:p-16 overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] group/success border border-white/5 relative backdrop-blur-3xl">
+                      <div className="bg-white rounded-3xl border border-black/[0.06] shadow-sm overflow-hidden">
                         
-                        {/* Premium Dynamic Background */}
-                        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-b from-[#E53935]/10 to-transparent rounded-full blur-[120px] -mr-[400px] -mt-[400px] animate-pulse" style={{ animationDuration: '4s' }} />
-                           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-t from-[#34C759]/10 to-transparent rounded-full blur-[100px] -ml-[300px] -mb-[300px] opacity-70" />
-                           {/* Subtle Grid Overlay */}
-                           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-50 mix-blend-overlay" />
-                        </div>
-                        
-                        <div className="relative z-10 flex flex-col xl:flex-row gap-16 xl:items-center">
-                           
-                           {/* LEFT: STATUS HERO */}
-                           <div className="flex-1 space-y-12">
-                              <div className="space-y-8">
-                                 <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-white/80 text-[11px] font-black uppercase tracking-[0.2em] shadow-xl">
-                                    <div className="h-2 w-2 rounded-full bg-[#34C759] shadow-[0_0_15px_#34C759] animate-pulse" />
-                                    Post Published & Live
-                                 </div>
-                                 <h1 className="text-5xl lg:text-7xl font-black text-white leading-[1.1] uppercase tracking-tighter italic">
-                                    Requirement <br /> 
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E53935] to-[#FF8A80] drop-shadow-[0_0_30px_rgba(229,57,53,0.3)]">Published</span>
-                                 </h1>
-                                 <p className="text-white/60 font-medium text-lg lg:text-xl max-w-lg leading-relaxed font-outfit">
-                                    Your requirement is now visible to the network. We're actively matching you with high-probability experts and partners.
-                                 </p>
-                              </div>
+                        {/* Thin accent line at top */}
+                        <div className="h-0.5 w-full bg-gradient-to-r from-[#34C759] via-[#34C759]/40 to-transparent" />
 
-                              <div className="flex items-center gap-12 pt-10 border-t border-white/5">
-                                 <div>
-                                    <p className="text-[10px] font-black uppercase text-white/30 tracking-[0.3em] mb-3">Sync Status</p>
-                                    <div className="flex items-center gap-3">
-                                       <div className="h-1.5 w-8 bg-[#34C759] rounded-full shadow-[0_0_10px_rgba(52,199,89,0.5)]" />
-                                       <p className="text-2xl font-black text-white uppercase tracking-tight font-outfit">Verified</p>
-                                    </div>
-                                 </div>
-                                 <div className="h-14 w-[1px] bg-white/5" />
-                                 <div>
-                                    <p className="text-[10px] font-black uppercase text-white/30 tracking-[0.3em] mb-3">Network Tier</p>
-                                    <p className="text-2xl font-black text-[#E53935] uppercase tracking-tight italic font-outfit">Priority One</p>
-                                 </div>
-                              </div>
-                           </div>
+                        <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
 
-                           {/* RIGHT: INTELLIGENT MATCHES */}
-                           <div className="w-full xl:w-[520px] space-y-8">
-                              <div className="flex items-center justify-between">
-                                 <h3 className="text-[11px] font-black uppercase text-white/30 tracking-[0.4em]">Smart Match Detection</h3>
-                                 <div className="flex gap-1">
-                                    <div className="h-1 w-4 bg-[#34C759] rounded-full" />
-                                    <div className="h-1 w-1 bg-white/20 rounded-full" />
-                                 </div>
+                          {/* Icon + Status */}
+                          <div className="flex items-center gap-4 flex-1 min-w-0">
+                            <div className="h-12 w-12 shrink-0 bg-[#34C759]/10 rounded-2xl flex items-center justify-center">
+                              <CheckCircle2 size={22} className="text-[#34C759]" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <div className="h-1.5 w-1.5 rounded-full bg-[#34C759] animate-pulse" />
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Live Now</p>
                               </div>
+                              <p className="text-[16px] font-black uppercase tracking-tight text-[#1D1D1F] truncate">Post Published</p>
+                            </div>
+                          </div>
 
-                              <div className="space-y-4">
-                                 {[].map((profile: any, i) => (
-                                   <motion.div 
-                                     key={profile.name}
-                                     initial={{ opacity: 0, x: 30 }}
-                                     animate={{ opacity: 1, x: 0 }}
-                                     transition={{ delay: 0.5 + (i * 0.15) }}
-                                     className="group/item flex items-center justify-between p-6 bg-white/[0.03] border border-white/5 rounded-[24px] hover:bg-white/[0.08] transition-all hover:border-white/10 backdrop-blur-md"
-                                   >
-                                     <div 
-                                       className="flex items-center gap-5 min-w-0 cursor-pointer"
-                                       onClick={() => router.push(`/profile/${profile.id}`)}
-                                     >
-                                       <div className="h-16 w-16 rounded-[18px] bg-white/5 border border-white/10 overflow-hidden shrink-0 p-1.5 shadow-xl">
-                                          <img src={profile.avatar} className="w-full h-full object-cover rounded-[12px] grayscale group-hover/item:grayscale-0 transition-all duration-500" alt="" />
-                                       </div>
-                                       <div className="min-w-0">
-                                          <p className="text-[17px] font-black text-white uppercase truncate mb-0.5 font-outfit">{profile.name}</p>
-                                          <div className="flex items-center gap-2">
-                                             <div className="h-1 w-1 rounded-full bg-[#E53935] animate-pulse" />
-                                             <p className="text-[11px] font-black text-[#E53935] uppercase tracking-widest">{profile.score}% Match Score</p>
-                                          </div>
-                                       </div>
-                                     </div>
-                                     <button 
-                                       onClick={() => {
-                                         setConnectedIds(prev => [...prev, profile.name]);
-                                         registerAction('connect_sent');
-                                       }}
-                                       className={cn(
-                                          "h-12 px-6 rounded-xl text-[11px] font-black uppercase transition-all shrink-0 border-2 font-outfit",
-                                          connectedIds.includes(profile.name)
-                                            ? "bg-[#34C759]/10 border-[#34C759]/20 text-[#34C759]"
-                                            : "bg-white text-black border-white hover:bg-black hover:text-white hover:border-black"
-                                       )}
-                                     >
-                                        {connectedIds.includes(profile.name) ? "Linked" : "Link Partner"}
-                                     </button>
-                                   </motion.div>
-                                 ))}
-                              </div>
+                          {/* Divider */}
+                          <div className="hidden md:block h-10 w-px bg-slate-100" />
 
-                              <div className="grid grid-cols-2 gap-4 mt-6">
-                                <button 
-                                  onClick={() => router.push('/matches')}
-                                  className="h-18 bg-white/5 border border-white/10 rounded-[24px] text-[11px] font-black uppercase text-white/50 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all flex items-center justify-center gap-4 group/btn"
-                                >
-                                  View Matches <ArrowRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
-                                </button>
-                                <button 
-                                  onClick={() => {
-                                    const post = posts.find(p => p.id === newlyCreatedPostId);
-                                    const url = `${window.location.origin}/post/${newlyCreatedPostId}`;
-                                    navigator.clipboard.writeText(`Check out my post on Checkout: ${url}`);
-                                    alert("Link copied to clipboard!");
-                                  }}
-                                  className="h-18 bg-[#E53935]/10 border border-[#E53935]/20 rounded-[24px] text-[11px] font-black uppercase text-[#E53935] hover:bg-[#E53935]/20 transition-all flex items-center justify-center gap-4 group/share"
-                                >
-                                  Share Link <Sparkles size={18} className="group-hover/share:scale-125 transition-transform" />
-                                </button>
-                              </div>
-                           </div>
+                          {/* Stats */}
+                          <div className="flex items-center gap-6 shrink-0">
+                            <div>
+                              <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 mb-1">Status</p>
+                              <p className="text-[12px] font-black uppercase text-[#1D1D1F]">Verified</p>
+                            </div>
+                            <div className="h-8 w-px bg-slate-100" />
+                            <div>
+                              <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 mb-1">Priority</p>
+                              <p className="text-[12px] font-black uppercase text-[#E53935]">High</p>
+                            </div>
+                          </div>
+
+                          {/* Divider */}
+                          <div className="hidden md:block h-10 w-px bg-slate-100" />
+
+                          {/* Actions */}
+                          <div className="flex items-center gap-3 shrink-0">
+                            <button
+                              onClick={() => router.push('/matches')}
+                              className="h-11 px-5 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#E53935] transition-all"
+                            >
+                              View Matches
+                            </button>
+                            <button
+                              onClick={() => {
+                                const url = `${window.location.origin}/post/${newlyCreatedPostId}`;
+                                navigator.clipboard.writeText(`Check out my post on Checkout: ${url}`);
+                              }}
+                              className="h-11 px-5 bg-slate-50 border border-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all"
+                            >
+                              Copy Link
+                            </button>
+                            <button 
+                              onClick={() => setNewlyCreatedPostId(null)}
+                              className="h-11 w-11 bg-slate-50 text-slate-300 rounded-xl flex items-center justify-center hover:bg-slate-100 hover:text-slate-500 transition-all border border-slate-100"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
 
                         </div>
-
-                        {/* CLOSE TRIGGER */}
-                        <button 
-                          onClick={() => setNewlyCreatedPostId(null)}
-                          className="absolute top-8 right-8 h-14 w-14 bg-white/5 text-white/20 rounded-full flex items-center justify-center hover:bg-white/10 hover:text-white transition-all border border-white/10 group-hover/success:text-white/50"
-                        >
-                          <X size={24} />
-                        </button>
                       </div>
                     </motion.div>
                   )}
