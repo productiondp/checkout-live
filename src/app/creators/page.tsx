@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Users, 
   MapPin, 
@@ -19,19 +19,89 @@ import {
   ChevronDown,
   Bell,
   Activity,
-  UserCheck
+  UserCheck,
+  User,
+  Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/client";
+
+const supabase = createClient();
 
 export default function TalentNetworkPage() {
   const [activeTab, setActiveTab] = useState("Roster");
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeRegion, setActiveRegion] = useState("All Locations");
+  const [activeGender, setActiveGender] = useState("All");
+  
+  const [creators, setCreators] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const tabs = ["Roster", "Castings", "Schedule", "Contracts", "Finance", "Public Hub"];
 
+  useEffect(() => {
+    const fetchCreators = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("creator_profiles")
+          .select(`
+            *,
+            profiles:id (
+              full_name,
+              location
+            )
+          `);
+        
+        if (error) throw error;
+        if (data) {
+          setCreators(data);
+        }
+      } catch (err) {
+        console.error("Error fetching creators:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCreators();
+  }, []);
+
+  // Extract unique categories (specialties)
+  const allSpecialties = Array.from(new Set(creators.flatMap(c => c.specialties || []))).filter(Boolean).slice(0, 8); // Top 8 to avoid clutter
+  const categories = ["All", ...allSpecialties];
+
+  // Extract unique locations
+  const allLocations = Array.from(new Set(creators.map(c => c.profiles?.location).filter(Boolean)));
+  const regions = ["All Locations", ...allLocations];
+
+  // Filtering logic
+  const filteredCreators = creators.filter(c => {
+    // 1. Search Query
+    const nameMatch = c.profiles?.full_name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const specialtyMatch = c.specialties?.some((s: string) => s.toLowerCase().includes(searchQuery.toLowerCase()));
+    if (searchQuery && !nameMatch && !specialtyMatch) return false;
+
+    // 2. Category
+    if (activeCategory !== "All" && !c.specialties?.includes(activeCategory)) return false;
+
+    // 3. Region
+    if (activeRegion !== "All Locations" && c.profiles?.location !== activeRegion) return false;
+
+    // 4. Gender (Mocked, since not in schema, assuming All for now)
+    // if (activeGender !== "All") { ... }
+
+    return true;
+  });
+
+  // Stats calculation
+  const totalActive = creators.length;
+  const totalAvailable = creators.filter(c => c.availability?.toLowerCase().includes("available")).length;
+
   const stats = [
-    { label: "TOTAL TALENT", value: "0 Active", sub: "Fully Vetted", icon: Users },
-    { label: "AVAILABLE NOW", value: "0 Talents", sub: "Ready to Shoot", icon: CheckCircle2 },
+    { label: "TOTAL TALENT", value: `${totalActive} Active`, sub: "Fully Vetted", icon: Users },
+    { label: "AVAILABLE NOW", value: `${totalAvailable} Talents`, sub: "Ready to Shoot", icon: CheckCircle2 },
     { label: "BOOKED ROSTER", value: "0 Booked", sub: "Util: 0.0%", icon: Calendar },
     { label: "ACTIVE CASTINGS", value: "0 Open", sub: "0 Shortlisted", icon: FileText },
     { label: "AI MATCH RATE", value: "94%", sub: "Matched profiles", icon: Sparkles },
@@ -42,6 +112,13 @@ export default function TalentNetworkPage() {
     { type: "New Casting", desc: "Tech-Start Brand Film Dub published requirement.", time: "1h ago", color: "bg-orange-500" },
     { type: "Conflict Detected", desc: "Aparna B. has overlapping travel dates on June 14.", time: "2h ago", color: "bg-orange-500" },
   ];
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setActiveCategory("All");
+    setActiveRegion("All Locations");
+    setActiveGender("All");
+  };
 
   return (
     <div className="min-h-screen bg-[#FDFDFF] p-6 lg:p-10 space-y-8 font-sans selection:bg-[#E53935]/10">
@@ -96,7 +173,7 @@ export default function TalentNetworkPage() {
                 <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input 
                   type="text" 
-                  placeholder="Name, skills, or agency tags..." 
+                  placeholder="Name, skills..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full h-12 pl-11 pr-4 bg-slate-50 border border-slate-100 rounded-xl text-sm font-medium text-slate-700 outline-none focus:border-[#E53935] transition-all"
@@ -108,7 +185,18 @@ export default function TalentNetworkPage() {
             <div className="space-y-3">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Category Roster</p>
               <div className="flex flex-wrap gap-2">
-                <button className="px-4 py-2 bg-[#E53935] text-white rounded-lg text-[10px] font-black uppercase tracking-wider">All</button>
+                {categories.map(cat => (
+                  <button 
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={cn(
+                      "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all",
+                      activeCategory === cat ? "bg-[#E53935] text-white" : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                    )}
+                  >
+                    {cat}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -116,11 +204,14 @@ export default function TalentNetworkPage() {
             <div className="space-y-3">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Shoot Region</p>
               <div className="relative">
-                <select className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-600 outline-none focus:border-[#E53935] appearance-none cursor-pointer">
-                  <option>All Locations</option>
-                  <option>Trivandrum</option>
-                  <option>Kochi</option>
-                  <option>Mumbai</option>
+                <select 
+                  value={activeRegion}
+                  onChange={(e) => setActiveRegion(e.target.value)}
+                  className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-600 outline-none focus:border-[#E53935] appearance-none cursor-pointer"
+                >
+                  {regions.map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
                 </select>
                 <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               </div>
@@ -130,13 +221,25 @@ export default function TalentNetworkPage() {
             <div className="space-y-3">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Preferred Gender</p>
               <div className="flex bg-slate-50 rounded-xl p-1 border border-slate-100">
-                <button className="flex-1 py-2.5 bg-[#E53935] text-white rounded-lg text-[10px] font-black uppercase tracking-wider shadow-sm">All</button>
-                <button className="flex-1 py-2.5 text-slate-400 hover:text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">Male</button>
-                <button className="flex-1 py-2.5 text-slate-400 hover:text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all">Female</button>
+                {["All", "Male", "Female"].map(gender => (
+                  <button 
+                    key={gender}
+                    onClick={() => setActiveGender(gender)}
+                    className={cn(
+                      "flex-1 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all",
+                      activeGender === gender ? "bg-[#E53935] text-white shadow-sm" : "text-slate-400 hover:text-slate-600"
+                    )}
+                  >
+                    {gender}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <button className="w-full h-12 bg-slate-50 text-slate-500 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all">
+            <button 
+              onClick={clearFilters}
+              className="w-full h-12 bg-slate-50 text-slate-500 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all"
+            >
               Clear Precision Filters
             </button>
           </div>
@@ -183,13 +286,70 @@ export default function TalentNetworkPage() {
             ))}
           </div>
 
-          {/* Main Roster Content Area */}
-          <div className="bg-white rounded-3xl border border-slate-100 p-12 shadow-sm min-h-[400px] flex flex-col items-center justify-center text-center">
-            <UserCheck size={48} className="text-slate-200 mb-4" />
-            <p className="text-[15px] font-bold text-slate-600">No roster profiles matched filters.</p>
-            <p className="text-xs font-bold text-[#E53935] uppercase tracking-widest mt-4 cursor-pointer hover:underline">
-              List First Talent Profile
-            </p>
+          {/* Main Content Area */}
+          <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm min-h-[400px]">
+            {activeTab === "Roster" ? (
+              loading ? (
+                <div className="h-[400px] flex flex-col items-center justify-center">
+                  <Loader2 size={32} className="text-[#E53935] animate-spin mb-4" />
+                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Loading Roster...</p>
+                </div>
+              ) : filteredCreators.length === 0 ? (
+                <div className="h-[400px] flex flex-col items-center justify-center text-center">
+                  <UserCheck size={48} className="text-slate-200 mb-4" />
+                  <p className="text-[15px] font-bold text-slate-600">No roster profiles matched filters.</p>
+                  <button onClick={clearFilters} className="text-xs font-bold text-[#E53935] uppercase tracking-widest mt-4 cursor-pointer hover:underline">
+                    Clear Filters
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredCreators.map(creator => (
+                    <Link key={creator.id} href={`/creators/profile/${creator.id}`} className="group flex flex-col bg-white rounded-3xl border border-slate-100 overflow-hidden hover:border-[#E53935]/30 hover:shadow-xl transition-all">
+                      <div className="h-48 bg-slate-100 relative overflow-hidden">
+                        {creator.portfolio_images?.[0] ? (
+                          <img src={creator.portfolio_images[0]} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-slate-200 to-slate-100 flex items-center justify-center">
+                            <User size={32} className="text-slate-300" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent z-10" />
+                        <div className="absolute bottom-4 left-4 right-4 z-20 flex justify-between items-end">
+                          <div>
+                            <h3 className="text-white font-black tracking-tight text-lg leading-none flex items-center gap-1">
+                              {creator.profiles?.full_name || "Creator"}
+                              <CheckCircle2 size={14} className="text-blue-400" />
+                            </h3>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-white/80 mt-1 truncate max-w-[160px]">
+                              {creator.specialties?.slice(0, 2).join(" · ") || "Talent"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-4 flex flex-col gap-2">
+                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-500">
+                          <span className="flex items-center gap-1 uppercase tracking-wider"><MapPin size={12} /> {creator.profiles?.location || "Remote"}</span>
+                          {creator.availability && (
+                            <span className="text-[#34C759] bg-[#34C759]/10 px-2 py-1 rounded-md text-[9px] uppercase tracking-wider truncate max-w-[100px]">
+                              {creator.availability.includes("Immediate") ? "Immediate" : "Available"}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )
+            ) : (
+              <div className="h-[400px] flex flex-col items-center justify-center text-center">
+                <FileText size={48} className="text-slate-200 mb-4" />
+                <p className="text-[15px] font-bold text-slate-600">Nothing here yet.</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">
+                  This section is under construction.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Discussion */}
