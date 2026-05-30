@@ -1,13 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Sparkles, MapPin, Star, Briefcase, ChevronRight, CheckCircle2 } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { createClient } from "@/utils/supabase/client";
 
 export default function CreatorsDiscoveryFeed() {
   const [role, setRole] = useState<"CREATOR" | "BUSINESS">("BUSINESS"); // Toggle for demo/admin view
+  const [creators, setCreators] = useState<any[]>([]);
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function fetchCreators() {
+      const { data } = await supabase
+        .from("creator_profiles")
+        .select(`
+          *,
+          profiles (
+            full_name,
+            avatar_url,
+            location
+          )
+        `)
+        .order('trust_score', { ascending: false })
+        .limit(20);
+      
+      if (data) setCreators(data);
+    }
+    fetchCreators();
+  }, [supabase]);
 
   return (
     <div className="px-4 lg:px-8 space-y-8 pb-20 mt-8 max-w-[1600px] mx-auto">
@@ -55,49 +78,64 @@ export default function CreatorsDiscoveryFeed() {
 
         {role === "BUSINESS" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Mock Creator Cards for V1 Foundation */}
-            {[
-              { name: "Sarah Jenkins", cat: "Photographer & UGC", match: 98, location: "Trivandrum", verified: true, trust: 95 },
-              { name: "Rajat Menon", cat: "Motion Designer", match: 92, location: "Trivandrum", verified: true, trust: 88 },
-              { name: "Priya Patel", cat: "Influencer", match: 85, location: "Trivandrum", verified: false, trust: 70 },
-            ].map((creator, i) => (
-              <Link href={`/creators/profile/${creator.name.toLowerCase().replace(' ', '-')}`} key={i} className="group flex flex-col bg-white rounded-3xl border border-black/[0.05] overflow-hidden hover:border-black/[0.1] hover:shadow-xl transition-all">
-                {/* Cover / Portfolio Preview */}
-                <div className="h-40 bg-gray-100 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
-                  <div className="absolute bottom-4 left-4 z-20">
-                    <div className="flex items-center gap-2">
-                      <div className="h-12 w-12 rounded-full bg-white p-1">
-                        <div className="w-full h-full bg-gray-200 rounded-full" />
-                      </div>
-                      <div className="text-white">
-                        <h3 className="font-black tracking-tight leading-none flex items-center gap-1">
-                          {creator.name}
-                          {creator.verified && <CheckCircle2 size={14} className="text-blue-400" />}
-                        </h3>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">{creator.cat}</p>
+            {creators.length === 0 ? (
+              <p className="text-slate-400 font-medium col-span-full">No creators found. Set up a profile to appear here.</p>
+            ) : (
+              creators.map((creator, i) => {
+                const name = creator.profiles?.full_name || "Creator";
+                const cat = creator.specialties?.[0] || creator.category || "Creator";
+                const match = 80 + Math.floor(Math.random() * 20); // Random high match for demo
+                const trust = creator.trust_score || 50;
+                const avatar = creator.portfolio_images?.[0] || creator.profiles?.avatar_url || null;
+                const isVerified = creator.is_verified;
+
+                return (
+                  <Link href={`/creators/profile/${creator.id}`} key={i} className="group flex flex-col bg-white rounded-3xl border border-black/[0.05] overflow-hidden hover:border-black/[0.1] hover:shadow-xl transition-all">
+                    {/* Cover / Portfolio Preview */}
+                    <div className="h-40 bg-gray-100 relative overflow-hidden">
+                      {avatar && (
+                        <img src={avatar} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10" />
+                      <div className="absolute bottom-4 left-4 z-20">
+                        <div className="flex items-center gap-2">
+                          <div className="h-12 w-12 rounded-full bg-white p-1">
+                            {avatar ? (
+                              <img src={avatar} className="w-full h-full rounded-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full bg-gray-200 rounded-full" />
+                            )}
+                          </div>
+                          <div className="text-white">
+                            <h3 className="font-black tracking-tight leading-none flex items-center gap-1">
+                              {name}
+                              {isVerified && <CheckCircle2 size={14} className="text-blue-400" />}
+                            </h3>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-white/80">{cat}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                {/* Stats */}
-                <div className="p-5 flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-black/40">AI Match</span>
-                    <span className="text-lg font-black text-[#E53935]">{creator.match}%</span>
-                  </div>
-                  <div className="w-px h-8 bg-black/5" />
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-black/40">Trust Score</span>
-                    <span className="text-lg font-black">{creator.trust}/100</span>
-                  </div>
-                  <div className="w-px h-8 bg-black/5" />
-                  <div className="h-10 w-10 rounded-xl bg-black/5 flex items-center justify-center text-black group-hover:bg-black group-hover:text-white transition-colors">
-                    <ChevronRight size={18} />
-                  </div>
-                </div>
-              </Link>
-            ))}
+                    {/* Stats */}
+                    <div className="p-5 flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-black/40">AI Match</span>
+                        <span className="text-lg font-black text-[#E53935]">{match}%</span>
+                      </div>
+                      <div className="w-px h-8 bg-black/5" />
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-black/40">Trust Score</span>
+                        <span className="text-lg font-black">{trust}/100</span>
+                      </div>
+                      <div className="w-px h-8 bg-black/5" />
+                      <div className="h-10 w-10 rounded-xl bg-black/5 flex items-center justify-center text-black group-hover:bg-black group-hover:text-white transition-colors">
+                        <ChevronRight size={18} />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
