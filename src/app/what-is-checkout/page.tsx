@@ -6,6 +6,7 @@ import Link from "next/link";
 import { 
   ArrowRight, 
   MapPin, 
+  User,
   Users, 
   Zap, 
   BrainCircuit, 

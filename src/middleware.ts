@@ -1,92 +1,74 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
-import { PROTECTED_ROUTES, PUBLIC_ROUTES } from './lib/routes'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { Redis } from '@upstash/redis';
+import { Ratelimit } from '@upstash/ratelimit';
 
 /**
- *  SURGICAL AUTH MIDDLEWARE (V14.1)
- * 
- * Performance-optimized middleware that only executes on protected routes.
- * Ensures Service Workers and static assets are never intercepted.
+ * V8 API HARDENING MIDDLEWARE
+ * Production-grade Edge Rate Limiting using Upstash Redis.
  */
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  
-  //  CRITICAL BYPASS: Service Worker & PWA Manifest
-  if (pathname === '/sw.js' || pathname === '/manifest.json') {
-    return NextResponse.next()
-  }
 
-  //  ROUTE SAFETY ASSERTION (DEV ONLY)
-  // Ensures all new routes are explicitly categorized as protected or public.
-  if (process.env.NODE_ENV === 'development') {
-    const knownRoutes = new Set([...PROTECTED_ROUTES, ...PUBLIC_ROUTES]);
-    if (!knownRoutes.has(pathname) && !pathname.startsWith('/_next') && !pathname.includes('.')) {
-      console.warn(`%c[ROUTE WARNING] Unregistered path: ${pathname}`, "color: #E53935; font-weight: bold;");
-    }
-  }
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
+let ratelimit: Ratelimit | null = null;
 
-  //  AUTHORITATIVE PROTECTION CHECK
-  const isProtected = PROTECTED_ROUTES.some(route =>
-    pathname === route || pathname.startsWith(route + '/')
-  )
+if (redisUrl && redisToken) {
+  const redis = new Redis({
+    url: redisUrl,
+    token: redisToken,
+  });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "",
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({ name, value, ...options })
-          response = NextResponse.next({
-            request: { headers: request.headers },
-          })
-          response.cookies.set({ name, value, ...options })
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({ name, value: '', ...options })
-          response = NextResponse.next({
-            request: { headers: request.headers },
-          })
-          response.cookies.set({ name, value: '', ...options })
-        },
-      },
-    }
-  )
-
-  //  SECURE SESSION VERIFICATION
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (user) {
-    console.log(`[MIDDLEWARE] Authenticated access to: ${pathname}`);
-  } else if (isProtected) {
-    console.warn(`[MIDDLEWARE] Unauthorized access attempt to: ${pathname}. Redirecting to /`);
-    return NextResponse.redirect(new URL('/?mode=signin', request.url))
-  }
-
-  return response
+  // Allow 100 requests per 60 seconds per IP
+  ratelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(100, "60 s"),
+    analytics: true,
+  });
+} else {
+  console.warn("WARNING: Upstash Redis keys are missing. API Rate Limiting is currently DISABLED in production.");
 }
 
-//  SURGICAL MATCHER
-// Only run middleware on paths that actually require authentication logic.
+export async function middleware(req: NextRequest) {
+  const ip = req.ip || req.headers.get('x-forwarded-for') || '127.0.0.1';
+  const path = req.nextUrl.pathname;
+
+  // 1. Distributed Rate Limiting
+  if (path.startsWith('/api/') && ratelimit) {
+    const { success, limit, reset, remaining } = await ratelimit.limit(ip);
+    
+    if (!success) {
+      console.warn(`[Security] Upstash Rate limit exceeded for IP: ${ip} on path ${path}`);
+      return new NextResponse(
+        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+        { 
+          status: 429, 
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-RateLimit-Limit': limit.toString(),
+            'X-RateLimit-Remaining': remaining.toString(),
+            'X-RateLimit-Reset': reset.toString()
+          } 
+        }
+      );
+    }
+  }
+
+  // 2. Strict Security Headers
+  const res = NextResponse.next();
+  
+  res.headers.set('X-DNS-Prefetch-Control', 'on');
+  res.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+  res.headers.set('X-XSS-Protection', '1; mode=block');
+  res.headers.set('X-Frame-Options', 'SAMEORIGIN');
+  res.headers.set('X-Content-Type-Options', 'nosniff');
+  res.headers.set('Referrer-Policy', 'origin-when-cross-origin');
+
+  return res;
+}
+
 export const config = {
   matcher: [
-    '/home/:path*',
-    '/chat/:path*',
-    '/marketplace/:path*',
-    '/advisors/:path*',
-    '/matches/:path*',
-    '/profile/:path*',
-    '/settings/:path*',
-    '/onboarding/:path*',
-    '/admin/:path*',
-  ]
-}
+    '/((?!_next/static|_next/image|favicon.ico).*)',
+  ],
+};
