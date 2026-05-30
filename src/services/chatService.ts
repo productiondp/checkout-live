@@ -7,7 +7,7 @@ export const ChatService = {
   async getConversations(userId: string) {
     const { data: conns, error } = await supabase
       .from('connections')
-      .select('id, sender_id, receiver_id, status, updated_at')
+      .select('id, sender_id, receiver_id, status, created_at')
       .eq('status', 'ACCEPTED')
       .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
 
@@ -44,7 +44,7 @@ export const ChatService = {
         title: partner?.full_name || "Partner",
         avatar_url: partner?.avatar_url,
         last_message_content: lastMsg?.content || "No messages yet",
-        last_message_at: lastMsg?.created_at || conn.updated_at,
+        last_message_at: lastMsg?.created_at || conn.created_at,
         last_message_sender_id: lastMsg?.sender_id,
         members: [
           { user_id: userId },
@@ -90,10 +90,8 @@ export const ChatService = {
 
     if (error) throw error;
 
-    await supabase
-      .from('connections')
-      .update({ updated_at: new Date().toISOString() })
-      .eq('id', convId);
+    // For V1, since updated_at doesn't exist, we skip bumping the connection itself.
+    // The conversation list sorts by latest message created_at anyway.
 
     return {
       ...data,
