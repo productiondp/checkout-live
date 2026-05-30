@@ -33,11 +33,12 @@ import { useAuth, useAuthGuard } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 
 type AuthMode = "signin" | "signup";
-type Role = "Business" | "Professional" | "Student" | "Advisor";
+type Role = "Business" | "Professional" | "Student" | "Advisor" | "Creator";
 
 const ROLES: { value: Role; icon: any; desc: string }[] = [
   { value: "Business", icon: Briefcase, desc: "Hire and grow" },
   { value: "Professional", icon: User, desc: "Work and help" },
+  { value: "Creator", icon: PlayCircle, desc: "Build your brand" },
   { value: "Advisor", icon: ShieldCheck, desc: "Give advice" },
   { value: "Student", icon: Award, desc: "Learn and grow" },
 ];

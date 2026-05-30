@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 type AuthMode = "signin" | "signup";
-type Role = "Business" | "Professional" | "Student" | "Advisor";
+type Role = "Business" | "Professional" | "Student" | "Advisor" | "Creator";
 
 interface AuthModalProps {
   isOpen: boolean;

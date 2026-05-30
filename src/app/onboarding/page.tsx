@@ -21,6 +21,7 @@ import {
   Globe,
   Rocket,
   Sparkles,
+  PlayCircle,
   X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -30,7 +31,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import AuthSubmissionStatus from "@/components/auth/AuthSubmissionStatus";
 
-type Role = 'BUSINESS' | 'PROFESSIONAL' | 'ADVISOR' | 'STUDENT';
+type Role = 'BUSINESS' | 'PROFESSIONAL' | 'ADVISOR' | 'STUDENT' | 'CREATOR';
 
 type OnboardingState = {
   name: string;
@@ -485,10 +486,11 @@ function OnboardingContent() {
                           
                           <div className="space-y-4">
                              <label className="text-[11px] font-black uppercase text-slate-400 tracking-widest ml-1">Select Role</label>
-                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                             <div className="grid grid-cols-2 lg:grid-[grid-template-columns:repeat(auto-fit,minmax(140px,1fr))] gap-4">
                                 {[
                                   { id: 'BUSINESS', label: 'Company', icon: Briefcase },
                                   { id: 'PROFESSIONAL', label: 'Individual', icon: Laptop },
+                                  { id: 'CREATOR', label: 'Creator', icon: PlayCircle },
                                   { id: 'ADVISOR', label: 'Advisor', icon: ShieldCheck },
                                   { id: 'STUDENT', label: 'Student', icon: Award }
                                 ].map(r => (
@@ -528,6 +530,7 @@ function OnboardingContent() {
                                    <span className="text-[9px] font-black text-[#FF3B30] uppercase">
                                       {onboardingData.role === 'BUSINESS' && 'Company'}
                                       {onboardingData.role === 'PROFESSIONAL' && 'Individual'}
+                                      {onboardingData.role === 'CREATOR' && 'Creator'}
                                       {onboardingData.role === 'ADVISOR' && 'Advisor'}
                                       {onboardingData.role === 'STUDENT' && 'Student'}
                                    </span>
@@ -590,7 +593,7 @@ function OnboardingContent() {
                                       industry: (highConfidence && detection.industries.length === 1) ? detection.industries[0] : prev.industry 
                                     }));
                                   }}
-                                  placeholder={onboardingData.role === 'ADVISOR' ? "e.g. Startup Strategy, Marketing Guidance" : "e.g. Video Editor, Founder, Developer"}
+                                  placeholder={onboardingData.role === 'ADVISOR' ? "e.g. Startup Strategy, Marketing Guidance" : onboardingData.role === 'CREATOR' ? "e.g. Content Creator, YouTuber, Model" : "e.g. Video Editor, Founder, Developer"}
                                   className="flex-1 h-16 lg:h-20 bg-transparent pr-8 text-xl lg:text-2xl font-black text-[#1A1A1A] outline-none placeholder:text-slate-200"
                                 />
 
