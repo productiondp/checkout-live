@@ -26,7 +26,7 @@ export default async function PublicPostPage({ params }: { params: { id: string 
   // Fetch post with author profile attached using the clean relation we fixed earlier!
   const { data: post, error } = await supabase
     .from('posts')
-    .select('*, profiles(*)')
+    .select('*, profiles!posts_author_id_fkey(*)')
     .eq('id', params.id)
     .single();
 

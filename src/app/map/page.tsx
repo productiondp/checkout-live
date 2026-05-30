@@ -71,7 +71,7 @@ function MapContent() {
         // Fetch All Posts (Prioritize Marketplace Content)
         const { data: posts } = await supabase
           .from('posts')
-          .select(`*, author:profiles(*)`)
+          .select(`*, author:profiles!posts_author_id_fkey(*)`)
           .order('created_at', { ascending: false });
 
         // Fetch Profiles (Partners/Businesses)

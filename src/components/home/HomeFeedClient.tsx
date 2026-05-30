@@ -105,7 +105,7 @@ export default function HomeFeedClient({ initialPosts = [], initialProfile }: Ho
     if (!authUser) return;
     if (posts.length === 0) setIsLoading(true);
     try {
-      let { data: postsData, error: fetchErr } = await supabase.from('posts').select(`*, profiles(id, full_name, avatar_url, role)`).order('created_at', { ascending: false }).limit(100);
+      let { data: postsData, error: fetchErr } = await supabase.from('posts').select(`*, profiles!posts_author_id_fkey(id, full_name, avatar_url, role)`).order('created_at', { ascending: false }).limit(100);
       
       if (fetchErr) {
         console.error("[FEED_ERROR] Primary fetch failed:", fetchErr);

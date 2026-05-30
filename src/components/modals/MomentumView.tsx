@@ -47,7 +47,7 @@ export default function MomentumView({ type, postId, isOpen, onClose }: Momentum
         // 1. Fetch Post Details
         const { data: postData, error: postError } = await supabase
           .from('posts')
-          .select('*, profiles(id, full_name, avatar_url, role)')
+          .select('*, profiles!posts_author_id_fkey(id, full_name, avatar_url, role)')
           .eq('id', postId)
           .single();
         

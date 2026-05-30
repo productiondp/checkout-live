@@ -163,7 +163,7 @@ function SentinelDashboardContent() {
       // 5. RECENT DATA
       const { data: profs } = await supabase.from('profiles').select('id, full_name, industry').order('created_at', { ascending: false }).limit(20);
       const { data: evs } = await supabase.from('analytics_events').select('*').order('created_at', { ascending: false }).limit(40);
-      const { data: pts } = await supabase.from('posts').select('*, profiles(full_name)').order('created_at', { ascending: false }).limit(20);
+      const { data: pts } = await supabase.from('posts').select('*, profiles!posts_author_id_fkey(full_name)').order('created_at', { ascending: false }).limit(20);
       
       setMetrics({
         totalUsers: uC.count || 0,

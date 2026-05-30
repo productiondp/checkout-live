@@ -107,7 +107,7 @@ function MarketplaceContent() {
         // Fetch all relevant posts from ecosystem
         const { data: postsData, error: postsError } = await supabase
           .from('posts')
-          .select(`*, profiles(id, full_name, avatar_url, role)`)
+          .select(`*, profiles!posts_author_id_fkey(id, full_name, avatar_url, role)`)
           .neq('author_id', user.id)
           .order('created_at', { ascending: false });
 

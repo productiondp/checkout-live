@@ -16,7 +16,7 @@ export async function GET() {
       .from('posts')
       .select(`
         *,
-        profiles(*)
+        profiles!posts_author_id_fkey(*)
       `)
       .eq('status', 'ACTIVE')
       .order('created_at', { ascending: false })

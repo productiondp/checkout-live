@@ -140,7 +140,7 @@ export default function HomeFeed({
 
       return {
         ...post,
-        authorName: post.author?.full_name || "Member",
+        authorName: post.author?.full_name || post.authorName || "Member",
         relevanceScore: score,
         relevanceLabel: customLabel || null,
         relevanceSignals: signals,
