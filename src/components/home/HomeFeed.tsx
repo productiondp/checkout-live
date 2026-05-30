@@ -493,13 +493,14 @@ export default function HomeFeed({
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       className="relative px-[5%] mb-12"
                     >
-                      <div className="bg-[#1D1D1F] rounded-[32px] p-10 lg:p-16 overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] group/success border border-white/10 relative">
+                      <div className="bg-gradient-to-br from-[#121214] to-[#0A0A0B] rounded-[32px] p-10 lg:p-16 overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] group/success border border-white/5 relative backdrop-blur-3xl">
                         
-                        {/* THE NEURAL SYNC BACKGROUND  ENHANCED */}
-                        <div className="absolute inset-0 pointer-events-none">
-                           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#E53935]/15 rounded-full blur-[140px] -mr-64 -mt-64 animate-pulse" />
-                           <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#34C759]/10 rounded-full blur-[120px] -ml-48 -mb-48 opacity-50" />
-                           <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#34C759]/10 rounded-full blur-[120px] -ml-48 -mb-48 opacity-50" />
+                        {/* Premium Dynamic Background */}
+                        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-b from-[#E53935]/10 to-transparent rounded-full blur-[120px] -mr-[400px] -mt-[400px] animate-pulse" style={{ animationDuration: '4s' }} />
+                           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-t from-[#34C759]/10 to-transparent rounded-full blur-[100px] -ml-[300px] -mb-[300px] opacity-70" />
+                           {/* Subtle Grid Overlay */}
+                           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-50 mix-blend-overlay" />
                         </div>
                         
                         <div className="relative z-10 flex flex-col xl:flex-row gap-16 xl:items-center">
@@ -507,30 +508,30 @@ export default function HomeFeed({
                            {/* LEFT: STATUS HERO */}
                            <div className="flex-1 space-y-12">
                               <div className="space-y-8">
-                                 <div className="inline-flex items-center gap-3 px-4 py-2 bg-[#34C759]/10 border border-[#34C759]/20 rounded-full text-[#34C759] text-[11px] font-black uppercase tracking-[0.2em]">
+                                 <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-white/80 text-[11px] font-black uppercase tracking-[0.2em] shadow-xl">
                                     <div className="h-2 w-2 rounded-full bg-[#34C759] shadow-[0_0_15px_#34C759] animate-pulse" />
                                     Post Published & Live
                                  </div>
-                                 <h1 className="text-6xl lg:text-8xl font-black text-white leading-[0.8] uppercase tracking-tighter italic">
+                                 <h1 className="text-5xl lg:text-7xl font-black text-white leading-[1.1] uppercase tracking-tighter italic">
                                     Requirement <br /> 
-                                    <span className="text-[#E53935] drop-shadow-[0_0_30px_rgba(229,57,53,0.3)]">Published</span>
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E53935] to-[#FF8A80] drop-shadow-[0_0_30px_rgba(229,57,53,0.3)]">Published</span>
                                  </h1>
-                                 <p className="text-white/50 font-bold text-xl lg:text-2xl max-w-lg leading-tight font-outfit">
-                                    Your requirement is now visible to the network. We're matching you with relevant experts and partners.
+                                 <p className="text-white/60 font-medium text-lg lg:text-xl max-w-lg leading-relaxed font-outfit">
+                                    Your requirement is now visible to the network. We're actively matching you with high-probability experts and partners.
                                  </p>
                               </div>
 
-                              <div className="flex items-center gap-12 pt-10 border-t border-white/10">
+                              <div className="flex items-center gap-12 pt-10 border-t border-white/5">
                                  <div>
-                                    <p className="text-[11px] font-black uppercase text-white/20 tracking-[0.3em] mb-3">Sync Status</p>
-                                    <div className="flex items-center gap-2">
-                                       <div className="h-1.5 w-8 bg-[#34C759] rounded-full" />
+                                    <p className="text-[10px] font-black uppercase text-white/30 tracking-[0.3em] mb-3">Sync Status</p>
+                                    <div className="flex items-center gap-3">
+                                       <div className="h-1.5 w-8 bg-[#34C759] rounded-full shadow-[0_0_10px_rgba(52,199,89,0.5)]" />
                                        <p className="text-2xl font-black text-white uppercase tracking-tight font-outfit">Verified</p>
                                     </div>
                                  </div>
-                                 <div className="h-14 w-[1px] bg-white/10" />
+                                 <div className="h-14 w-[1px] bg-white/5" />
                                  <div>
-                                    <p className="text-[11px] font-black uppercase text-white/20 tracking-[0.3em] mb-3">Network Tier</p>
+                                    <p className="text-[10px] font-black uppercase text-white/30 tracking-[0.3em] mb-3">Network Tier</p>
                                     <p className="text-2xl font-black text-[#E53935] uppercase tracking-tight italic font-outfit">Priority One</p>
                                  </div>
                               </div>
