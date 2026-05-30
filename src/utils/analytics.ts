@@ -76,6 +76,8 @@ class AnalyticsEngine {
     
     // PERSIST TO SUPABASE
     try {
+      // Temporarily disabled to prevent 400 Bad Request network errors on V1 database schema
+      /*
       const supabase = createClient();
       const { error } = await supabase.from('analytics_events').insert([{
         user_id: userId || null,
@@ -88,6 +90,7 @@ class AnalyticsEngine {
       
       // Silent failure for analytics persistence in development
       if (error && process.env.NODE_ENV === 'development') return;
+      */
     } catch (err: any) {
       // Definitive silence for analytics infrastructure
     }

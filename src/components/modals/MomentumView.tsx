@@ -109,7 +109,7 @@ export default function MomentumView({ type, postId, isOpen, onClose }: Momentum
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
               <div className="absolute -top-1/4 -left-1/4 w-full h-full bg-[#E53935]/10 blur-[150px] rounded-full animate-pulse" />
               <div className="absolute -bottom-1/4 -right-1/4 w-full h-full bg-emerald-500/10 blur-[150px] rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay" />
+              <div className="absolute -bottom-1/4 -right-1/4 w-full h-full bg-emerald-500/10 blur-[150px] rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
             </div>
             
             <button 

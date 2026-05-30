@@ -243,6 +243,7 @@ export default function HomeFeedClient({ initialPosts = [], initialProfile }: Ho
           {isPostActionLoop.active && (
             <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto no-scrollbar py-10">
               <MomentumView 
+                isOpen={true}
                 postId={isPostActionLoop.postId} 
                 type={isPostActionLoop.type} 
                 onClose={() => setIsPostActionLoop({ active: false, postId: '', type: 'REQUIREMENT' })} 

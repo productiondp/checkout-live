@@ -110,7 +110,7 @@ export default function HomeFeed({
         }, 300);
 
         // Snappy transition
-        setTimeout(() => setNewlyCreatedPostId(null), 3000); // 3 seconds as requested
+        setTimeout(() => setNewlyCreatedPostId(null), 30000); // 30 seconds as requested
       }
     }
   }, [posts, currentUserId, newlyCreatedPostId]);
@@ -499,7 +499,7 @@ export default function HomeFeed({
                         <div className="absolute inset-0 pointer-events-none">
                            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#E53935]/15 rounded-full blur-[140px] -mr-64 -mt-64 animate-pulse" />
                            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#34C759]/10 rounded-full blur-[120px] -ml-48 -mb-48 opacity-50" />
-                           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay" />
+                           <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#34C759]/10 rounded-full blur-[120px] -ml-48 -mb-48 opacity-50" />
                         </div>
                         
                         <div className="relative z-10 flex flex-col xl:flex-row gap-16 xl:items-center">
