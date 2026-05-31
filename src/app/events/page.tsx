@@ -89,7 +89,7 @@ export default function EventsPage() {
                ))}
             </div>
             <button 
-              onClick={() => router.push('/home')}
+              onClick={() => router.push('/meetup')}
               className="h-10 px-6 bg-black text-white rounded-2xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:bg-[#E53935] shadow-lg active:scale-95"
             >
               <Plus size={14} /> Host
