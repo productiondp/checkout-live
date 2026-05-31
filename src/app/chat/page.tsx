@@ -26,6 +26,7 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatStore } from '@/stores/chatStore';
 import { ChatService } from '@/services/chatService';
+import { useNotifications } from "@/contexts/NotificationContext";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import TerminalLayout from '@/components/layout/TerminalLayout';
@@ -52,6 +53,8 @@ export default function ChatPage() {
 
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { setActiveChatId, refreshCounts } = useNotifications();
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -135,8 +138,16 @@ export default function ChatPage() {
     loadMessages();
     if (activeId && user?.id) {
       ChatService.markAsRead(activeId, user.id);
+      setActiveChatId(activeId);
+      refreshCounts();
+    } else {
+      setActiveChatId(null);
     }
-  }, [activeId, user?.id, setMessages, activeMessages]);
+
+    return () => {
+      setActiveChatId(null);
+    };
+  }, [activeId, user?.id, setMessages, activeMessages, setActiveChatId, refreshCounts]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -224,7 +235,7 @@ export default function ChatPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={isSidebarOpen ? "Search..." : ""}
-                  className="w-full h-10 bg-[#F5F5F7] rounded-[10px] pl-9 pr-3 text-[10px] font-black uppercase tracking-widest placeholder:text-black/20 border-none outline-none transition-all focus:bg-black/5"
+                  className="w-full h-10 bg-[#F5F5F7] rounded-2xl pl-9 pr-3 text-[10px] font-black uppercase tracking-widest placeholder:text-black/20 border-none outline-none transition-all focus:bg-black/5"
                 />
               </div>
             </div>
@@ -243,7 +254,7 @@ export default function ChatPage() {
                       activeId === convo.id && "bg-[#F5F5F7]"
                     )}
                   >
-                    <div className="w-12 h-12 rounded-[10px] bg-black/5 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                    <div className="w-12 h-12 rounded-2xl bg-black/5 flex-shrink-0 flex items-center justify-center overflow-hidden">
                       {convo.avatar_url ? (
                         <img src={convo.avatar_url} alt="" className="w-full h-full object-cover" />
                       ) : (
@@ -279,7 +290,7 @@ export default function ChatPage() {
                 <div className="h-20 border-b border-black/[0.03] px-8 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-2 hover:bg-[#F5F5F7] rounded-full mr-2"><ChevronLeft size={20}/></button>
-                    <div className="w-10 h-10 rounded-[10px] bg-black/5 overflow-hidden">
+                    <div className="w-10 h-10 rounded-2xl bg-black/5 overflow-hidden">
                        <img src={activeConvo.avatar_url || "/default-avatar.png"} alt="" className="w-full h-full object-cover" />
                     </div>
                     <div>
@@ -372,7 +383,7 @@ export default function ChatPage() {
                           )}
                         >
                           <div className={cn(
-                            "p-4 rounded-[12px] text-[13px] font-medium leading-relaxed",
+                            "p-4 rounded-2xl text-[13px] font-medium leading-relaxed",
                             isMe ? "bg-black text-white" : "bg-[#F5F5F7] text-black"
                           )}>
                             {msg.content}
@@ -380,7 +391,7 @@ export default function ChatPage() {
                           <div className="flex items-center gap-2 mt-2 px-1">
                             <span className="text-[9px] font-black uppercase text-black/20">{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                             {isMe && (
-                              activeConvo.members?.some(m => m.user_id !== user?.id && m.last_read_at && new Date(m.last_read_at) >= new Date(msg.created_at)) ? (
+                              activeConvo.members?.some((m: any) => m.user_id !== user?.id && m.last_read_at && new Date(m.last_read_at) >= new Date(msg.created_at)) ? (
                                 <CheckCheck size={12} className="text-blue-500" />
                               ) : (
                                 <Check size={12} className="text-black/20" />
@@ -395,9 +406,9 @@ export default function ChatPage() {
 
                 {/* Input Area */}
                 <div className="p-6 border-t border-black/[0.03]">
-                  <div className="flex items-center gap-4 bg-[#F5F5F7] p-2 rounded-[12px]">
-                    <button className="p-3 hover:bg-black/5 rounded-[10px] text-black/20"><ImageIcon size={20}/></button>
-                    <button className="p-3 hover:bg-black/5 rounded-[10px] text-black/20"><Mic size={20}/></button>
+                  <div className="flex items-center gap-4 bg-[#F5F5F7] p-2 rounded-2xl">
+                    <button className="p-3 hover:bg-black/5 rounded-2xl text-black/20"><ImageIcon size={20}/></button>
+                    <button className="p-3 hover:bg-black/5 rounded-2xl text-black/20"><Mic size={20}/></button>
                     <input 
                       type="text" 
                       value={input}
@@ -409,7 +420,7 @@ export default function ChatPage() {
                     <button 
                       onClick={handleSend}
                       disabled={!input.trim()}
-                      className="p-3 bg-black text-white rounded-[10px] disabled:opacity-20 transition-all hover:scale-105 active:scale-95"
+                      className="p-3 bg-black text-white rounded-2xl disabled:opacity-20 transition-all hover:scale-105 active:scale-95"
                     >
                       <Send size={20}/>
                     </button>
@@ -418,7 +429,7 @@ export default function ChatPage() {
               </>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center p-12 text-center opacity-20">
-                <div className="w-20 h-20 bg-black/5 rounded-[20px] flex items-center justify-center mb-6">
+                <div className="w-20 h-20 bg-black/5 rounded-2xl flex items-center justify-center mb-6">
                   <Clock size={40}/>
                 </div>
                 <h3 className="text-[16px] font-black uppercase tracking-widest mb-2">Checkout Messaging</h3>
@@ -444,7 +455,7 @@ export default function ChatPage() {
                 <div className="flex-1 overflow-y-auto p-8 space-y-10">
                   {/* Profile Header */}
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-24 h-24 rounded-[30px] bg-black/5 overflow-hidden mb-4 border-4 border-white shadow-xl">
+                    <div className="w-24 h-24 rounded-2xl bg-black/5 overflow-hidden mb-4 border-4 border-white shadow-xl">
                       <img src={activeConvo.avatar_url || "/default-avatar.png"} alt="" className="w-full h-full object-cover" />
                     </div>
                     <h3 className="text-[16px] font-black uppercase tracking-widest">{activeConvo.title || "Partner"}</h3>

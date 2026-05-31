@@ -190,7 +190,7 @@ export default function CommunityDetailPage() {
               <div className="p-8 lg:p-12 space-y-12">
                  
                  {/* HEADER CARD */}
-                 <div className="bg-white rounded-[2rem] border border-black/[0.03] p-10 space-y-8 shadow-sm">
+                 <div className="bg-white rounded-2xl border border-black/[0.03] p-10 space-y-8 shadow-sm">
                     <div className="flex flex-col md:flex-row items-start justify-between gap-8">
                        <div className="space-y-4 max-w-2xl">
                           <div className="flex items-center gap-3">
@@ -247,14 +247,14 @@ export default function CommunityDetailPage() {
                     {activeTab === "FEED" && (
                        <div className="space-y-8">
                           {posts.length === 0 ? (
-                            <div className="py-24 text-center space-y-4 bg-slate-50/50 rounded-[2rem] border border-dashed border-black/10">
+                            <div className="py-24 text-center space-y-4 bg-slate-50/50 rounded-2xl border border-dashed border-black/10">
                                <MessageSquare size={40} className="mx-auto text-black/10" />
                                <h3 className="text-xl font-black uppercase">No activity yet</h3>
                                <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">Be the first to start a discussion.</p>
                             </div>
                           ) : (
                             posts.map(post => (
-                              <div key={post.id} className="bg-white rounded-[2rem] border border-black/[0.03] p-10 hover:shadow-2xl transition-all">
+                              <div key={post.id} className="bg-white rounded-2xl border border-black/[0.03] p-10 hover:shadow-2xl transition-all">
                                  <div className="flex items-center justify-between mb-8">
                                     <div className="flex items-center gap-4">
                                        <div className="h-12 w-12 rounded-xl overflow-hidden border border-black/5 shadow-sm">
@@ -285,14 +285,14 @@ export default function CommunityDetailPage() {
                     {activeTab === "MEETUPS" && (
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                           {meetups.length === 0 ? (
-                            <div className="col-span-2 py-24 text-center space-y-4 bg-slate-50/50 rounded-[2rem] border border-dashed border-black/10">
+                            <div className="col-span-2 py-24 text-center space-y-4 bg-slate-50/50 rounded-2xl border border-dashed border-black/10">
                                <Calendar size={40} className="mx-auto text-black/10" />
                                <h3 className="text-xl font-black uppercase">No upcoming meetups</h3>
                                <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">Organize a session for this community.</p>
                             </div>
                           ) : (
                             meetups.map(m => (
-                              <div key={m.id} className="bg-white rounded-[2rem] border border-black/[0.03] p-8 space-y-6 hover:shadow-2xl transition-all">
+                              <div key={m.id} className="bg-white rounded-2xl border border-black/[0.03] p-8 space-y-6 hover:shadow-2xl transition-all">
                                  <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 bg-[#E53935]/5 text-[#E53935] rounded-lg flex items-center justify-center">
                                        <MapPin size={20} />
@@ -319,7 +319,7 @@ export default function CommunityDetailPage() {
                     {activeTab === "MEMBERS" && (
                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                           {members.map(m => (
-                            <div key={m.user_id} className="bg-white rounded-[1.5rem] border border-black/[0.03] p-6 flex items-center gap-4 hover:border-[#E53935]/20 transition-all cursor-pointer">
+                            <div key={m.user_id} className="bg-white rounded-2xl border border-black/[0.03] p-6 flex items-center gap-4 hover:border-[#E53935]/20 transition-all cursor-pointer">
                                <div className="h-12 w-12 rounded-xl overflow-hidden border border-black/5">
                                   <img src={m.user?.avatar_url || `https://i.pravatar.cc/150?u=${m.user_id}`} className="w-full h-full object-cover" alt="" />
                                </div>
@@ -383,7 +383,7 @@ export default function CommunityDetailPage() {
               {community.host && (
                  <div className="space-y-8">
                     <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-black/20">Community Host</h2>
-                    <div className="p-8 bg-white rounded-[2rem] border border-black/[0.03] space-y-6 shadow-sm">
+                    <div className="p-8 bg-white rounded-2xl border border-black/[0.03] space-y-6 shadow-sm">
                        <div className="flex items-center gap-4">
                           <div className="h-16 w-16 rounded-2xl overflow-hidden border border-black/5 shadow-sm">
                              <img src={community.host.avatar_url || `https://i.pravatar.cc/150?u=${community.host_id}`} className="w-full h-full object-cover" alt="" />
@@ -411,7 +411,7 @@ export default function CommunityDetailPage() {
               )}
 
               {/* STATS */}
-              <div className="p-8 bg-black rounded-[2rem] text-white space-y-6 shadow-2xl">
+              <div className="p-8 bg-black rounded-2xl text-white space-y-6 shadow-2xl">
                  <div className="flex items-center gap-3">
                     <Target size={20} className="text-[#E53935]" />
                     <h3 className="text-[13px] font-black uppercase">Community Vitals</h3>

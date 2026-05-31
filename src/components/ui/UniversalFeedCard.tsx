@@ -300,7 +300,7 @@ const UniversalFeedCard = React.memo(({
         else onExpand?.();
       }}
       className={cn(
-        "group relative rounded-[2rem] border overflow-hidden transition-all duration-700 bg-white cursor-pointer",
+        "group relative rounded-2xl border overflow-hidden transition-all duration-700 bg-white cursor-pointer",
         isOwner 
           ? "border-[#E53935]/10" 
           : isTopPriority

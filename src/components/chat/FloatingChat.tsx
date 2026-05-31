@@ -19,51 +19,82 @@ export default function FloatingChat() {
   const supabase = createClient();
   const router = useRouter();
 
-  const activeMessages = overlayChatId ? (messages[overlayChatId] || []) : [];
+  const [connectionId, setConnectionId] = useState<string | null>(null);
+
+  const activeMessages = connectionId ? (messages[connectionId] || []) : [];
 
   useEffect(() => {
-    if (!overlayChatId) return;
+    if (!overlayChatId || !user?.id) return;
 
     async function fetchChatData() {
-      // 1. Fetch recipient info
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url, role')
-        .eq('id', overlayChatId)
-        .single();
-      
-      setRecipient(profile);
+      try {
+        // 1. Fetch recipient info
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url, role')
+          .eq('id', overlayChatId)
+          .single();
+        
+        setRecipient(profile);
 
-      // 2. Fetch recent messages
-      const { data: msgs } = await supabase
-        .from('messages')
-        .select('*')
-        .or(`and(sender_id.eq.${user?.id},receiver_id.eq.${overlayChatId}),and(sender_id.eq.${overlayChatId},receiver_id.eq.${user?.id})`)
-        .order('created_at', { ascending: true })
-        .limit(50);
-      
-      if (msgs) setMessages(overlayChatId, msgs);
+        // 2. Resolve or create connection
+        let { data: conn } = await supabase
+          .from('connections')
+          .select('*')
+          .or(`and(sender_id.eq.${user?.id},receiver_id.eq.${overlayChatId}),and(sender_id.eq.${overlayChatId},receiver_id.eq.${user?.id})`)
+          .single();
+          
+        if (!conn) {
+          const { data: newConn } = await supabase.from('connections').insert({
+            sender_id: user.id,
+            receiver_id: overlayChatId,
+            status: 'ACCEPTED'
+          }).select().single();
+          conn = newConn;
+        }
+
+        const activeConnId = conn?.id;
+        if (activeConnId) {
+           setConnectionId(activeConnId);
+
+           // 3. Fetch recent messages using connection_id
+           const { data: msgs } = await supabase
+             .from('messages')
+             .select('*')
+             .eq('connection_id', activeConnId)
+             .order('created_at', { ascending: true })
+             .limit(50);
+           
+           if (msgs) setMessages(activeConnId, msgs);
+        }
+      } catch (err) {
+         console.error("FloatingChat init error", err);
+      }
     }
 
     fetchChatData();
+  }, [overlayChatId, user?.id]);
+
+  // Separate effect for subscription so it handles connectionId updates
+  useEffect(() => {
+    if (!connectionId) return;
 
     // Subscribe to new messages
     const channel = supabase
-      .channel(`floating_chat_${overlayChatId}`)
+      .channel(`floating_chat_${connectionId}`)
       .on('postgres_changes', { 
         event: 'INSERT', 
         schema: 'public', 
-        table: 'messages'
+        table: 'messages',
+        filter: `connection_id=eq.${connectionId}`
       }, (payload) => {
         const msg = payload.new as any;
-        if (msg.sender_id === overlayChatId || msg.receiver_id === overlayChatId) {
-           addMessage(overlayChatId, msg);
-        }
+        addMessage(connectionId, msg);
       })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [overlayChatId, user?.id]);
+  }, [connectionId]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -73,24 +104,26 @@ export default function FloatingChat() {
 
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!content.trim() || !user || !overlayChatId) return;
+    if (!content.trim() || !user || !overlayChatId || !connectionId) return;
 
     const tempMsg = {
       id: `temp-${Date.now()}`,
       content: content.trim(),
       sender_id: user.id,
       receiver_id: overlayChatId,
+      connection_id: connectionId,
       created_at: new Date().toISOString(),
       type: 'TEXT' as const
     };
 
     setContent("");
-    addMessage(overlayChatId, tempMsg);
+    addMessage(connectionId, tempMsg);
 
     const { error } = await supabase.from('messages').insert({
       content: tempMsg.content,
       sender_id: user.id,
       receiver_id: overlayChatId,
+      connection_id: connectionId,
       type: 'TEXT'
     });
 
@@ -107,7 +140,7 @@ export default function FloatingChat() {
             initial={{ opacity: 0, y: 100, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.9 }}
-            className="w-[360px] h-[500px] bg-white rounded-t-[2.5rem] shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.15)] border-x border-t border-black/[0.05] flex flex-col pointer-events-auto overflow-hidden"
+            className="w-[360px] h-[500px] bg-white rounded-2xl shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.15)] border-x border-t border-black/[0.05] flex flex-col pointer-events-auto overflow-hidden"
           >
             {/* HEADER */}
             <div className="bg-[#1D1D1F] p-5 flex items-center justify-between shrink-0">
@@ -142,7 +175,7 @@ export default function FloatingChat() {
                     className={cn("flex flex-col max-w-[80%]", isMe ? "ml-auto items-end" : "mr-auto items-start")}
                    >
                       <div className={cn(
-                        "p-3.5 rounded-[1.5rem] text-[13px] font-medium leading-relaxed shadow-sm",
+                        "p-3.5 rounded-2xl text-[13px] font-medium leading-relaxed shadow-sm",
                         isMe ? "bg-[#1D1D1F] text-white rounded-tr-none" : "bg-white border border-black/[0.03] text-black rounded-tl-none"
                       )}>
                         {msg.content}

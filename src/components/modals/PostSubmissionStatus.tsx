@@ -84,7 +84,7 @@ export default function PostSubmissionStatus({ state, onRetry, onCancel }: PostS
               animate={{ scale: 1, opacity: 1, rotate: 0 }}
               exit={{ scale: 1.5, opacity: 0, rotate: 20 }}
               className={cn(
-                "h-24 w-24 mx-auto rounded-[2rem] flex items-center justify-center shadow-2xl relative z-10",
+                "h-24 w-24 mx-auto rounded-2xl flex items-center justify-center shadow-2xl relative z-10",
                 config.bg,
                 config.color
               )}

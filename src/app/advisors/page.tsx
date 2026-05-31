@@ -145,7 +145,7 @@ function AdvisorsContent() {
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3].map(i => <div key={i} className="h-64 bg-[#F5F5F7] rounded-[10px] animate-pulse" />)}
+            {[1, 2, 3].map(i => <div key={i} className="h-64 bg-[#F5F5F7] rounded-2xl animate-pulse" />)}
           </div>
         ) : filteredAdvisors.length > 0 ? (
           <>
@@ -157,14 +157,14 @@ function AdvisorsContent() {
               </div>
               <div className="flex overflow-x-auto no-scrollbar gap-6 pb-6 -mx-6 px-6 md:mx-0 md:px-0">
                 {filteredAdvisors.filter(a => a.matchScore > 90).map((advisor) => (
-                  <div key={advisor.id} onClick={() => router.push(`/advisors/${advisor.id}`)} className="min-w-[280px] md:min-w-[400px] bg-white rounded-[10px] p-6 md:p-10 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group relative overflow-hidden flex flex-col h-full">
+                  <div key={advisor.id} onClick={() => router.push(`/advisors/${advisor.id}`)} className="min-w-[280px] md:min-w-[400px] bg-white rounded-2xl p-6 md:p-10 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group relative overflow-hidden flex flex-col h-full">
                     <div className="flex items-start justify-between mb-6 md:mb-8">
-                      <div className="h-16 w-16 md:h-24 md:w-24 rounded-[10px] overflow-hidden border-4 border-[#F5F5F7] shadow-lg"><img src={advisor.avatar} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="" /></div>
+                      <div className="h-16 w-16 md:h-24 md:w-24 rounded-2xl overflow-hidden border-4 border-[#F5F5F7] shadow-lg"><img src={advisor.avatar} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="" /></div>
                       <div className="relative h-12 w-12 md:h-16 md:w-16 flex items-center justify-center"><svg className="w-full h-full" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="#F5F5F7" strokeWidth="8" /><circle cx="50" cy="50" r="45" fill="none" stroke="#E53935" strokeWidth="8" strokeDasharray={2 * Math.PI * 45} strokeDashoffset={(2 * Math.PI * 45) * (1 - advisor.matchScore / 100)} strokeLinecap="round" /></svg><span className="absolute text-[10px] md:text-[12px] font-black text-black font-outfit">{advisor.matchScore}%</span></div>
                     </div>
                     <h3 className="text-xl md:text-2xl font-black text-[#1D1D1F] uppercase font-outfit mb-2 group-hover:text-[#E53935] transition-colors line-clamp-1">{advisor.name}</h3>
                     <p className="text-[9px] md:text-[10px] font-black text-black/20 uppercase tracking-widest mb-6">{advisor.role}  {advisor.industry}</p>
-                    <div className="p-4 md:p-6 bg-[#F5F5F7] rounded-[10px] border border-black/[0.02] mb-6 md:mb-8"><p className="text-[11px] md:text-xs font-bold text-black/60 leading-relaxed italic uppercase line-clamp-2">"{advisor.bestFor}"</p></div>
+                    <div className="p-4 md:p-6 bg-[#F5F5F7] rounded-2xl border border-black/[0.02] mb-6 md:mb-8"><p className="text-[11px] md:text-xs font-bold text-black/60 leading-relaxed italic uppercase line-clamp-2">"{advisor.bestFor}"</p></div>
                     <div className="mt-auto pt-6 border-t border-black/[0.03] flex flex-col sm:flex-row sm:items-center justify-between gap-4"><div className="flex items-center gap-2"><Award size={16} className="text-emerald-500" /><span className="text-[9px] md:text-[10px] font-black text-black uppercase tracking-widest">{advisor.experience} Exp</span></div><ConnectButton userId={advisor.id} userName={advisor.name} label="Start Conversation" /></div>
                   </div>
                 ))}
@@ -183,7 +183,7 @@ function AdvisorsContent() {
           </>
         ) : (
           <div className="py-40 text-center space-y-6">
-            <div className="h-20 w-20 bg-[#F5F5F7] rounded-[10px] mx-auto flex items-center justify-center text-black/10"><Zap size={32} /></div>
+            <div className="h-20 w-20 bg-[#F5F5F7] rounded-2xl mx-auto flex items-center justify-center text-black/10"><Zap size={32} /></div>
             <h3 className="text-xl font-black text-[#1D1D1F] uppercase font-outfit">No experts found</h3>
             <p className="text-black/20 text-[11px] font-black uppercase tracking-widest">Try adjusting your search criteria.</p>
           </div>
@@ -199,7 +199,7 @@ function AdvisorCard({ advisor, viewMode }: { advisor: Advisor; viewMode: "list"
   
   if (viewMode === "list") {
     return (
-      <div onClick={() => router.push(`/advisors/${advisor.id}`)} className="bg-white rounded-[2rem] p-6 md:p-8 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
+      <div onClick={() => router.push(`/advisors/${advisor.id}`)} className="bg-white rounded-2xl p-6 md:p-8 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
         <div className="h-20 w-20 md:h-28 md:w-28 shrink-0 rounded-2xl overflow-hidden border-4 border-[#F5F5F7] shadow-md group-hover:rotate-3 transition-all duration-500">
           <img src={advisor.avatar} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="" />
         </div>
@@ -228,7 +228,7 @@ function AdvisorCard({ advisor, viewMode }: { advisor: Advisor; viewMode: "list"
   }
 
   return (
-    <div onClick={() => router.push(`/advisors/${advisor.id}`)} className="bg-white rounded-[2rem] p-6 md:p-8 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col h-full">
+    <div onClick={() => router.push(`/advisors/${advisor.id}`)} className="bg-white rounded-2xl p-6 md:p-8 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col h-full">
       <div className="flex items-start justify-between mb-6">
         <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl overflow-hidden border-4 border-[#F5F5F7] shadow-md group-hover:scale-105 transition-all duration-500">
           <img src={advisor.avatar} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="" />

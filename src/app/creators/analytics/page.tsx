@@ -33,7 +33,7 @@ export default function CreatorAnalyticsDashboard() {
            { title: "Invite Rate", val: "22%", trend: "+5%", color: "text-green-500" },
            { title: "Repeat Clients", val: "85%", trend: "+2%", color: "text-orange-500" }
          ].map((stat, i) => (
-           <div key={i} className="bg-white p-6 rounded-[2rem] border border-black/5 shadow-sm space-y-4">
+           <div key={i} className="bg-white p-6 rounded-2xl border border-black/5 shadow-sm space-y-4">
              <h3 className="text-[10px] font-black uppercase tracking-widest text-black/40">{stat.title}</h3>
              <div className="flex justify-between items-end">
                <span className="text-3xl font-black">{stat.val}</span>
@@ -46,7 +46,7 @@ export default function CreatorAnalyticsDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Liquidity / Hire Pipeline */}
-        <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm">
+        <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm">
            <div className="flex justify-between items-center mb-8">
              <h3 className="text-xl font-black uppercase tracking-tight">Hire Pipeline</h3>
              <TrendingUp size={20} className="text-black/40" />
@@ -86,7 +86,7 @@ export default function CreatorAnalyticsDashboard() {
         </div>
 
         {/* Growth Engine Recommendations */}
-        <div className="bg-black text-white p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
+        <div className="bg-black text-white p-8 rounded-2xl shadow-xl relative overflow-hidden">
            <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
            <h3 className="text-xl font-black uppercase tracking-tight mb-2 relative z-10">Growth Engine</h3>
            <p className="text-white/60 font-medium text-sm mb-8 relative z-10">AI-driven recommendations to reach the next tier.</p>

@@ -21,7 +21,7 @@ export default function CreateOpportunityPage() {
         </p>
       </div>
 
-      <form className="space-y-8 bg-white p-8 md:p-10 rounded-[2rem] border border-black/5 shadow-2xl shadow-black/[0.02]">
+      <form className="space-y-8 bg-white p-8 md:p-10 rounded-2xl border border-black/5 shadow-2xl shadow-black/[0.02]">
         
         <div className="space-y-3">
           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-black/40">Project Title</label>

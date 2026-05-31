@@ -77,7 +77,7 @@ export default function ReviewModal({ isOpen, onClose, booking, onSuccess }: Rev
   return (
     <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 bg-[#292828]/60 backdrop-blur-md animate-in fade-in duration-300">
       <div className="absolute inset-0" onClick={onClose} />
-      <div className="w-full max-w-lg bg-white rounded-[2rem] p-10 md:p-12 shadow-4xl animate-in zoom-in-95 duration-500 overflow-hidden relative z-10">
+      <div className="w-full max-w-lg bg-white rounded-2xl p-10 md:p-12 shadow-4xl animate-in zoom-in-95 duration-500 overflow-hidden relative z-10">
         
         {/* FIXED CLOSE BUTTON */}
         <button 
@@ -152,7 +152,7 @@ export default function ReviewModal({ isOpen, onClose, booking, onSuccess }: Rev
           <button 
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="w-full h-16 bg-[#292828] text-white rounded-[1.5rem] font-black text-xs uppercase  shadow-2xl hover:bg-[#E53935] hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+            className="w-full h-16 bg-[#292828] text-white rounded-2xl font-black text-xs uppercase  shadow-2xl hover:bg-[#E53935] hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
           >
              {isSubmitting ? "Submitting..." : (
                 <>Submit Review <Zap size={18} className="fill-white" /></>

@@ -281,7 +281,7 @@ export default function MatchesPage() {
       <TerminalLayout
         topbarChildren={
            <div className="flex items-center gap-6">
-              <div className="flex p-1 bg-[#F5F5F7] rounded-[10px] border border-black/[0.03]">
+              <div className="flex p-1 bg-[#F5F5F7] rounded-2xl border border-black/[0.03]">
                  {[
                    { id: 'DISCOVER', label: 'Explore', count: discoverList.length },
                    { id: 'REQUESTS', label: 'Requests', count: requests.filter(r => r.isIncoming).length },
@@ -291,7 +291,7 @@ export default function MatchesPage() {
                      key={tab.id}
                      onClick={() => setActiveTab(tab.id as any)}
                      className={cn(
-                       "px-6 h-9 rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all relative",
+                       "px-6 h-9 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all relative",
                        activeTab === tab.id ? "bg-white text-black shadow-sm" : "text-black/40 hover:text-black"
                      )}
                    >
@@ -315,7 +315,7 @@ export default function MatchesPage() {
                  { label: "Daily Goal", value: `${stats.dailyGoal}%`, icon: Target, color: "text-[#E53935]" },
                  { label: "Partners", value: stats.partnersCount, icon: ShieldCheck, color: "text-emerald-500" },
               ].map((stat, i) => (
-                 <div key={i} className="bg-white border border-black/[0.03] p-5 rounded-[10px] flex items-center justify-between">
+                 <div key={i} className="bg-white border border-black/[0.03] p-5 rounded-2xl flex items-center justify-between">
                     <div>
                        <p className="text-[9px] font-black uppercase tracking-widest text-black/30 mb-1">{stat.label}</p>
                        <p className="text-4xl font-black font-outfit">{stat.value}</p>
@@ -409,20 +409,20 @@ export default function MatchesPage() {
         <AnimatePresence>
           {confirmAction && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm flex items-center justify-center p-6">
-              <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="w-full max-w-md bg-white rounded-[10px] p-10 shadow-4xl text-center border border-black/[0.05]">
-                <div className={cn("h-20 w-20 rounded-[10px] flex items-center justify-center mx-auto mb-6", confirmAction.type === 'BLOCK' ? "bg-black text-white" : "bg-red-50 text-[#E53935]")}>
+              <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="w-full max-w-md bg-white rounded-2xl p-10 shadow-4xl text-center border border-black/[0.05]">
+                <div className={cn("h-20 w-20 rounded-2xl flex items-center justify-center mx-auto mb-6", confirmAction.type === 'BLOCK' ? "bg-black text-white" : "bg-red-50 text-[#E53935]")}>
                   {confirmAction.type === 'BLOCK' ? <ShieldAlert size={32} /> : <Trash2 size={32} />}
                 </div>
                 <h3 className="text-2xl font-black text-[#1D1D1F] uppercase leading-none mb-3 font-outfit">{confirmAction.type === 'BLOCK' ? "Block User?" : "Remove Partner?"}</h3>
                 <p className="text-black/40 font-bold uppercase text-[10px] tracking-widest mb-8 leading-relaxed">Confirm action for <strong>{confirmAction.partnerName}</strong>.</p>
                 <div className="flex gap-3">
-                  <button onClick={() => setConfirmAction(null)} className="flex-1 h-14 bg-[#F5F5F7] rounded-[10px] font-black uppercase text-[10px]">Cancel</button>
+                  <button onClick={() => setConfirmAction(null)} className="flex-1 h-14 bg-[#F5F5F7] rounded-2xl font-black uppercase text-[10px]">Cancel</button>
                   <button onClick={async () => {
                     if (confirmAction.type === 'BLOCK') await ConnectionService.blockUser(confirmAction.connectionId);
                     else await ConnectionService.removeConnection(confirmAction.connectionId);
                     setConfirmAction(null);
                     window.location.reload();
-                  }} className={cn("flex-1 h-14 rounded-[10px] font-black uppercase text-[10px] text-white transition-all", confirmAction.type === 'BLOCK' ? "bg-black" : "bg-[#E53935] shadow-red-500/20")}>Confirm</button>
+                  }} className={cn("flex-1 h-14 rounded-2xl font-black uppercase text-[10px] text-white transition-all", confirmAction.type === 'BLOCK' ? "bg-black" : "bg-[#E53935] shadow-red-500/20")}>Confirm</button>
                 </div>
               </motion.div>
             </motion.div>
@@ -435,8 +435,8 @@ export default function MatchesPage() {
 
 function EmptyState({ title, description, icon: Icon }: any) {
   return (
-    <div className="col-span-full py-40 text-center bg-white border border-black/[0.03] rounded-[10px]">
-      <div className="h-20 w-20 bg-[#F5F5F7] rounded-[10px] flex items-center justify-center mx-auto mb-6 relative"><Icon size={32} className="text-black/20" /></div>
+    <div className="col-span-full py-40 text-center bg-white border border-black/[0.03] rounded-2xl">
+      <div className="h-20 w-20 bg-[#F5F5F7] rounded-2xl flex items-center justify-center mx-auto mb-6 relative"><Icon size={32} className="text-black/20" /></div>
       <h3 className="text-2xl font-black text-[#1D1D1F] uppercase mb-2 font-outfit">{title}</h3>
       <p className="text-black/40 text-[11px] font-bold uppercase tracking-widest">{description}</p>
     </div>

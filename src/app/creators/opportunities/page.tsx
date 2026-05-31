@@ -40,7 +40,7 @@ export default function OpportunitiesPage() {
         ))}
       </div>
 
-      <div className="bg-white rounded-[2rem] border border-black/5 p-12 text-center space-y-4">
+      <div className="bg-white rounded-2xl border border-black/5 p-12 text-center space-y-4">
          <div className="h-16 w-16 bg-black/5 rounded-2xl flex items-center justify-center mx-auto text-black/40">
             <LayoutGrid size={24} />
          </div>

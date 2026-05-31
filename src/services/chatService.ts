@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/client';
+import { markMessagesAsReadAction } from '@/actions/chat';
 
 const supabase = createClient();
 
@@ -8,7 +9,7 @@ export const ChatService = {
     const { data: conns, error } = await supabase
       .from('connections')
       .select('id, sender_id, receiver_id, status, created_at')
-      .eq('status', 'ACCEPTED')
+      .in('status', ['ACCEPTED', 'PENDING'])
       .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
 
     if (error) throw error;
@@ -130,11 +131,10 @@ export const ChatService = {
 
   // 4. READ RECEIPTS
   async markAsRead(convId: string, userId: string) {
-    await supabase
-      .from('messages')
-      .update({ is_read: true })
-      .eq('connection_id', convId)
-      .eq('receiver_id', userId)
-      .eq('is_read', false);
+    try {
+      await markMessagesAsReadAction(convId, userId);
+    } catch (e) {
+      console.error("Failed to mark as read:", e);
+    }
   }
 };

@@ -78,10 +78,10 @@ function DirectoryContent() {
     <TerminalLayout
       topbarChildren={
          <div className="flex items-center gap-6">
-            <div className="flex p-1 bg-[#F5F5F7] rounded-[10px] border border-black/[0.03]">
-               <button onClick={() => setActiveCategory("All")} className={cn("px-6 h-9 rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all", activeCategory === "All" ? "bg-white text-black shadow-sm" : "text-black/40 hover:text-black")}>All</button>
+            <div className="flex p-1 bg-[#F5F5F7] rounded-2xl border border-black/[0.03]">
+               <button onClick={() => setActiveCategory("All")} className={cn("px-6 h-9 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all", activeCategory === "All" ? "bg-white text-black shadow-sm" : "text-black/40 hover:text-black")}>All</button>
                {CATEGORIES.map(cat => (
-                 <button key={cat} onClick={() => setActiveCategory(cat)} className={cn("px-6 h-9 rounded-[8px] text-[10px] font-black uppercase tracking-widest transition-all", activeCategory === cat ? "bg-white text-black shadow-sm" : "text-black/40 hover:text-black")}>{cat}</button>
+                 <button key={cat} onClick={() => setActiveCategory(cat)} className={cn("px-6 h-9 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all", activeCategory === cat ? "bg-white text-black shadow-sm" : "text-black/40 hover:text-black")}>{cat}</button>
                ))}
             </div>
          </div>
@@ -91,12 +91,12 @@ function DirectoryContent() {
          {/* SEARCH AREA */}
          <div className="relative group">
             <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-black/10 group-focus-within:text-[#E53935] transition-colors" size={20} />
-            <input type="text" placeholder="Search business directory..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full h-16 bg-white border border-black/[0.03] rounded-[10px] pl-16 pr-6 text-sm font-bold text-[#1D1D1F] outline-none focus:bg-white focus:border-[#E53935]/20 transition-all shadow-sm" />
+            <input type="text" placeholder="Search business directory..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full h-16 bg-white border border-black/[0.03] rounded-2xl pl-16 pr-6 text-sm font-bold text-[#1D1D1F] outline-none focus:bg-white focus:border-[#E53935]/20 transition-all shadow-sm" />
          </div>
 
          {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-               {[1, 2].map(i => <div key={i} className="h-80 bg-[#F5F5F7] rounded-[10px] animate-pulse" />)}
+               {[1, 2].map(i => <div key={i} className="h-80 bg-[#F5F5F7] rounded-2xl animate-pulse" />)}
             </div>
          ) : filteredBusinesses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
@@ -104,7 +104,7 @@ function DirectoryContent() {
             </div>
          ) : (
             <div className="py-40 text-center space-y-6">
-               <div className="h-20 w-20 bg-[#F5F5F7] rounded-[10px] mx-auto flex items-center justify-center text-black/10"><Zap size={32} /></div>
+               <div className="h-20 w-20 bg-[#F5F5F7] rounded-2xl mx-auto flex items-center justify-center text-black/10"><Zap size={32} /></div>
                <h3 className="text-xl font-black text-[#1D1D1F] uppercase font-outfit">No listings found</h3>
                <p className="text-black/20 text-[11px] font-black uppercase tracking-widest mt-2">Try different search terms.</p>
             </div>
@@ -119,9 +119,9 @@ function DirectoryContent() {
 function UltimateBusinessCard({ business }: { business: BusinessListing }) {
   const router = useRouter();
   return (
-    <div onClick={() => router.push(`/directory/${business.id}`)} className="bg-white rounded-[20px] p-10 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 group cursor-pointer flex flex-col h-full">
+    <div onClick={() => router.push(`/directory/${business.id}`)} className="bg-white rounded-2xl p-10 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 group cursor-pointer flex flex-col h-full">
        <div className="flex items-start justify-between mb-8">
-          <div className="h-20 w-20 rounded-[10px] bg-black flex items-center justify-center shadow-lg relative overflow-hidden shrink-0"><img src={business.logo} className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-500" alt="" /></div>
+          <div className="h-20 w-20 rounded-2xl bg-black flex items-center justify-center shadow-lg relative overflow-hidden shrink-0"><img src={business.logo} className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-500" alt="" /></div>
           <div className="flex flex-col items-end gap-1.5">
              <span className="text-[8px] font-black uppercase text-black/20 tracking-widest">Match Accuracy</span>
              <div className="flex items-center gap-2">
@@ -145,7 +145,7 @@ function UltimateBusinessCard({ business }: { business: BusinessListing }) {
           <div className="flex items-center gap-2 text-black/20"><MapPin size={14} className="text-[#E53935]" /><span className="text-[9px] font-black uppercase tracking-widest">{business.location}</span></div>
           <p className="text-[13px] font-bold text-black/40 leading-relaxed italic uppercase line-clamp-3">"{business.description}"</p>
        </div>
-       <div className="pt-8 border-t border-black/[0.03] flex items-center justify-between mt-auto"><div className="flex -space-x-3">{[1, 2, 3].map(i => <div key={i} className="h-10 w-10 rounded-[8px] bg-[#F5F5F7] border-2 border-white shadow-sm overflow-hidden"><img src={`https://i.pravatar.cc/150?u=biz${i}${business.id}`} alt="" /></div>)}<div className="h-10 w-10 rounded-[8px] bg-white border-2 border-black/[0.03] flex items-center justify-center text-[8px] font-black text-black/20">+12</div></div><ConnectButton userId={business.id} userName={business.name} label="Connect" /></div>
+       <div className="pt-8 border-t border-black/[0.03] flex items-center justify-between mt-auto"><div className="flex -space-x-3">{[1, 2, 3].map(i => <div key={i} className="h-10 w-10 rounded-2xl bg-[#F5F5F7] border-2 border-white shadow-sm overflow-hidden"><img src={`https://i.pravatar.cc/150?u=biz${i}${business.id}`} alt="" /></div>)}<div className="h-10 w-10 rounded-2xl bg-white border-2 border-black/[0.03] flex items-center justify-center text-[8px] font-black text-black/20">+12</div></div><ConnectButton userId={business.id} userName={business.name} label="Connect" /></div>
     </div>
   );
 }

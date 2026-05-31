@@ -11,7 +11,7 @@ export default function BusinessProfilePage({ params }: { params: { id: string }
       <div className="bg-black text-white pt-32 pb-20 px-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070')] bg-cover bg-center opacity-30" />
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row items-center md:items-end gap-8">
-          <div className="h-32 w-32 md:h-48 md:w-48 bg-white rounded-[2rem] shadow-2xl flex items-center justify-center shrink-0 overflow-hidden p-4">
+          <div className="h-32 w-32 md:h-48 md:w-48 bg-white rounded-2xl shadow-2xl flex items-center justify-center shrink-0 overflow-hidden p-4">
              {/* Logo Placeholder */}
              <div className="w-full h-full bg-black/5 rounded-xl flex items-center justify-center">
                <span className="text-black font-black text-4xl">LA</span>
@@ -33,7 +33,7 @@ export default function BusinessProfilePage({ params }: { params: { id: string }
         
         {/* Left Column: Stats & Trust Engine */}
         <div className="w-full lg:w-1/3 space-y-6">
-          <div className="bg-white rounded-[2rem] p-8 border border-black/5">
+          <div className="bg-white rounded-2xl p-8 border border-black/5">
             <h3 className="font-black uppercase tracking-tight mb-6">Business Reputation</h3>
             
             <div className="space-y-6">
@@ -77,7 +77,7 @@ export default function BusinessProfilePage({ params }: { params: { id: string }
           <h2 className="text-2xl font-black uppercase tracking-tight">Open Opportunities</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2].map((i) => (
-              <div key={i} className="bg-white p-8 rounded-[2rem] border border-black/5 hover:border-black/10 transition-colors">
+              <div key={i} className="bg-white p-8 rounded-2xl border border-black/5 hover:border-black/10 transition-colors">
                 <div className="flex justify-between items-start mb-6">
                   <div>
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-50 px-2 py-1 rounded-md mb-3 inline-block">Apparel Shoot</span>

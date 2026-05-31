@@ -43,7 +43,7 @@ export default function MarketIntelligenceDashboard() {
         
         {/* Macro Indicators */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-4">
+          <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-4">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black/40">Market Heat Index</h3>
             <div className="flex justify-between items-end">
               <span className="text-5xl font-black text-[#E53935]">84/100</span>
@@ -54,7 +54,7 @@ export default function MarketIntelligenceDashboard() {
             </p>
           </div>
           
-          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-4">
+          <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-4">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black/40">Average Project Value</h3>
             <div className="flex justify-between items-end">
               <span className="text-5xl font-black">$1.2k</span>
@@ -65,7 +65,7 @@ export default function MarketIntelligenceDashboard() {
             </p>
           </div>
           
-          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-4">
+          <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-4">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black/40">Fastest Growing Category</h3>
             <div className="flex justify-between items-end">
               <span className="text-4xl font-black tracking-tight">UGC Creators</span>
@@ -80,7 +80,7 @@ export default function MarketIntelligenceDashboard() {
         {/* Trending Skills & AI Suggestions */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
-          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-8">
+          <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-8">
             <div className="flex justify-between items-center">
               <h3 className="font-black uppercase tracking-tight text-xl">Trending Skills</h3>
               <Activity size={20} className="text-black/40" />
@@ -107,7 +107,7 @@ export default function MarketIntelligenceDashboard() {
             </div>
           </div>
 
-          <div className="bg-blue-50 p-8 rounded-[2rem] border border-blue-100 shadow-sm space-y-6">
+          <div className="bg-blue-50 p-8 rounded-2xl border border-blue-100 shadow-sm space-y-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
                 <Sparkles size={18} />

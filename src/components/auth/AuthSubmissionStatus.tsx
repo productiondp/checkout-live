@@ -112,7 +112,7 @@ export default function AuthSubmissionStatus({ state, error, onRetry }: AuthSubm
               />
               
               {/* Main Visual Container */}
-              <div className="relative h-36 w-36 rounded-[2.5rem] bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] flex items-center justify-center border border-black/[0.03] overflow-hidden group">
+              <div className="relative h-36 w-36 rounded-2xl bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] flex items-center justify-center border border-black/[0.03] overflow-hidden group">
                 <div className={cn("absolute inset-0 opacity-[0.03]", config.bg.replace('50', '500'))} />
                 
                 {/* Orbital Rings */}

@@ -55,8 +55,8 @@ export default function DiscoverPage() {
             </div>
             
             <div className="relative aspect-square order-1 lg:order-2">
-               <div className="absolute inset-0 bg-white rounded-[3rem] shadow-2xl border border-black/[0.03] p-4">
-                  <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden">
+               <div className="absolute inset-0 bg-white rounded-2xl shadow-2xl border border-black/[0.03] p-4">
+                  <div className="relative w-full h-full rounded-2xl overflow-hidden">
                      <Image src="/images/map_engine.png" alt="Map Discovery" fill className="object-cover" />
                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                   </div>
@@ -84,7 +84,7 @@ export default function DiscoverPage() {
                 desc: "Find local businesses, grand openings, and community projects. Support local growth." 
               }
             ].map((item, i) => (
-              <div key={i} className="p-10 rounded-[2.5rem] bg-white border border-black/[0.05] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500">
+              <div key={i} className="p-10 rounded-2xl bg-white border border-black/[0.05] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500">
                 <div className="h-14 w-14 rounded-2xl bg-[#E53935]/5 text-[#E53935] flex items-center justify-center mb-8">
                   <item.icon size={28} />
                 </div>

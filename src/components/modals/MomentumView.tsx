@@ -67,9 +67,9 @@ export default function MomentumView({ type, postId, isOpen, onClose }: Momentum
         
         const enriched = (people || []).map(p => ({
           ...p,
-          reputation: p.metadata?.checkout_score || 50,
-          compatibility: Math.round(85 + (Math.random() * 10)),
-          skills: p.skills || ["Strategy", "Growth", "Product"]
+          reputation: p.match_score || p.metadata?.checkout_score || 85,
+          compatibility: p.match_score || Math.round(85 + (parseInt(p.id.substring(0,4), 16) % 15)),
+          skills: p.metadata?.skills || p.skills || (p.role ? [p.role] : ["Professional"])
         }));
 
         setMatches(enriched);
@@ -103,10 +103,10 @@ export default function MomentumView({ type, postId, isOpen, onClose }: Momentum
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-black/40 backdrop-blur-3xl rounded-[2rem] md:rounded-[3rem] w-full max-w-5xl max-h-[90vh] overflow-y-auto no-scrollbar text-white shadow-[0_0_100px_rgba(255,255,255,0.05)] border border-white/10 relative pointer-events-auto font-outfit"
+            className="bg-black/40 backdrop-blur-3xl rounded-2xl md:rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto no-scrollbar text-white shadow-[0_0_100px_rgba(255,255,255,0.05)] border border-white/10 relative pointer-events-auto font-outfit"
           >
             {/* Ambient Glowing Background Overlay */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[3rem]">
+            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
               <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[80%] bg-gradient-to-br from-indigo-500/10 to-fuchsia-500/10 blur-[100px] rounded-full animate-pulse" style={{ animationDuration: '6s' }} />
               <div className="absolute bottom-[-20%] right-[-10%] w-[80%] h-[80%] bg-gradient-to-tl from-emerald-500/10 to-cyan-500/10 blur-[100px] rounded-full animate-pulse" style={{ animationDuration: '8s' }} />
             </div>
@@ -159,11 +159,11 @@ export default function MomentumView({ type, postId, isOpen, onClose }: Momentum
                     </div>
 
                     <div className="w-full lg:w-[380px] shrink-0">
-                        <div className="p-8 bg-white/5 border border-white/10 rounded-[2rem] space-y-8 relative overflow-hidden backdrop-blur-xl shadow-2xl">
+                        <div className="p-8 bg-white/5 border border-white/10 rounded-2xl space-y-8 relative overflow-hidden backdrop-blur-xl shadow-2xl">
                           <div className="flex items-center gap-5">
-                            <div className="h-16 w-16 rounded-[1.2rem] overflow-hidden shadow-lg border border-white/20 relative">
+                            <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-lg border border-white/20 relative">
                                 <img src={post.profiles?.avatar_url || DEFAULT_AVATAR} className="w-full h-full object-cover" alt="" />
-                                <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-[1.2rem]" />
+                                <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl" />
                             </div>
                             <div>
                                 <p className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-1">Created By</p>
@@ -173,16 +173,25 @@ export default function MomentumView({ type, postId, isOpen, onClose }: Momentum
                           </div>
 
                           <div className="space-y-4 pt-2">
-                            <button 
-                              onClick={() => {
-                                setOverlayChatId(post.profiles?.id);
-                                setOverlayOpen(true);
-                                onClose();
-                              }}
-                              className="w-full h-14 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(99,102,241,0.4)] active:scale-95 flex items-center justify-center gap-3"
-                            >
-                                Send Message <MessageSquare size={16} className="opacity-80" />
-                            </button>
+                            {post.profiles?.id !== user?.id ? (
+                              <button 
+                                onClick={() => {
+                                  setOverlayChatId(post.profiles?.id);
+                                  setOverlayOpen(true);
+                                  onClose();
+                                }}
+                                className="w-full h-14 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl text-[11px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-opacity shadow-[0_0_20px_rgba(99,102,241,0.4)] active:scale-95 flex items-center justify-center gap-3"
+                              >
+                                  Send Message <MessageSquare size={16} className="opacity-80" />
+                              </button>
+                            ) : (
+                              <button 
+                                onClick={onClose}
+                                className="w-full h-14 bg-white/10 text-white rounded-xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-white/20 transition-colors flex items-center justify-center gap-3"
+                              >
+                                  Manage Post
+                              </button>
+                            )}
                             <p className="text-center text-[9px] font-bold text-white/30 uppercase tracking-[0.2em]">End-to-End Encrypted</p>
                           </div>
                         </div>
@@ -214,10 +223,10 @@ export default function MomentumView({ type, postId, isOpen, onClose }: Momentum
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.1 }}
-                            className="p-6 bg-white/5 border border-white/10 rounded-[1.5rem] flex flex-col items-center text-center hover:bg-white/10 transition-all duration-300 hover:border-white/20 backdrop-blur-md"
+                            className="p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center text-center hover:bg-white/10 transition-all duration-300 hover:border-white/20 backdrop-blur-md"
                           >
                             <div className="relative mb-4 group">
-                               <div className="h-16 w-16 rounded-[1rem] overflow-hidden shadow-lg border border-white/20 transition-transform group-hover:scale-105">
+                               <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-lg border border-white/20 transition-transform group-hover:scale-105">
                                    <img src={person.avatar_url || DEFAULT_AVATAR} className="w-full h-full object-cover" alt="" />
                                </div>
                                <div className="absolute -bottom-2 -right-2 h-6 w-6 bg-[#0F0F11] rounded-full border border-white/10 flex items-center justify-center text-[8px] font-black text-emerald-400">

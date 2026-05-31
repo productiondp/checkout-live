@@ -98,9 +98,9 @@ export default function PublicPostView({ post }: { post: any }) {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
-                className="relative z-20 rounded-[40px] p-1.5 bg-gradient-to-b from-white to-gray-50/50 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] border border-white"
+                className="relative z-20 rounded-2xl p-1.5 bg-gradient-to-b from-white to-gray-50/50 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] border border-white"
              >
-                <div className="rounded-[36px] overflow-hidden bg-white">
+                <div className="rounded-2xl overflow-hidden bg-white">
                    {/* Card is now FULLY VISIBLE and CLEAR, but actions are disabled */}
                    <UniversalFeedCard post={post} currentUserId="guest" isPublicPreview={true} />
                 </div>
@@ -111,7 +111,7 @@ export default function PublicPostView({ post }: { post: any }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="mt-12 bg-white/90 backdrop-blur-2xl p-10 rounded-[40px] border border-black/[0.03] shadow-2xl w-full text-center relative z-30"
+                className="mt-12 bg-white/90 backdrop-blur-2xl p-10 rounded-2xl border border-black/[0.03] shadow-2xl w-full text-center relative z-30"
              >
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                    <div className="text-left space-y-2">

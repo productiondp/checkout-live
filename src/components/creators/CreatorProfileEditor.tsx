@@ -71,18 +71,19 @@ export default function CreatorProfileEditor({
   const [saved, setSaved] = useState(false);
 
   // BIO & IDENTITY
+  const [category, setCategory] = useState<string>(initialData.category || "INFLUENCER");
   const [bio, setBio] = useState(initialData.bio || "");
-  const [specialties, setSpecialties] = useState<string[]>(initialData.specialties || []);
+  const [specialties, setSpecialties] = useState<string[]>(initialData.subcategories || initialData.specialties || []);
   const [availability, setAvailability] = useState(initialData.availability || "");
   const [rateCard, setRateCard] = useState(initialData.rate_card || "");
 
   // PHOTOS
-  const [portfolioImages, setPortfolioImages] = useState<string[]>(initialData.portfolio_images || []);
+  const [portfolioImages, setPortfolioImages] = useState<string[]>(initialData.portfolio_gallery || initialData.portfolio_images || []);
   const [imageUrlInput, setImageUrlInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // VIDEOS
-  const [videoLinks, setVideoLinks] = useState<string[]>(initialData.video_links || []);
+  const [videoLinks, setVideoLinks] = useState<string[]>(initialData.videos || initialData.video_links || []);
   const [videoInput, setVideoInput] = useState("");
 
   // SOCIAL LINKS
@@ -127,11 +128,12 @@ export default function CreatorProfileEditor({
 
     const payload = {
       bio,
-      specialties,
+      category,
+      subcategories: specialties,
       availability,
       rate_card: rateCard,
-      portfolio_images: finalPhotos,
-      video_links: finalVideos,
+      portfolio_gallery: finalPhotos,
+      videos: finalVideos,
       social_links: socials,
       measurements,
       updated_at: new Date().toISOString()
@@ -228,6 +230,26 @@ export default function CreatorProfileEditor({
         {/* BIO & IDENTITY */}
         {activeSection === "bio" && (
           <motion.div key="bio" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-5">
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Primary Category</label>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {["INFLUENCER", "MODEL", "UGC_CREATOR", "PHOTOGRAPHER", "VIDEOGRAPHER", "AGENCY", "OTHER"].map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setCategory(cat)}
+                    className={cn(
+                      "px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border",
+                      category === cat
+                        ? "bg-black text-white border-black"
+                        : "bg-white text-slate-400 border-slate-100 hover:border-slate-300"
+                    )}
+                  >
+                    {cat.replace("_", " ")}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div>
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Bio / About You</label>
               <textarea

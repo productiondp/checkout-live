@@ -88,7 +88,7 @@ export default function WhatIsCheckout() {
               { icon: Search, title: "Hyperlocal discovery", desc: "Find everything within your immediate vicinity, focusing on real-world proximity." },
               { icon: Lock, title: "No public noise", desc: "We eliminate the clutter. You only see connections that are relevant to your intent." }
             ].map((item, i) => (
-              <div key={i} className="bg-white p-8 lg:p-10 rounded-[2rem] border border-black/[0.05] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 group">
+              <div key={i} className="bg-white p-8 lg:p-10 rounded-2xl border border-black/[0.05] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 group">
                 <div className="h-14 w-14 rounded-2xl bg-red-50 text-[#E53935] flex items-center justify-center mb-8 group-hover:bg-[#E53935] group-hover:text-white transition-colors">
                   <item.icon size={28} />
                 </div>
@@ -132,7 +132,7 @@ export default function WhatIsCheckout() {
               </div>
             </div>
 
-            <div className="relative aspect-square rounded-[3rem] overflow-hidden bg-gray-100 shadow-2xl group">
+            <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-100 shadow-2xl group">
                <Image src="/images/collaboration.png" alt="Checkout Community" fill className="object-cover group-hover:scale-105 transition-transform duration-1000" />
                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                <div className="absolute bottom-10 left-10 text-white">
@@ -194,7 +194,7 @@ export default function WhatIsCheckout() {
           </div>
 
           <Link href="/?mode=signup" className="inline-block w-full sm:w-auto">
-            <Button className="h-16 lg:h-24 px-12 lg:px-20 rounded-2xl lg:rounded-[2.5rem] bg-black text-white text-[12px] lg:text-[14px] font-black uppercase tracking-[0.3em] hover:bg-[#E53935] transition-all duration-500 shadow-2xl shadow-black/20 w-full sm:w-auto">
+            <Button className="h-16 lg:h-24 px-12 lg:px-20 rounded-2xl lg:rounded-2xl bg-black text-white text-[12px] lg:text-[14px] font-black uppercase tracking-[0.3em] hover:bg-[#E53935] transition-all duration-500 shadow-2xl shadow-black/20 w-full sm:w-auto">
                Get Started Today
             </Button>
           </Link>

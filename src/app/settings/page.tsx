@@ -78,7 +78,7 @@ function SettingsContent() {
         </div>
         
         {/* Header Block */}
-        <div className="flex flex-col lg:flex-row lg:items-center gap-8 mb-16 p-10 bg-white rounded-[32px] border border-[#292828]/5 shadow-premium group relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-8 mb-16 p-10 bg-white rounded-2xl border border-[#292828]/5 shadow-premium group relative overflow-hidden">
            <div className="absolute top-0 right-0 w-32 h-32 bg-[#E53935]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
            <div className="h-24 w-24 bg-[#292828] text-white rounded-lg flex items-center justify-center shadow-2xl transition-all group-hover:rotate-6 group-hover:scale-105">
               <Settings size={48} className="animate-spin-slow" />

@@ -118,25 +118,25 @@ export default function CreatorFinanceDashboard() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-2">
+          <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-2">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black/40">Available for Payout</h3>
             <p className="text-5xl font-black">${financials.cleared.toLocaleString()}</p>
             <p className="text-xs font-bold uppercase text-black/40 mt-4 flex items-center gap-1"><ArrowUpRight size={14} /> Processed & Cleared</p>
           </div>
-          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-2 relative overflow-hidden group">
+          <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-2 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 text-black/5 group-hover:text-amber-500/10 transition-colors"><ShieldCheck size={100} /></div>
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black/40 relative z-10">In Escrow (Secured)</h3>
             <p className="text-5xl font-black relative z-10">${financials.escrow.toLocaleString()}</p>
             <p className="text-xs font-bold uppercase text-amber-500 mt-4 flex items-center gap-1 relative z-10"><Clock size={14} /> Awaiting Approval</p>
           </div>
-          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-2">
+          <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-2">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-black/40">Total Earnings (YTD)</h3>
             <p className="text-5xl font-black">${financials.totalEarnings.toLocaleString()}</p>
             <p className="text-xs font-bold uppercase text-black/40 mt-4 flex items-center gap-1"><FileText size={14} /> Download Tax Statement</p>
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-8">
+        <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-8">
            <div className="flex justify-between items-center">
              <h3 className="font-black uppercase tracking-tight text-xl">Recent Transactions</h3>
            </div>

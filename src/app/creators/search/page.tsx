@@ -63,7 +63,7 @@ export default function CreatorSearchPage() {
             />
           </div>
 
-          <div className="bg-white rounded-[2rem] border border-black/5 p-8 text-center space-y-4">
+          <div className="bg-white rounded-2xl border border-black/5 p-8 text-center space-y-4">
              <div className="h-16 w-16 bg-black/5 rounded-2xl flex items-center justify-center mx-auto text-black/40">
                 <Search size={24} />
              </div>

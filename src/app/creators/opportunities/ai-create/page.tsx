@@ -42,7 +42,7 @@ export default function AICreateOpportunityPage() {
       </div>
 
       {!generatedProject ? (
-        <div className="bg-white p-8 md:p-10 rounded-[2rem] border border-black/5 shadow-2xl shadow-black/[0.02] space-y-6 relative overflow-hidden">
+        <div className="bg-white p-8 md:p-10 rounded-2xl border border-black/5 shadow-2xl shadow-black/[0.02] space-y-6 relative overflow-hidden">
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
           
           <div className="space-y-4 relative z-10">
@@ -67,7 +67,7 @@ export default function AICreateOpportunityPage() {
           </div>
         </div>
       ) : (
-        <form className="space-y-8 bg-white p-8 md:p-10 rounded-[2rem] border border-blue-500/30 shadow-2xl shadow-blue-500/10">
+        <form className="space-y-8 bg-white p-8 md:p-10 rounded-2xl border border-blue-500/30 shadow-2xl shadow-blue-500/10">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-widest mb-4">
             <CheckCircle2 size={14} /> AI Generated Draft
           </div>

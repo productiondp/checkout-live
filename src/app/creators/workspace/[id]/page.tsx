@@ -64,35 +64,18 @@ export default function CreatorWorkspacePage({ params }: { params: { id: string 
         
         {/* CHAT TAB */}
         {activeTab === "CHAT" && (
-          <div className="bg-white rounded-[2rem] border border-black/5 h-[600px] flex flex-col shadow-sm">
-            <div className="p-6 border-b border-black/5">
-              <h3 className="font-black uppercase tracking-tight">Project Chat</h3>
+          <div className="bg-white rounded-2xl border border-black/5 h-[400px] flex flex-col items-center justify-center gap-6 shadow-sm">
+            <MessageSquare size={40} className="text-black/10" />
+            <div className="text-center">
+              <p className="font-black text-xl uppercase font-outfit">Use the Main Chat</p>
+              <p className="text-black/40 text-[11px] font-bold uppercase tracking-widest mt-2">All project communication happens in the network chat.</p>
             </div>
-            <div className="flex-1 p-6 overflow-y-auto space-y-4">
-               <div className="text-center text-black/30 text-[10px] font-bold uppercase tracking-widest my-4">Workspace Created</div>
-               
-               {/* Mock Messages */}
-               <div className="flex gap-4">
-                 <div className="h-10 w-10 bg-black/10 rounded-full shrink-0" />
-                 <div className="bg-black/5 p-4 rounded-2xl rounded-tl-none max-w-md">
-                   <p className="text-sm font-medium">Hi Sarah, we accepted your proposal! The contract is in the Contracts tab.</p>
-                 </div>
-               </div>
-
-               <div className="flex gap-4 flex-row-reverse">
-                 <div className="h-10 w-10 bg-[#E53935]/20 rounded-full shrink-0" />
-                 <div className="bg-[#E53935] text-white p-4 rounded-2xl rounded-tr-none max-w-md">
-                   <p className="text-sm font-medium">Amazing! I'll review and sign it today. When do you want to schedule the first shoot?</p>
-                 </div>
-               </div>
-            </div>
-            <div className="p-4 border-t border-black/5 flex gap-2">
-              <Button className="h-12 w-12 rounded-xl bg-black/5 text-black hover:bg-black/10 flex items-center justify-center shrink-0">
-                <Upload size={18} />
-              </Button>
-              <input type="text" placeholder="Type a message..." className="flex-1 bg-black/5 rounded-xl px-4 text-sm font-medium focus:outline-none" />
-              <Button className="h-12 px-6 rounded-xl bg-black text-white text-xs font-black uppercase tracking-[0.1em]">Send</Button>
-            </div>
+            <a
+              href="/chat"
+              className="h-12 px-8 bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#E53935] transition-all flex items-center gap-2"
+            >
+              <MessageSquare size={14} /> Open Chat
+            </a>
           </div>
         )}
 
@@ -130,7 +113,7 @@ export default function CreatorWorkspacePage({ params }: { params: { id: string 
         {/* CONTRACTS TAB */}
         {activeTab === "CONTRACTS" && (
           <div className="max-w-3xl space-y-6">
-             <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-6">
+             <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-6">
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-black uppercase tracking-tight text-xl">Service Agreement</h3>
@@ -167,7 +150,7 @@ export default function CreatorWorkspacePage({ params }: { params: { id: string 
 
         {/* ACTIVITY TAB */}
         {activeTab === "ACTIVITY" && (
-          <div className="max-w-2xl bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm">
+          <div className="max-w-2xl bg-white p-8 rounded-2xl border border-black/5 shadow-sm">
              <h3 className="font-black uppercase tracking-tight mb-8">Workspace Activity</h3>
              <div className="space-y-6 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
                 {[

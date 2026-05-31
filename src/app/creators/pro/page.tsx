@@ -46,7 +46,7 @@ export default function CreatorProUpgradePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           
           {/* Creator Pro */}
-          <div className="bg-white rounded-[2rem] p-8 border border-amber-500 shadow-2xl shadow-amber-500/10 relative transform md:-translate-y-4">
+          <div className="bg-white rounded-2xl p-8 border border-amber-500 shadow-2xl shadow-amber-500/10 relative transform md:-translate-y-4">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-amber-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
               Most Popular
             </div>
@@ -76,7 +76,7 @@ export default function CreatorProUpgradePage() {
           </div>
 
           {/* Business Pro */}
-          <div className="bg-white rounded-[2rem] p-8 border border-black/5 shadow-xl">
+          <div className="bg-white rounded-2xl p-8 border border-black/5 shadow-xl">
             <h3 className="text-2xl font-black uppercase tracking-tight">Business Pro</h3>
             <p className="text-black/40 font-medium text-sm mt-2">Scale your content operations and hire without limits.</p>
             <div className="my-6">
@@ -103,7 +103,7 @@ export default function CreatorProUpgradePage() {
           </div>
 
           {/* Agency / Enterprise */}
-          <div className="bg-white rounded-[2rem] p-8 border border-black/5 shadow-xl">
+          <div className="bg-white rounded-2xl p-8 border border-black/5 shadow-xl">
             <h3 className="text-2xl font-black uppercase tracking-tight">Agency</h3>
             <p className="text-black/40 font-medium text-sm mt-2">Built for teams managing multiple brand portfolios.</p>
             <div className="my-6">

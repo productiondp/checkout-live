@@ -36,7 +36,7 @@ const MeetupCard = ({ meetup, isJoined, onJoin, viewMode }: { meetup: any; isJoi
   return (
     <div className="group relative">
       <div className={cn(
-          "bg-white rounded-[2rem] border border-[#292828]/10 overflow-hidden transition-all duration-500 hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] hover:border-[#E53935]/20 hover:-translate-y-2",
+          "bg-white rounded-2xl border border-[#292828]/10 overflow-hidden transition-all duration-500 hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] hover:border-[#E53935]/20 hover:-translate-y-2",
           isJoined && "border-emerald-500/30 ring-4 ring-emerald-500/5 shadow-2xl shadow-emerald-500/10"
       )}>
           {/* AI Alignment Indicator */}
@@ -418,7 +418,7 @@ export default function MeetupPage() {
                   <p className="text-[10px] font-black uppercase tracking-widest text-black/20">Syncing Meetups...</p>
                 </div>
               ) : meetups.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 md:py-32 text-center space-y-8 bg-slate-50/50 rounded-[2rem] border border-dashed border-black/10 p-6">
+                <div className="flex flex-col items-center justify-center py-20 md:py-32 text-center space-y-8 bg-slate-50/50 rounded-2xl border border-dashed border-black/10 p-6">
                    <div className="h-20 w-20 md:h-24 md:w-24 bg-white rounded-full flex items-center justify-center shadow-xl border border-black/5">
                       <Calendar size={40} className="text-black/10" />
                    </div>
@@ -624,7 +624,7 @@ export default function MeetupPage() {
                       </div>
                    </section>
    
-                   <section className="relative p-10 bg-[#E53935] rounded-[2.5rem] text-white space-y-8 overflow-hidden shadow-4xl group/card">
+                   <section className="relative p-10 bg-[#E53935] rounded-2xl text-white space-y-8 overflow-hidden shadow-4xl group/card">
                       {/* WHEEL ANIMATION BACKGROUND */}
                       <motion.div 
                         animate={{ rotate: 360 }}
@@ -673,7 +673,7 @@ export default function MeetupPage() {
                          <motion.div 
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="p-8 bg-slate-50/50 border border-slate-100 rounded-[2rem] group/data hover:bg-white hover:shadow-2xl transition-all"
+                          className="p-8 bg-slate-50/50 border border-slate-100 rounded-2xl group/data hover:bg-white hover:shadow-2xl transition-all"
                          >
                             <div className="flex items-center gap-2 mb-4">
                               <Target size={12} className="text-emerald-500" />
@@ -687,7 +687,7 @@ export default function MeetupPage() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.1 }}
-                          className="p-8 bg-slate-50/50 border border-slate-100 rounded-[2rem] group/data hover:bg-white hover:shadow-2xl transition-all"
+                          className="p-8 bg-slate-50/50 border border-slate-100 rounded-2xl group/data hover:bg-white hover:shadow-2xl transition-all"
                          >
                             <div className="flex items-center gap-2 mb-4">
                               <Users size={12} className="text-indigo-500" />
@@ -720,7 +720,7 @@ export default function MeetupPage() {
                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
                  animate={{ opacity: 1, scale: 1, y: 0 }}
                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                 className="relative w-full max-w-2xl bg-white rounded-[2.5rem] overflow-hidden shadow-4xl"
+                 className="relative w-full max-w-2xl bg-white rounded-2xl overflow-hidden shadow-4xl"
                >
                   {/* PROGRESS BAR */}
                   <div className="absolute top-0 left-0 w-full h-2 bg-[#F5F5F7]">

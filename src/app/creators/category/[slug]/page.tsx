@@ -96,7 +96,7 @@ export default function CategoryHubPage({ params }: { params: { slug: string } }
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2].map((i) => (
-              <div key={i} className="bg-white p-8 rounded-[2rem] border border-black/5 hover:border-black/10 transition-colors">
+              <div key={i} className="bg-white p-8 rounded-2xl border border-black/5 hover:border-black/10 transition-colors">
                 <div className="flex justify-between items-start mb-6">
                   <div>
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#E53935] bg-red-50 px-2 py-1 rounded-md mb-3 inline-block">High Demand</span>

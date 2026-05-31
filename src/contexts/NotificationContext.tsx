@@ -17,10 +17,16 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const { user } = useAuth();
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [activeChatId, setActiveChatIdState] = useState<string | null>(null);
   
   const supabase = createClient();
   const syncChannel = useRef<BroadcastChannel | null>(null);
+  const activeChatIdRef = useRef<string | null>(null);
+
+  const setActiveChatId = useCallback((id: string | null) => {
+    setActiveChatIdState(id);
+    activeChatIdRef.current = id;
+  }, []);
 
   //  TAB SYNC (BroadcastChannel) 
   useEffect(() => {
@@ -59,14 +65,16 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     try {
       // 1. Unread Messages Count (Standard Query fallback)
-      const { count: unreadCount, error: unreadErr } = await supabase
+      const { data: unreadMsgs, error: unreadErr } = await supabase
         .from('messages')
-        .select('*', { count: 'exact', head: true })
+        .select('id, connection_id')
         .eq('receiver_id', user.id)
         .eq('is_read', false);
       
       if (unreadErr) throw unreadErr;
-      setUnreadMessagesCount(Number(unreadCount) || 0);
+      
+      const unreadCount = (unreadMsgs || []).filter(m => m.connection_id !== activeChatIdRef.current).length;
+      setUnreadMessagesCount(unreadCount);
 
       // 2. Pending Requests Count (Smart Join to avoid Ghost counts)
       const { data: rawConns } = await supabase

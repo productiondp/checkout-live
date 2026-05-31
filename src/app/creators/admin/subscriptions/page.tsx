@@ -50,7 +50,7 @@ export default function SubscriptionAdminPanel() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             {/* Plan Editor */}
-            <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-6">
+            <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-6">
                <div className="flex justify-between items-center">
                  <h3 className="font-black uppercase tracking-tight text-xl">Creator Pro</h3>
                  <span className="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest rounded-lg">Active</span>
@@ -86,7 +86,7 @@ export default function SubscriptionAdminPanel() {
             </div>
 
             {/* Feature Gates Overview */}
-            <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-6">
+            <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-6">
               <h3 className="font-black uppercase tracking-tight text-xl">Global Feature Gates</h3>
               <p className="text-sm font-medium text-black/40">These metrics track limits in the <code className="bg-black/5 px-1 py-0.5 rounded">usage_tracking</code> table.</p>
               
@@ -109,7 +109,7 @@ export default function SubscriptionAdminPanel() {
         )}
 
         {activeTab === "PROMOS" && (
-          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm space-y-6">
+          <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-sm space-y-6">
              <div className="flex justify-between items-center mb-4">
                <h3 className="font-black uppercase tracking-tight text-xl">Active Promotions</h3>
                <Button className="h-10 rounded-xl bg-black text-white text-[10px] font-black uppercase tracking-[0.1em] px-4">

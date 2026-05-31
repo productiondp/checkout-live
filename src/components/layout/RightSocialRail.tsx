@@ -147,7 +147,7 @@ export default function RightSocialRail() {
                   <div className="flex items-center gap-4">
                      <div className="relative shrink-0">
                         <div className="h-14 w-14 rounded-xl overflow-hidden border border-[#292828]/5 p-0.5 bg-[#F5F5F7]">
-                           <div className="h-full w-full rounded-[10px] overflow-hidden bg-white">
+                           <div className="h-full w-full rounded-2xl overflow-hidden bg-white">
                               <img 
                                 src={p.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.full_name}`} 
                                 className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 

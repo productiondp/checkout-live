@@ -48,7 +48,7 @@ export default function LiveOpsPage() {
           </div>
 
           {/* DASHBOARD CONTAINER */}
-          <div className="bg-white rounded-[2.5rem] border border-black/5 shadow-2xl shadow-black/5 overflow-hidden">
+          <div className="bg-white rounded-2xl border border-black/5 shadow-2xl shadow-black/5 overflow-hidden">
              <div className="p-10 border-b border-black/5 bg-slate-50/50 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                    <Activity size={18} className="text-[#E53935]" />

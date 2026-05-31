@@ -212,7 +212,7 @@ function AuthContent() {
                             transition={{ duration: 3, repeat: Infinity }}
                             className="absolute inset-0 bg-[#E53935] rounded-full blur-2xl"
                           />
-                          <div className="relative h-16 w-16 lg:h-20 lg:w-20 rounded-[1.2rem] lg:rounded-[1.5rem] bg-red-50 border border-red-100 flex items-center justify-center shadow-lg shadow-red-100">
+                          <div className="relative h-16 w-16 lg:h-20 lg:w-20 rounded-2xl lg:rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center shadow-lg shadow-red-100">
                             <ShieldCheck size={24} className="text-[#E53935] relative z-10" strokeWidth={2} />
                           </div>
                         </div>
@@ -235,7 +235,7 @@ function AuthContent() {
                             transition={{ duration: 3, repeat: Infinity }}
                             className={`absolute inset-0 rounded-full blur-2xl ${submissionState === 'FAILED' ? 'bg-red-500' : 'bg-[#E53935]'}`}
                           />
-                          <div className="relative h-16 w-16 lg:h-20 lg:w-20 rounded-[1.2rem] lg:rounded-[1.5rem] bg-red-50 border border-red-100 flex items-center justify-center shadow-lg shadow-red-100">
+                          <div className="relative h-16 w-16 lg:h-20 lg:w-20 rounded-2xl lg:rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center shadow-lg shadow-red-100">
                             {submissionState === 'FAILED' ? <X size={24} className="text-[#E53935]" strokeWidth={2.5} /> : <ShieldCheck size={24} className="text-[#E53935] relative z-10 animate-pulse" strokeWidth={2} />}
                           </div>
                         </div>

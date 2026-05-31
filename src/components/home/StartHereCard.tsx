@@ -44,7 +44,7 @@ export default function StartHereCard({ onAction, onExplore }: StartHereCardProp
       animate={{ opacity: 1, y: 0 }}
       className="relative mb-10"
     >
-      <div className="bg-[#0A0A0A] rounded-[2rem] p-8 lg:p-12 shadow-2xl relative overflow-hidden group border border-white/5">
+      <div className="bg-[#0A0A0A] rounded-2xl p-8 lg:p-12 shadow-2xl relative overflow-hidden group border border-white/5">
         
         {/* Dynamic Background Accents */}
         <div className="absolute top-0 right-0 w-full h-full pointer-events-none opacity-50">

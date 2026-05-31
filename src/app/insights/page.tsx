@@ -65,7 +65,7 @@ export default function InsightsPage() {
                 desc: "Get tips from advisors and experienced professionals in your field. No jargon, just real advice." 
               }
             ].map((item, i) => (
-              <div key={i} className="p-10 rounded-[2.5rem] bg-[#FBFBFD] border border-black/[0.05] hover:bg-white hover:shadow-2xl transition-all duration-500">
+              <div key={i} className="p-10 rounded-2xl bg-[#FBFBFD] border border-black/[0.05] hover:bg-white hover:shadow-2xl transition-all duration-500">
                 <div className="h-16 w-16 rounded-2xl bg-white text-[#E53935] flex items-center justify-center mb-8 shadow-sm">
                   <item.icon size={32} />
                 </div>

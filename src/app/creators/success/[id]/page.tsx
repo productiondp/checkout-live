@@ -31,15 +31,15 @@ export default function SuccessStoryPage({ params }: { params: { id: string } })
         
         {/* Results Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 -mt-32 relative z-20">
-          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-2xl shadow-black/5 text-center">
+          <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-2xl shadow-black/5 text-center">
             <p className="text-4xl font-black text-[#E53935]">+300%</p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-black/40 mt-2">Social Engagement</p>
           </div>
-          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-2xl shadow-black/5 text-center">
+          <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-2xl shadow-black/5 text-center">
             <p className="text-4xl font-black text-[#E53935]">1.2M</p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-black/40 mt-2">Local Impressions</p>
           </div>
-          <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-2xl shadow-black/5 text-center">
+          <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-2xl shadow-black/5 text-center">
             <p className="text-4xl font-black text-[#E53935]">14 Days</p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-black/40 mt-2">Total Turnaround</p>
           </div>
@@ -57,7 +57,7 @@ export default function SuccessStoryPage({ params }: { params: { id: string } })
             Using Checkout's AI Match Engine, Spice Route posted an opportunity for a "Restaurant Revamp Shoot". Within 2 hours, they were matched with Sarah Jenkins, an Elite-level UGC Creator located just 3 miles away with a 100 Trust Score.
           </p>
 
-          <blockquote className="my-12 p-8 bg-black/5 rounded-[2rem] border-l-4 border-[#E53935]">
+          <blockquote className="my-12 p-8 bg-black/5 rounded-2xl border-l-4 border-[#E53935]">
             <Quote size={32} className="text-[#E53935] mb-4" />
             <p className="text-xl font-bold italic">
               "The process was completely frictionless. The workspace was created automatically, the contract was signed digitally within the app, and Sarah started shooting the very next day. Checkout handles all the operational friction so we could focus on the creative."
@@ -69,7 +69,7 @@ export default function SuccessStoryPage({ params }: { params: { id: string } })
         </div>
 
         {/* CTA */}
-        <div className="bg-black text-white p-12 rounded-[2rem] text-center space-y-6">
+        <div className="bg-black text-white p-12 rounded-2xl text-center space-y-6">
           <h2 className="text-3xl font-black uppercase tracking-tight">Ready for your own success story?</h2>
           <p className="text-white/60 font-medium">Post your opportunity and let our AI match you with verified local talent.</p>
           <div className="pt-4">

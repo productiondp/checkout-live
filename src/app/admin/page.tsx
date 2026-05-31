@@ -121,7 +121,7 @@ function SentinelDashboardContent() {
     // Subscribe to real-time analytics
     const channel = supabase
       .channel('admin_realtime')
-      .on('postgres_changes', { event: 'INSERT', table: 'analytics_events' }, (payload) => {
+      .on('postgres_changes', { event: 'INSERT', table: 'analytics_events' }, (payload: any) => {
         const log = `[${new Date().toLocaleTimeString()}] ${payload.new.event_type} -> ${payload.new.user_id?.slice(0,8) || 'ANON'}`;
         setSecurityLogs(prev => [...prev.slice(-39), log]);
       })
@@ -131,6 +131,7 @@ function SentinelDashboardContent() {
   }, [isLinked]);
 
   const fetchStats = async () => {
+    const startTime = Date.now();
     try {
       const now = new Date();
       const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
@@ -171,7 +172,7 @@ function SentinelDashboardContent() {
         totalPosts: pC.count || 0,
         totalMeetups: mC.count || 0,
         matchEfficiency: matchEff,
-        systemLatency: Math.floor(Math.random() * 50) + 20, // Real-ish mock
+        systemLatency: Date.now() - startTime,
         industryDist: dist
       });
 

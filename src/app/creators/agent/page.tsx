@@ -83,7 +83,7 @@ export default function CreatorAIAgentPage() {
             <p className="text-sm font-medium text-black/40">No new insights generated yet.</p>
           ) : (
             insights.map((insight, i) => (
-              <div key={insight.id} className="bg-white rounded-[2rem] p-6 border border-black/5 shadow-sm space-y-4 relative overflow-hidden group">
+              <div key={insight.id} className="bg-white rounded-2xl p-6 border border-black/5 shadow-sm space-y-4 relative overflow-hidden group">
                 <div className="absolute top-0 left-0 w-1 h-full bg-blue-500" />
                 <div className="flex items-start gap-3">
                   <Target size={20} className="text-blue-500 shrink-0 mt-1" />
@@ -101,7 +101,7 @@ export default function CreatorAIAgentPage() {
 
         {/* Right Column: Active Chat Interface connected to API */}
         <div className="w-full lg:w-2/3">
-          <div className="bg-white rounded-[2rem] border border-black/5 shadow-sm h-[600px] flex flex-col">
+          <div className="bg-white rounded-2xl border border-black/5 shadow-sm h-[600px] flex flex-col">
             <div className="p-6 border-b border-black/5 flex justify-between items-center">
               <h3 className="font-black uppercase tracking-tight text-xl flex items-center gap-2"><Sparkles size={20} className="text-blue-500" /> Checkout AI</h3>
             </div>
@@ -125,7 +125,7 @@ export default function CreatorAIAgentPage() {
                )}
             </div>
             
-            <div className="p-4 border-t border-black/5 bg-white rounded-b-[2rem]">
+            <div className="p-4 border-t border-black/5 bg-white rounded-2xl">
               <div className="relative">
                 <input 
                   type="text" 

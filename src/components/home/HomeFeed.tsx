@@ -308,12 +308,12 @@ export default function HomeFeed({
             <motion.div 
               whileHover={{ y: -8, transition: { duration: 0.3 } }}
               whileTap={{ scale: 0.98 }}
-              className="flex-1 group relative overflow-hidden bg-white border border-black/[0.05] rounded-[2.5rem] p-8 lg:p-12 shadow-2xl shadow-black/[0.03] cursor-pointer transition-all duration-500"
+              className="flex-1 group relative overflow-hidden bg-white border border-black/[0.05] rounded-2xl p-8 lg:p-12 shadow-2xl shadow-black/[0.03] cursor-pointer transition-all duration-500"
               onClick={() => onCreate?.()}
             >
                <div className="absolute top-0 right-0 w-48 h-48 bg-[#E53935]/5 rounded-full blur-[60px] group-hover:bg-[#E53935]/10 transition-all duration-700" />
                <div className="relative z-10 space-y-8">
-                  <div className="h-16 w-16 bg-[#E53935] text-white rounded-[1.25rem] flex items-center justify-center shadow-[0_20px_40px_rgba(229,57,51,0.2)] group-hover:scale-110 transition-all duration-500 group-hover:rotate-3">
+                  <div className="h-16 w-16 bg-[#E53935] text-white rounded-2xl flex items-center justify-center shadow-[0_20px_40px_rgba(229,57,51,0.2)] group-hover:scale-110 transition-all duration-500 group-hover:rotate-3">
                      <Target size={32} strokeWidth={2.5} />
                   </div>
                   <div className="space-y-3">
@@ -335,12 +335,12 @@ export default function HomeFeed({
             <motion.div 
               whileHover={{ y: -8, transition: { duration: 0.3 } }}
               whileTap={{ scale: 0.98 }}
-              className="flex-1 group relative overflow-hidden bg-[#1D1D1F] rounded-[2.5rem] p-8 lg:p-12 shadow-2xl shadow-black/20 cursor-pointer transition-all duration-500"
+              className="flex-1 group relative overflow-hidden bg-[#1D1D1F] rounded-2xl p-8 lg:p-12 shadow-2xl shadow-black/20 cursor-pointer transition-all duration-500"
               onClick={() => { registerAction('see_people'); router.push('/matches'); }}
             >
                <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px] group-hover:bg-indigo-500/20 transition-all duration-700" />
                <div className="relative z-10 space-y-8">
-                  <div className="h-16 w-16 bg-white/5 border border-white/10 text-white rounded-[1.25rem] flex items-center justify-center shadow-2xl group-hover:bg-white group-hover:text-black transition-all duration-500 group-hover:-rotate-3">
+                  <div className="h-16 w-16 bg-white/5 border border-white/10 text-white rounded-2xl flex items-center justify-center shadow-2xl group-hover:bg-white group-hover:text-black transition-all duration-500 group-hover:-rotate-3">
                      <Users size={32} strokeWidth={2.5} />
                   </div>
                   <div className="space-y-3">
@@ -399,7 +399,7 @@ export default function HomeFeed({
 
             {/*  STEP 4: DAILY PRIORITY LIST  */}
             {dailyPriorities.length > 0 && (
-              <div className="bg-[#0A0A0A] rounded-[2.5rem] p-10 text-white relative overflow-hidden border border-white/5 shadow-2xl">
+              <div className="bg-[#0A0A0A] rounded-2xl p-10 text-white relative overflow-hidden border border-white/5 shadow-2xl">
                  <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-emerald-500/10 to-transparent pointer-events-none" />
                  <div className="relative z-10">
                     <div className="flex items-center gap-4 mb-8">
@@ -486,7 +486,7 @@ export default function HomeFeed({
       </div>
 
        {posts.length === 0 ? (
-         <div className="relative py-24 lg:py-32 flex flex-col items-center justify-center text-center px-6 overflow-hidden rounded-[2rem] bg-white border border-black/[0.03]">
+         <div className="relative py-24 lg:py-32 flex flex-col items-center justify-center text-center px-6 overflow-hidden rounded-2xl bg-white border border-black/[0.03]">
             {/* Soft Ambient Background */}
             <div className="absolute inset-0 pointer-events-none">
                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#FF3B30]/5 rounded-full blur-[100px]" />

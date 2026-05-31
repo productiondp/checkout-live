@@ -333,7 +333,7 @@ export default function PremiumProfilePage() {
                 <motion.div 
                    initial={{ opacity: 0, y: 20 }}
                    animate={{ opacity: 1, y: 0 }}
-                   className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[1.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden group"
+                   className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden group"
                 >
                    {/* Shine Animation Overlay */}
                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
@@ -345,17 +345,17 @@ export default function PremiumProfilePage() {
                           <div className="h-40 w-40 rounded-lg overflow-hidden border-4 border-white/10 p-2 backdrop-blur-xl group-hover:border-[#E53935]/50 transition-all duration-700 shadow-4xl relative">
                              <img 
                                src={userData.avatar_url} 
-                               className="w-full h-full object-cover rounded-[1.8rem]" 
+                               className="w-full h-full object-cover rounded-2xl" 
                                alt={userData.full_name} 
                              />
                              {/* Upload Overlay */}
-                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/avatar:opacity-100 flex items-center justify-center rounded-[1.8rem] transition-all">
+                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/avatar:opacity-100 flex items-center justify-center rounded-2xl transition-all">
                                 <div className="flex flex-col items-center gap-2 text-white">
                                    <Plus size={24} />
                                    <span className="text-[10px] font-black uppercase">Change</span>
                                 </div>
                              </div>
-                             {isSaving && <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-[1.8rem]"><Loader2 className="animate-spin text-white" size={24} /></div>}
+                             {isSaving && <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-2xl"><Loader2 className="animate-spin text-white" size={24} /></div>}
                           </div>
                           
                           {/* HIDDEN FILE INPUT */}
@@ -370,7 +370,7 @@ export default function PremiumProfilePage() {
                           <motion.div 
                              animate={{ y: [0, -5, 0] }}
                              transition={{ duration: 4, repeat: Infinity }}
-                             className="absolute -bottom-3 -right-3 h-12 w-12 bg-[#E53935] rounded-[8px] flex items-center justify-center text-white shadow-[0_10px_30px_rgba(229,57,51,0.5)] border-4 border-[#0A0A0A]"
+                             className="absolute -bottom-3 -right-3 h-12 w-12 bg-[#E53935] rounded-2xl flex items-center justify-center text-white shadow-[0_10px_30px_rgba(229,57,51,0.5)] border-4 border-[#0A0A0A]"
                           >
                              <Award size={20} />
                           </motion.div>
@@ -384,13 +384,13 @@ export default function PremiumProfilePage() {
                                <CheckCircle2 size={24} className="text-[#E53935] fill-[#E53935]/10" />
                             </div>
                             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                               <div className="px-4 py-1.5 bg-[#E53935] rounded-[8px] text-[10px] font-black uppercase text-white shadow-lg ">
+                               <div className="px-4 py-1.5 bg-[#E53935] rounded-2xl text-[10px] font-black uppercase text-white shadow-lg ">
                                   {userData.role}
                                </div>
-                               <div className="px-4 py-1.5 bg-white/10 backdrop-blur-md border border-white/10 rounded-[8px] text-[10px] font-black uppercase text-white ">
+                               <div className="px-4 py-1.5 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl text-[10px] font-black uppercase text-white ">
                                   Rank {userData.checkoutRank}
                                </div>
-                               <div className="px-4 py-1.5 border border-white/5 rounded-[8px] text-[10px] font-black uppercase text-white/40 ">
+                               <div className="px-4 py-1.5 border border-white/5 rounded-2xl text-[10px] font-black uppercase text-white/40 ">
                                   Elite Verified
                                </div>
                             </div>
@@ -411,19 +411,19 @@ export default function PremiumProfilePage() {
                       <div className="flex flex-wrap items-center gap-4">
                          <button 
                             onClick={() => setShowEditModal(true)} 
-                            className="h-16 px-10 bg-white text-[#0A0A0A] rounded-[8px] font-black text-[11px] uppercase  shadow-2xl hover:bg-[#E53935] hover:text-white transition-all transform hover:-translate-y-1 active:scale-95"
+                            className="h-16 px-10 bg-white text-[#0A0A0A] rounded-2xl font-black text-[11px] uppercase  shadow-2xl hover:bg-[#E53935] hover:text-white transition-all transform hover:-translate-y-1 active:scale-95"
                          >
                            Edit Profile
                          </button>
                          <Link 
                             href="/creators/profile" 
-                            className="flex items-center h-16 px-10 bg-[#E53935] text-white rounded-[8px] font-black text-[11px] uppercase shadow-2xl hover:bg-white hover:text-[#E53935] transition-all transform hover:-translate-y-1 active:scale-95"
+                            className="flex items-center h-16 px-10 bg-[#E53935] text-white rounded-2xl font-black text-[11px] uppercase shadow-2xl hover:bg-white hover:text-[#E53935] transition-all transform hover:-translate-y-1 active:scale-95"
                          >
                            Creator Profile
                          </Link>
                          <button 
                             onClick={() => setShowSettingsModal(true)} 
-                            className="h-16 w-16 bg-white/5 backdrop-blur-md border border-white/10 rounded-[8px] flex items-center justify-center text-white hover:bg-white hover:text-[#0A0A0A] transition-all overflow-hidden relative group"
+                            className="h-16 w-16 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl flex items-center justify-center text-white hover:bg-white hover:text-[#0A0A0A] transition-all overflow-hidden relative group"
                          >
                             <Settings size={22} className="group-hover:rotate-90 transition-transform duration-500" />
                          </button>
@@ -441,7 +441,7 @@ export default function PremiumProfilePage() {
                 <div className="lg:col-span-3 space-y-8">
                    
                    {/* Skills & Expertise */}
-                   <div className="bg-white rounded-[8px] p-8 shadow-2xl border border-[#292828]/5 relative group overflow-hidden">
+                   <div className="bg-white rounded-2xl p-8 shadow-2xl border border-[#292828]/5 relative group overflow-hidden">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-[#E53935]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                       <div className="flex items-center justify-between mb-8">
                          <h3 className="text-[10px] font-black text-[#292828]/30 uppercase flex items-center gap-3 ">
@@ -471,7 +471,7 @@ export default function PremiumProfilePage() {
                           {userData.expertise && userData.expertise.length > 0 ? userData.expertise.map(skill => (
                              <span 
                                 key={skill} 
-                                className="px-4 py-2 bg-[#0A0A0A]/5 border border-[#0A0A0A]/5 rounded-[8px] text-[10px] font-black text-[#0A0A0A] uppercase flex items-center gap-2 group/skill hover:bg-red-50 hover:text-[#E53935] transition-all cursor-default"
+                                className="px-4 py-2 bg-[#0A0A0A]/5 border border-[#0A0A0A]/5 rounded-2xl text-[10px] font-black text-[#0A0A0A] uppercase flex items-center gap-2 group/skill hover:bg-red-50 hover:text-[#E53935] transition-all cursor-default"
                              >
                                 {skill}
                                 <X 
@@ -491,7 +491,7 @@ export default function PremiumProfilePage() {
                    </div>
 
                    {/* ABOUT & CONTACT BLOCK */}
-                   <div className="bg-white rounded-[8px] p-8 shadow-2xl border border-[#292828]/5">
+                   <div className="bg-white rounded-2xl p-8 shadow-2xl border border-[#292828]/5">
                       <h3 className="text-[10px] font-black text-[#292828]/30 uppercase mb-6 flex items-center gap-2 ">
                          <div className="h-1 w-4 bg-[#E53935] rounded-full" /> Personal Bio
                       </h3>
@@ -500,7 +500,7 @@ export default function PremiumProfilePage() {
                       <div className="pt-8 border-t border-[#0A0A0A]/5 space-y-6">
                          {contactInfo.map((info, i) => (
                             <div key={i} className="flex items-center gap-5 group/item cursor-pointer">
-                               <div className="h-11 w-11 bg-[#0A0A0A]/5 rounded-[8px] flex items-center justify-center text-[#0A0A0A] group-hover/item:bg-[#0A0A0A] group-hover/item:text-white transition-all shadow-sm">
+                               <div className="h-11 w-11 bg-[#0A0A0A]/5 rounded-2xl flex items-center justify-center text-[#0A0A0A] group-hover/item:bg-[#0A0A0A] group-hover/item:text-white transition-all shadow-sm">
                                   <info.icon size={18} />
                                </div>
                                <div className="flex-1 min-w-0">
@@ -592,7 +592,7 @@ export default function PremiumProfilePage() {
                                    </div>
                                    <div>
                                       <div className="flex items-center gap-3 mb-2">
-                                         <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[8px] font-bold uppercase rounded-[4px] tracking-widest">{dep.type}</span>
+                                         <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[8px] font-bold uppercase rounded-2xl tracking-widest">{dep.type}</span>
                                          <h4 className="text-[14px] font-bold text-[#1D1D1F] line-clamp-1">{dep.content}</h4>
                                       </div>
                                       <p className="text-[11px] font-medium text-slate-400">Active Priority</p>
@@ -688,48 +688,48 @@ export default function PremiumProfilePage() {
                 <motion.div 
                    initial={{ opacity: 0, scale: 0.95, y: 40 }}
                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                   className="bg-white w-full max-w-3xl rounded-[8px] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] flex flex-col max-h-[90vh] border border-[#0A0A0A]/5"
+                   className="bg-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] flex flex-col max-h-[90vh] border border-[#0A0A0A]/5"
                 >
                    <div className="p-10 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
                       <h2 className="text-4xl font-black text-[#0A0A0A] uppercase  italic leading-none mb-2">Edit Profile</h2>
-                      <button onClick={() => setShowEditModal(false)} className="h-12 w-12 bg-white border border-slate-100 rounded-[8px] flex items-center justify-center text-slate-300 hover:bg-[#E53935] hover:text-white transition-all shadow-sm"><X size={20} /></button>
+                      <button onClick={() => setShowEditModal(false)} className="h-12 w-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-300 hover:bg-[#E53935] hover:text-white transition-all shadow-sm"><X size={20} /></button>
                    </div>
                    <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar">
                       <div className="grid grid-cols-2 gap-8">
                          <div className="space-y-3">
                             <p className="text-[9px] font-black text-[#0A0A0A] uppercase ">Full Name</p>
-                            <input type="text" value={userData.full_name} onChange={(e) => setUserData({...userData, full_name: e.target.value})} className="w-full h-16 px-6 rounded-[8px] bg-slate-50 border border-slate-100 font-black uppercase text-sm outline-none focus:border-[#E53935] transition-all shadow-inner" />
+                            <input type="text" value={userData.full_name} onChange={(e) => setUserData({...userData, full_name: e.target.value})} className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-slate-100 font-black uppercase text-sm outline-none focus:border-[#E53935] transition-all shadow-inner" />
                          </div>
                          <div className="space-y-3">
                             <p className="text-[9px] font-black text-[#0A0A0A] uppercase ">Strategic Role</p>
-                            <input type="text" value={userData.role} onChange={(e) => setUserData({...userData, role: e.target.value})} className="w-full h-16 px-6 rounded-[8px] bg-slate-50 border border-slate-100 font-black uppercase text-sm outline-none focus:border-[#E53935] transition-all shadow-inner" />
+                            <input type="text" value={userData.role} onChange={(e) => setUserData({...userData, role: e.target.value})} className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-slate-100 font-black uppercase text-sm outline-none focus:border-[#E53935] transition-all shadow-inner" />
                          </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-8">
                          <div className="space-y-3">
                             <p className="text-[9px] font-black text-[#0A0A0A] uppercase ">Phone Number</p>
-                            <input type="text" value={userData.phone} onChange={(e) => setUserData({...userData, phone: e.target.value})} className="w-full h-16 px-6 rounded-[8px] bg-slate-50 border border-slate-100 font-black uppercase text-sm outline-none focus:border-[#E53935] transition-all shadow-inner" />
+                            <input type="text" value={userData.phone} onChange={(e) => setUserData({...userData, phone: e.target.value})} className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-slate-100 font-black uppercase text-sm outline-none focus:border-[#E53935] transition-all shadow-inner" />
                          </div>
                          <div className="space-y-3">
                             <p className="text-[9px] font-black text-[#0A0A0A] uppercase ">Website URL</p>
-                            <input type="text" value={userData.website} onChange={(e) => setUserData({...userData, website: e.target.value})} className="w-full h-16 px-6 rounded-[8px] bg-slate-50 border border-slate-100 font-black uppercase text-sm outline-none focus:border-[#E53935] transition-all shadow-inner" />
+                            <input type="text" value={userData.website} onChange={(e) => setUserData({...userData, website: e.target.value})} className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-slate-100 font-black uppercase text-sm outline-none focus:border-[#E53935] transition-all shadow-inner" />
                          </div>
                       </div>
 
                       <div className="space-y-3">
                          <p className="text-[9px] font-black text-[#0A0A0A] uppercase ">Email Address (Public)</p>
-                         <input type="email" value={userData.email} onChange={(e) => setUserData({...userData, email: e.target.value})} className="w-full h-16 px-6 rounded-[8px] bg-slate-50 border border-slate-100 font-black uppercase text-sm outline-none focus:border-[#E53935] transition-all shadow-inner" />
+                         <input type="email" value={userData.email} onChange={(e) => setUserData({...userData, email: e.target.value})} className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-slate-100 font-black uppercase text-sm outline-none focus:border-[#E53935] transition-all shadow-inner" />
                       </div>
 
                       <div className="space-y-3">
                          <p className="text-[9px] font-black text-[#0A0A0A] uppercase ">Node Bio / Intent</p>
-                         <textarea value={userData.bio} onChange={(e) => setUserData({...userData, bio: e.target.value})} className="w-full h-32 p-6 rounded-[8px] bg-slate-50 border border-slate-100 font-bold text-sm outline-none focus:border-[#E53935] transition-all resize-none shadow-inner" />
+                         <textarea value={userData.bio} onChange={(e) => setUserData({...userData, bio: e.target.value})} className="w-full h-32 p-6 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-sm outline-none focus:border-[#E53935] transition-all resize-none shadow-inner" />
                       </div>
                    </div>
                    <div className="p-10 border-t border-slate-100 bg-slate-50/50 flex gap-5">
-                      <button onClick={() => setShowEditModal(false)} className="flex-1 h-16 border border-slate-200 rounded-[8px] font-black text-[11px] uppercase text-slate-200 hover:bg-white hover:text-[#0A0A0A] transition-all">Discard</button>
-                      <button onClick={() => handleSaveProfile()} disabled={isSaving} className="flex-[2] h-16 bg-[#0A0A0A] text-white rounded-[8px] font-black text-[11px] uppercase hover:bg-[#E53935] shadow-2xl transition-all disabled:opacity-50 active:scale-95 group">
+                      <button onClick={() => setShowEditModal(false)} className="flex-1 h-16 border border-slate-200 rounded-2xl font-black text-[11px] uppercase text-slate-200 hover:bg-white hover:text-[#0A0A0A] transition-all">Discard</button>
+                      <button onClick={() => handleSaveProfile()} disabled={isSaving} className="flex-[2] h-16 bg-[#0A0A0A] text-white rounded-2xl font-black text-[11px] uppercase hover:bg-[#E53935] shadow-2xl transition-all disabled:opacity-50 active:scale-95 group">
                          {isSaving ? "Saving..." : "Save Changes"}
                       </button>
                    </div>
@@ -743,7 +743,7 @@ export default function PremiumProfilePage() {
                 <motion.div 
                    initial={{ opacity: 0, scale: 0.95, y: 40 }}
                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                   className="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] flex flex-col border border-[#0A0A0A]/5"
+                   className="bg-white w-full max-w-md rounded-2xl overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] flex flex-col border border-[#0A0A0A]/5"
                 >
                    <div className="p-10 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
                       <div>

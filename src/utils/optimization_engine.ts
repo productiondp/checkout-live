@@ -127,7 +127,7 @@ class OptimizationEngine {
       this.saveConfig();
 
       // Trigger Outcome Evaluation
-      insights.generateReport().then(report => {
+      insights.generateReport().then((report: any) => {
         if (report) {
            decisionMemory.evaluatePendingOutcomes({
               timestamp: now,

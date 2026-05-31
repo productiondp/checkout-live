@@ -429,6 +429,41 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
       
       setSubmissionState('SUCCESS');
       localStorage.removeItem(DRAFT_KEY);
+
+      // Create notifications for matched users (simulating backend trigger)
+      try {
+        const { data: users } = await supabase
+          .from('profiles')
+          .select('id')
+          .neq('id', authUser.id)
+          .limit(3);
+        
+        const notifications = [];
+        if (users && users.length > 0) {
+          notifications.push(...users.map(u => ({
+            user_id: u.id,
+            title: `New ${payload.type} Alert`,
+            message: `A new opportunity was posted: ${payload.title}`,
+            type: 'MATCH',
+            link: '/marketplace',
+            is_read: false
+          })));
+        }
+        
+        // Always add a confirmation for the author so they see the bell update in testing
+        notifications.push({
+          user_id: authUser.id,
+          title: `Post Published`,
+          message: `Your ${payload.type.toLowerCase()} was successfully published to the marketplace.`,
+          type: 'SYSTEM',
+          link: '/home',
+          is_read: false
+        });
+
+        await supabase.from('notifications').insert(notifications);
+      } catch (notifErr) {
+        console.error("Failed to sync notifications", notifErr);
+      }
       
       // Register for auto-scroll and highlight in Feed
       localStorage.setItem('checkout_last_post', JSON.stringify({
@@ -467,7 +502,7 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
         initial={{ opacity: 0, y: 100, scale: 1 }} 
         animate={{ opacity: 1, y: 0, scale: 1 }} 
         exit={{ opacity: 0, y: 100 }}
-        className="relative w-full sm:w-[90%] sm:max-w-xl bg-white rounded-t-[2rem] sm:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col h-[92vh] sm:h-auto max-h-[92vh] sm:max-h-[95vh]"
+        className="relative w-full sm:w-[90%] sm:max-w-xl bg-white rounded-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[92vh] sm:h-auto max-h-[92vh] sm:max-h-[95vh]"
       >
         {/* HEADER */}
         <div className="flex items-center justify-between shrink-0 p-6 md:p-8 lg:p-10 pb-4 border-b border-black/[0.03]">
@@ -531,11 +566,11 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                               (authUser?.role === 'CREATOR' ? "E.g. Open for brand deals and UGC content..." : "E.g. Need a senior dev for a 2-week sprint...")
                             }
                             type={type}
-                            className="min-h-[220px] md:min-h-[260px] text-base md:text-lg p-6 md:p-8 bg-slate-50 border-none rounded-[2rem] md:rounded-[2.5rem] focus:ring-4 focus:ring-black/5 transition-all"
+                            className="min-h-[220px] md:min-h-[260px] text-base md:text-lg p-6 md:p-8 bg-slate-50 border-none rounded-2xl md:rounded-2xl focus:ring-4 focus:ring-black/5 transition-all"
                           />
 
                           {/* UNIFIED INTELLIGENCE HUB - PREMIUM & RESPONSIVE */}
-                          <div className="bg-slate-50/50 backdrop-blur-sm rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8 border border-black/[0.03] space-y-5 md:space-y-6 shadow-sm">
+                          <div className="bg-slate-50/50 backdrop-blur-sm rounded-2xl md:rounded-2xl p-5 md:p-8 border border-black/[0.03] space-y-5 md:space-y-6 shadow-sm">
                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex items-center gap-3">
                                    <div className="h-8 w-8 md:h-10 md:w-10 bg-white rounded-xl md:rounded-2xl flex items-center justify-center text-[#FF3B30] shadow-sm border border-black/[0.02] shrink-0">
@@ -585,7 +620,7 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                                           initial={{ opacity: 0, scale: 0.95, y: 10 }}
                                           animate={{ opacity: 1, scale: 1, y: 0 }}
                                           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                          className="absolute bottom-full left-0 mb-3 w-72 bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_40px_80px_rgba(0,0,0,0.2)] border border-black/[0.03] p-5 z-[200] space-y-2 backdrop-blur-xl"
+                                          className="absolute bottom-full left-0 mb-3 w-72 bg-white rounded-2xl md:rounded-2xl shadow-[0_40px_80px_rgba(0,0,0,0.2)] border border-black/[0.03] p-5 z-[200] space-y-2 backdrop-blur-xl"
                                         >
                                           <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 px-2 pb-2">Select to Apply</p>
                                           {( (getIntentConfig(detectedIntent)?.suggestions.includes(s) || s === "What are you solving for?") ? (
@@ -759,14 +794,14 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                       <div className="space-y-6">
                         <h3 className="text-2xl md:text-3xl font-black tracking-tight">Choose Format</h3>
                         <div className="grid grid-cols-1 gap-3">
-                          <button onClick={() => setMeetupSubtype('OPEN')} className={cn("p-6 rounded-[2rem] border text-left transition-all", meetupSubtype === 'OPEN' ? "border-[#E53935] bg-[#E53935]/5 shadow-lg" : "border-slate-100")}>
+                          <button onClick={() => setMeetupSubtype('OPEN')} className={cn("p-6 rounded-2xl border text-left transition-all", meetupSubtype === 'OPEN' ? "border-[#E53935] bg-[#E53935]/5 shadow-lg" : "border-slate-100")}>
                             <div className="flex items-center gap-4">
                               <div className={cn("h-12 w-12 rounded-xl flex items-center justify-center", meetupSubtype === 'OPEN' ? "bg-[#E53935] text-white" : "bg-slate-50 text-slate-400")}><Users size={24} /></div>
                               <div><p className="text-[14px] font-black uppercase text-[#1D1D1F]">Open Meetup</p><p className="text-[10px] font-bold text-slate-400 uppercase">Visible to everyone relevant</p></div>
                               {meetupSubtype === 'OPEN' && <CheckCircle2 className="ml-auto text-[#E53935]" size={20} />}
                             </div>
                           </button>
-                          <button onClick={() => setMeetupSubtype('ADVISOR')} className={cn("p-6 rounded-[2rem] border text-left transition-all", meetupSubtype === 'ADVISOR' ? "border-[#E53935] bg-[#E53935]/5 shadow-lg" : "border-slate-100")}>
+                          <button onClick={() => setMeetupSubtype('ADVISOR')} className={cn("p-6 rounded-2xl border text-left transition-all", meetupSubtype === 'ADVISOR' ? "border-[#E53935] bg-[#E53935]/5 shadow-lg" : "border-slate-100")}>
                             <div className="flex items-center gap-4">
                               <div className={cn("h-12 w-12 rounded-xl flex items-center justify-center", meetupSubtype === 'ADVISOR' ? "bg-[#E53935] text-white" : "bg-slate-50 text-slate-400")}><ShieldCheck size={24} /></div>
                               <div><p className="text-[14px] font-black uppercase text-[#1D1D1F]">Advisor Meetup</p><p className="text-[10px] font-bold text-slate-400 uppercase">Requires advisor approval</p></div>
@@ -913,7 +948,7 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                     {currentStep === 9 && (
                       <div className="space-y-6">
                         <h3 className="text-2xl font-black tracking-tight">Review Session</h3>
-                        <div className="p-6 bg-slate-50 rounded-[2rem] border border-black/[0.03] space-y-6">
+                        <div className="p-6 bg-slate-50 rounded-2xl border border-black/[0.03] space-y-6">
                            <div className="flex items-center gap-4 border-b pb-4">
                               <div className="h-12 w-12 bg-white rounded-xl flex items-center justify-center shadow-sm"><Users className="text-[#E53935]" size={24} /></div>
                               <div><p className="text-[10px] font-black uppercase text-slate-300">Topic</p><p className="text-[14px] font-black text-[#1D1D1F] line-clamp-1">{content.split('\n')[0]}</p></div>
@@ -993,7 +1028,7 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                     {currentStep === 7 && (
                       <div className="space-y-6">
                         <h3 className="text-2xl font-black tracking-tight">Review</h3>
-                        <div className="p-6 bg-slate-50 rounded-[2rem] border space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar">
+                        <div className="p-6 bg-slate-50 rounded-2xl border space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar">
                            <div className="border-b pb-4">
                              <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Requirement Details</p>
                              <p className="text-[13px] font-medium text-slate-800 whitespace-pre-wrap italic">"{content}"</p>
@@ -1082,7 +1117,7 @@ export default function PostModal({ isOpen, onClose, onPostSuccess, editPost, in
                     {currentStep === 8 && (
                       <div className="space-y-6">
                         <h3 className="text-2xl font-black tracking-tight">Review</h3>
-                        <div className="p-6 bg-slate-50 rounded-[2rem] border space-y-4">
+                        <div className="p-6 bg-slate-50 rounded-2xl border space-y-4">
                            <p className="text-sm font-bold text-slate-800 italic">"{content}"</p>
                            <div className="grid grid-cols-2 gap-4">
                               <div><p className="text-[9px] font-black uppercase text-slate-300">Stage</p><p className="text-[11px] font-black uppercase">{stage}</p></div>

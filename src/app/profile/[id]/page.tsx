@@ -152,8 +152,8 @@ function ProfileContent() {
            <div className="max-w-7xl mx-auto px-10 h-full flex items-center relative z-10">
               <div className="flex flex-col md:flex-row items-center gap-12 w-full pt-10">
                  <div className="relative shrink-0">
-                    <div className="h-44 w-44 lg:h-48 lg:w-48 rounded-[2rem] bg-white p-3 shadow-4xl relative z-10 overflow-hidden border border-white/20">
-                       <img src={profile.avatar} className="w-full h-full object-cover rounded-[1.625rem]" alt="Profile" />
+                    <div className="h-44 w-44 lg:h-48 lg:w-48 rounded-2xl bg-white p-3 shadow-4xl relative z-10 overflow-hidden border border-white/20">
+                       <img src={profile.avatar} className="w-full h-full object-cover rounded-2xl" alt="Profile" />
                     </div>
                     <div className="absolute -bottom-2 -right-2 h-10 w-10 bg-[#E53935] border-4 border-white rounded-lg flex items-center justify-center text-white shadow-2xl z-20">
                        <CheckCircle2 size={20} />
@@ -178,7 +178,7 @@ function ProfileContent() {
                     {authUser?.id === profileId ? (
                        <button 
                           onClick={() => router.push('/profile')} 
-                          className="h-16 px-10 bg-black text-white rounded-[10px] font-black text-[11px] uppercase shadow-2xl hover:bg-[#E53935] transition-all active:scale-95 flex items-center gap-3"
+                          className="h-16 px-10 bg-black text-white rounded-2xl font-black text-[11px] uppercase shadow-2xl hover:bg-[#E53935] transition-all active:scale-95 flex items-center gap-3"
                        >
                           <Settings size={18} />
                           Edit Profile
@@ -186,10 +186,10 @@ function ProfileContent() {
                     ) : (
                        <ConnectButton 
                           targetId={profileId} 
-                          className="h-16 px-10 rounded-[10px] text-[11px] font-black uppercase"
+                          className="h-16 px-10 rounded-2xl text-[11px] font-black uppercase"
                        />
                     )}
-                    <button className="h-16 w-16 bg-white/10 backdrop-blur-md border border-white/10 rounded-[10px] flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
+                    <button className="h-16 w-16 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
                        <Plus size={24} />
                     </button>
                  </div>
@@ -204,7 +204,7 @@ function ProfileContent() {
               {/* CONTENT SIDEBAR (LEFT) */}
               <div className="lg:col-span-4 space-y-12">
                  
-                 <div className="bg-white rounded-[1.625rem] p-10 shadow-sm border border-black/[0.03]">
+                 <div className="bg-white rounded-2xl p-10 shadow-sm border border-black/[0.03]">
                     <h3 className="text-[10px] font-black text-black/20 uppercase mb-8 flex items-center gap-2 tracking-[0.2em]">
                        <div className="h-1 w-4 bg-[#E53935] rounded-full" />
                        About
@@ -216,7 +216,7 @@ function ProfileContent() {
                     <div className="mt-10 pt-10 border-t border-black/[0.03] space-y-8">
                        {contactInfo.map((info, i) => (
                           <div key={i} className="flex items-center gap-4 group cursor-pointer">
-                             <div className="h-12 w-12 bg-black/[0.03] rounded-[10px] flex items-center justify-center text-black/20 group-hover:bg-[#E53935] group-hover:text-white transition-all">
+                             <div className="h-12 w-12 bg-black/[0.03] rounded-2xl flex items-center justify-center text-black/20 group-hover:bg-[#E53935] group-hover:text-white transition-all">
                                 <info.icon size={18} />
                              </div>
                              <div className="flex-1 min-w-0">
@@ -232,14 +232,14 @@ function ProfileContent() {
                  </div>
 
                  {/* RANK CARD */}
-                 <div className="bg-black rounded-[1.625rem] p-10 shadow-2xl relative overflow-hidden group border border-black">
+                 <div className="bg-black rounded-2xl p-10 shadow-2xl relative overflow-hidden group border border-black">
                     <div className="absolute -bottom-10 -right-10 p-8 text-white opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
                        <TrendingUp size={240} />
                     </div>
                     
                     <div className="relative z-10">
                        <div className="flex items-center gap-4 mb-10">
-                          <div className="h-14 w-14 bg-[#E53935] rounded-[10px] flex items-center justify-center text-white shadow-xl">
+                          <div className="h-14 w-14 bg-[#E53935] rounded-2xl flex items-center justify-center text-white shadow-xl">
                              <Zap size={28} />
                           </div>
                           <div>
@@ -249,11 +249,11 @@ function ProfileContent() {
                        </div>
 
                        <div className="grid grid-cols-2 gap-4 mb-10 text-center">
-                          <div className="bg-white/5 p-5 rounded-[10px] border border-white/5">
+                          <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
                              <p className="text-[9px] font-black text-white/30 uppercase mb-2 tracking-widest">Global</p>
                              <p className="text-2xl font-black text-white font-outfit">#{100 + (profile.id?.length || 0)}</p>
                           </div>
-                          <div className="bg-white/5 p-5 rounded-[10px] border border-white/5">
+                          <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
                              <p className="text-[9px] font-black text-white/30 uppercase mb-2 tracking-widest">Network</p>
                              <p className="text-2xl font-black text-[#E53935] font-outfit">TOP 1%</p>
                           </div>
@@ -431,7 +431,7 @@ function ProfileContent() {
                                         </div>
                                         <div>
                                            <div className="flex items-center gap-3 mb-2">
-                                              <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[8px] font-bold uppercase rounded-[4px] tracking-widest">{dep.type}</span>
+                                              <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[8px] font-bold uppercase rounded-2xl tracking-widest">{dep.type}</span>
                                               <h4 className="text-[14px] font-bold text-[#1D1D1F] line-clamp-1">{dep.content}</h4>
                                            </div>
                                            <p className="text-[11px] font-medium text-slate-400">Active Priority</p>

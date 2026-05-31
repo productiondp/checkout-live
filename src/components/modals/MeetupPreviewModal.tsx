@@ -102,7 +102,7 @@ export default function MeetupPreviewModal({
             animate={{ opacity: 1, y: 0, scale: 1 }} 
             exit={{ opacity: 0, y: 100, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative w-full sm:max-w-xl bg-white rounded-t-[2.5rem] sm:rounded-[3rem] shadow-2xl overflow-hidden max-h-[90vh] z-[10000] flex flex-col"
+            className="relative w-full sm:max-w-xl bg-white rounded-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] z-[10000] flex flex-col"
           >
             {/* FIXED CLOSE BUTTON - Always clickable even when content scrolls */}
             <button 
@@ -159,7 +159,7 @@ export default function MeetupPreviewModal({
                     onClick={handleAction}
                     disabled={isActionLoading || (isFull && !isJoined)}
                     className={cn(
-                      "w-full h-18 rounded-[1.5rem] font-black text-sm uppercase tracking-[0.2em] shadow-2xl transition-all flex items-center justify-center gap-4 active:scale-95 group overflow-hidden relative",
+                      "w-full h-18 rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl transition-all flex items-center justify-center gap-4 active:scale-95 group overflow-hidden relative",
                       isJoined ? "bg-emerald-600 text-white" : 
                       isRequested ? "bg-slate-100 text-slate-400" :
                       isFull ? "bg-slate-100 text-slate-300" :

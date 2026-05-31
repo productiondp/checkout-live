@@ -18,7 +18,7 @@ export default function UnifiedSearch() {
   // Combine all entities for searching
   const allEntities = useMemo(() => {
     const advisors = MOCK_ADVISORS.map(a => ({ ...a, type: "ADVISOR" }));
-    const businesses = MOCK_BUSINESSES.map(b => ({ ...b, type: "BUSINESS" }));
+    const businesses = MOCK_BUSINESSES.map((b: any) => ({ ...b, type: "BUSINESS" }));
     const listings = MOCK_LISTINGS.map(l => ({ ...l, type: "LISTING" }));
     
     return [...advisors, ...businesses, ...listings];

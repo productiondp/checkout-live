@@ -183,12 +183,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
-    await runAuthSafe(async () => {
-      setAuthState({ state: { tag: 'unauthenticated' }, isAuthResolved: false });
-      await supabase.auth.signOut();
-      clearCache();
+    try {
+      await runAuthSafe(async () => {
+        setAuthState({ state: { tag: 'unauthenticated' }, isAuthResolved: false });
+        
+        // Prevent signOut from hanging longer than the 5s watchdog
+        await Promise.race([
+          supabase.auth.signOut(),
+          new Promise(resolve => setTimeout(resolve, 3000))
+        ]);
+        
+        clearCache();
+        setAuthState({ state: { tag: 'unauthenticated' }, isAuthResolved: true });
+      }, { priority: 'high', label: 'LOGOUT' });
+    } catch (e) {
+      console.warn("[AUTH] Logout error/timeout caught:", e);
+      // Force unauthenticated state locally so the user is still successfully logged out visually
       setAuthState({ state: { tag: 'unauthenticated' }, isAuthResolved: true });
-    }, { priority: 'high', label: 'LOGOUT' });
+    }
   };
 
   const login = async (email: string, password: string) => {

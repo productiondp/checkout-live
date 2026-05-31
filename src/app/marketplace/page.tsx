@@ -309,7 +309,7 @@ function MarketplaceContent() {
  
                 {isLoading ? (
                   <div className={cn("space-y-4", (viewMode === "grid" || viewMode === "map") && "grid grid-cols-1 md:grid-cols-3 gap-6 space-y-0")}>
-                    {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-48 bg-black/[0.02] rounded-[2rem] animate-pulse" />)}
+                    {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-48 bg-black/[0.02] rounded-2xl animate-pulse" />)}
                   </div>
                 ) : otherItems.length > 0 ? (
                   <div className={cn(
@@ -538,7 +538,7 @@ function OpportunityCard({ item, isPinned, index, viewMode }: { item: Marketplac
         transition={{ delay: index ? index * 0.05 : 0 }}
         onClick={() => router.push(`/marketplace/${item.id}`)}
         className={cn(
-          "bg-white rounded-[2rem] p-6 md:p-8 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col md:flex-row md:items-center gap-6 md:gap-8 relative overflow-hidden",
+          "bg-white rounded-2xl p-6 md:p-8 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col md:flex-row md:items-center gap-6 md:gap-8 relative overflow-hidden",
           isPinned && "border-[#E53935]/20 shadow-[0_40px_80px_-20px_rgba(229,57,51,0.08)] ring-1 ring-[#E53935]/10"
         )}
       >
@@ -654,7 +654,7 @@ function OpportunityCard({ item, isPinned, index, viewMode }: { item: Marketplac
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index ? index * 0.05 : 0 }}
       onClick={() => router.push(`/marketplace/${item.id}`)}
-      className="bg-white rounded-[2rem] p-6 md:p-8 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col h-full"
+      className="bg-white rounded-2xl p-6 md:p-8 border border-black/[0.03] shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col h-full"
     >
       <div className="flex items-start justify-between mb-6">
         <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl overflow-hidden border-4 border-[#F5F5F7] shadow-md group-hover:scale-105 transition-all duration-500">

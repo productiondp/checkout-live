@@ -28,7 +28,7 @@ const MomentumView = dynamic(() => import("@/components/modals/MomentumView"), {
 
 function MapContent() {
   const searchParams = useSearchParams();
-  const [activeLayer, setActiveLayer] = useState<"All" | "Partners" | "Businesses" | "Events" | "Requirements">("All");
+  const [activeLayer, setActiveLayer] = useState<"All" | "Partners" | "Businesses" | "Events" | "Requirements" | "Creators">("All");
   const [mapError, setMapError] = useState<string | null>(null);
   const [markers, setMarkers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,78 +68,163 @@ function MapContent() {
   useEffect(() => {
     async function loadNetworkNodes() {
       try {
-        // Fetch All Posts (Prioritize Marketplace Content)
-        const { data: posts } = await supabase
-          .from('posts')
-          .select(`*, author:profiles!posts_author_id_fkey(*)`)
-          .order('created_at', { ascending: false });
+        // ── CITY GEOCODE TABLE ────────────────────────────────────────
+        // Real coordinates for cities in Kerala & beyond
+        const CITY_COORDS: Record<string, [number, number]> = {
+          // Kerala
+          'trivandrum': [8.5241, 76.9467],
+          'thiruvananthapuram': [8.5241, 76.9467],
+          'kochi': [9.9312, 76.2673],
+          'cochin': [9.9312, 76.2673],
+          'ernakulam': [9.9816, 76.2999],
+          'kozhikode': [11.2588, 75.7804],
+          'calicut': [11.2588, 75.7804],
+          'thrissur': [10.5276, 76.2144],
+          'kannur': [11.8745, 75.3704],
+          'kollam': [8.8932, 76.6141],
+          'palakkad': [10.7867, 76.6548],
+          'alappuzha': [9.4981, 76.3388],
+          'alleppey': [9.4981, 76.3388],
+          'malappuram': [11.0510, 76.0711],
+          'kasaragod': [12.4996, 74.9869],
+          'pathanamthitta': [9.2648, 76.7870],
+          'idukki': [9.9189, 77.0083],
+          'kottayam': [9.5916, 76.5222],
+          'wayanad': [11.6854, 76.1320],
+          // Other major Indian cities
+          'bangalore': [12.9716, 77.5946],
+          'bengaluru': [12.9716, 77.5946],
+          'mumbai': [19.0760, 72.8777],
+          'delhi': [28.6139, 77.2090],
+          'hyderabad': [17.3850, 78.4867],
+          'chennai': [13.0827, 80.2707],
+          'pune': [18.5204, 73.8567],
+          'kolkata': [22.5726, 88.3639],
+          'ahmedabad': [23.0225, 72.5714],
+          'jaipur': [26.9124, 75.7873],
+          'global': [20.5937, 78.9629],
+          'online': [8.5241, 76.9467],
+        };
 
-        // Fetch Profiles (Partners/Businesses)
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('*')
-          .limit(100);
+        const getCoords = (city: string, id: string, salt1: number, salt2: number): [number, number] => {
+          const key = (city || '').toLowerCase().trim();
+          const base = CITY_COORDS[key] || CITY_COORDS['trivandrum'];
+          // Tiny deterministic jitter so overlapping pins spread out
+          let h = salt1;
+          for (let i = 0; i < id.length; i++) h = (Math.imul(31, h) + id.charCodeAt(i)) | 0;
+          const jitterLat = ((h & 0xffff) / 0xffff - 0.5) * 0.025;
+          let h2 = salt2;
+          for (let i = 0; i < id.length; i++) h2 = (Math.imul(37, h2) + id.charCodeAt(i)) | 0;
+          const jitterLng = ((h2 & 0xffff) / 0xffff - 0.5) * 0.030;
+          return [base[0] + jitterLat, base[1] + jitterLng];
+        };
+
+        // ── PARALLEL FETCHES ──────────────────────────────────────────
+        const [postsRes, profilesRes, creatorsRes] = await Promise.all([
+          supabase
+            .from('posts')
+            .select(`id, title, content, type, metadata, location, created_at, author:profiles!posts_author_id_fkey(id, full_name, avatar_url, location)`)
+            .order('created_at', { ascending: false })
+            .limit(60),
+          supabase
+            .from('profiles')
+            .select('id, full_name, avatar_url, bio, role, location')
+            .not('full_name', 'is', null)
+            .limit(100),
+          supabase
+            .from('creator_profiles')
+            .select(`*, profile:profiles(id, full_name, avatar_url, location)`)
+            .limit(80)
+        ]);
+
+        if (postsRes.error) console.error("Posts fetch error:", postsRes.error);
+        if (profilesRes.error) console.error("Profiles fetch error:", profilesRes.error);
+        if (creatorsRes.error) console.error("Creators fetch error:", creatorsRes.error);
+
+        const posts = postsRes.data || [];
+        const profiles = profilesRes.data || [];
+        const creators = creatorsRes.data || [];
 
         const nodes: any[] = [];
-        const HUB_LAT = 8.5241;
-        const HUB_LNG = 76.9467;
 
-        // Map All Posts
-        (posts || []).forEach((p, idx) => {
-          const rawType = (p.type || "").toUpperCase();
-          let nodeType: "Partners" | "Businesses" | "Events" | "Requirements" = "Partners";
-          
-          if (rawType === 'MEETUP') nodeType = "Events";
-          else if (rawType === 'REQUIREMENT' || rawType === 'PARTNERSHIP') nodeType = "Requirements";
-          else if (rawType === 'PARTNER') nodeType = "Partners";
+        // ── POSTS → map nodes ─────────────────────────────────────────
+        posts.forEach((p: any) => {
+          const rawType = (p.type || '').toUpperCase();
+          let nodeType: 'Partners' | 'Businesses' | 'Events' | 'Requirements' = 'Partners';
+          if (rawType === 'MEETUP') nodeType = 'Events';
+          else if (['REQUIREMENT', 'PARTNERSHIP', 'JOB'].includes(rawType)) nodeType = 'Requirements';
+          else if (rawType === 'BUSINESS') nodeType = 'Businesses';
 
-          const lat = p.metadata?.geo?.lat || (HUB_LAT + (Math.random() - 0.5) * 0.05);
-          const lng = p.metadata?.geo?.lng || (HUB_LNG + (Math.random() - 0.5) * 0.05);
+          // Priority: stored geo > post location text > author city > author location
+          let lat: number, lng: number;
+          if (p.metadata?.geo?.lat) {
+            lat = p.metadata.geo.lat;
+            lng = p.metadata.geo.lng;
+          } else {
+            const cityStr = p.location || p.author?.city || p.author?.location || 'trivandrum';
+            [lat, lng] = getCoords(cityStr, p.id, 1, 2);
+          }
 
-          const color = nodeType === 'Events' ? '#FF3B30' : nodeType === 'Businesses' ? '#5856D6' : nodeType === 'Requirements' ? '#FF9500' : '#34C759';
-          const icon = nodeType === 'Events' ? '🔥' : nodeType === 'Businesses' ? '🏢' : nodeType === 'Requirements' ? '🎯' : '👤';
+          const colorMap: Record<string, string> = { Events: '#FF3B30', Businesses: '#5856D6', Requirements: '#FF9500', Partners: '#34C759' };
+          const iconMap: Record<string, string> = { Events: '🔥', Businesses: '🏢', Requirements: '🎯', Partners: '👤' };
 
           nodes.push({
             id: p.id,
             type: nodeType,
             subType: rawType,
-            lat,
-            lng,
-            title: p.title || "Opportunity",
+            lat, lng,
+            title: p.title || 'Opportunity',
             content: p.content,
-            author: p.author?.full_name || "Member",
+            author: p.author?.full_name || 'Member',
             avatar: p.author?.avatar_url,
-            isRealGeo: !!p.metadata?.geo,
-            markerColor: color,
-            markerIcon: icon
+            linkHref: null,
+            markerColor: colorMap[nodeType],
+            markerIcon: iconMap[nodeType]
           });
         });
 
-        // Map Profiles
-        (profiles || []).forEach((p, idx) => {
+        // ── PROFILES → Partners / Businesses ─────────────────────────
+        profiles.forEach((p: any) => {
           const isBusiness = p.role === 'BUSINESS';
-          const lat = HUB_LAT + (Math.random() - 0.5) * 0.08;
-          const lng = HUB_LNG + (Math.random() - 0.5) * 0.08;
-          const color = isBusiness ? '#5856D6' : '#34C759';
-          const icon = isBusiness ? '🏢' : '👤';
+          const cityStr = p.city || p.location || 'trivandrum';
+          const [lat, lng] = getCoords(cityStr, p.id, 3, 4);
 
           nodes.push({
             id: p.id,
             type: isBusiness ? 'Businesses' : 'Partners',
             subType: isBusiness ? 'BUSINESS' : 'PARTNER',
-            lat,
-            lng,
+            lat, lng,
             title: p.full_name,
             content: p.bio,
             avatar: p.avatar_url,
             isProfile: true,
-            markerColor: color,
-            markerIcon: icon
+            linkHref: `/creators/profile/${p.id}`,
+            markerColor: isBusiness ? '#5856D6' : '#34C759',
+            markerIcon: isBusiness ? '🏢' : '👤'
           });
         });
 
-        console.log("[MAP] Node Discovery Complete");
-        console.table(nodes.map(n => ({ id: n.id, type: n.type, color: n.markerColor })));
+        // ── CREATOR PROFILES ─────────────────────────────────────────
+        creators.forEach((c: any) => {
+          const profileId = c.profile?.id || c.id;
+          const cityStr = c.city || c.profile?.city || c.profile?.location || 'trivandrum';
+          const [lat, lng] = getCoords(cityStr, profileId, 5, 6);
+
+          nodes.push({
+            id: profileId,
+            type: 'Creators',
+            subType: c.category || 'CREATOR',
+            lat, lng,
+            title: c.profile?.full_name || 'Creator',
+            content: c.bio || '',
+            avatar: c.profile?.avatar_url,
+            isProfile: true,
+            linkHref: `/creators/profile/${profileId}`,
+            markerColor: '#E91E8C',
+            markerIcon: '🎬'
+          });
+        });
+
         setMarkers(nodes);
       } catch (err) {
         console.error('[MAP_DATA_ERROR]', err);
@@ -203,8 +288,8 @@ function MapContent() {
     
     const q = mapSearchQuery.toLowerCase();
     return base.filter(m => 
-      m.title.toLowerCase().includes(q) || 
-      m.content?.toLowerCase().includes(q)
+      (m.title && m.title.toLowerCase().includes(q)) || 
+      (m.content && m.content.toLowerCase().includes(q))
     );
   }, [markers, activeLayer, mapSearchQuery]);
 
@@ -262,7 +347,7 @@ function MapContent() {
       const popupContent = document.createElement('div');
       popupContent.className = 'map-popup-container';
       popupContent.innerHTML = `
-        <div class="p-5 bg-black/90 backdrop-blur-2xl border border-white/10 rounded-[2rem] w-64 shadow-4xl text-white space-y-6">
+        <div class="p-5 bg-black/90 backdrop-blur-2xl border border-white/10 rounded-2xl w-64 shadow-4xl text-white space-y-6">
            <div class="flex items-center gap-4">
               <div class="h-12 w-12 rounded-xl overflow-hidden border border-white/10 shrink-0">
                  <img src="${node.avatar || `https://i.pravatar.cc/150?u=${node.id}`}" class="h-full w-full object-cover" />
@@ -307,22 +392,15 @@ function MapContent() {
       
       el.addEventListener('click', (e) => {
         e.stopPropagation();
-        console.log(`[MAP_INTERACT] Node ${node.id} (${node.type})`);
-        
-        if (node.isProfile) {
-          popup.setLngLat([node.lng, node.lat]).addTo(map.current!);
-          
-          // Add listeners to popup buttons (scoped to content)
-          setTimeout(() => {
-            const connectBtn = popupContent.querySelector('.btn-connect');
-            if (connectBtn) connectBtn.addEventListener('click', () => {
-               alert(`Connection request sent to ${node.title}`);
-               popup.remove();
-            });
-          }, 100);
-        } else {
-          // Launch Full Feed Experience for posts
-          console.log(`[MAP_OPEN_POST] Launching Momentum for ${node.id}`);
+
+        // Profile nodes (partners, businesses, creators) → navigate to profile
+        if (node.isProfile && node.linkHref) {
+          window.location.href = node.linkHref;
+          return;
+        }
+
+        // Post nodes → open MomentumView feed overlay
+        if (!node.isProfile) {
           setSelectedPost({ id: node.id, type: node.subType });
         }
       });
@@ -353,14 +431,14 @@ function MapContent() {
           </div>
 
           <div className="flex items-center gap-4 bg-white/[0.03] p-1.5 rounded-xl border border-white/[0.05] overflow-x-auto no-scrollbar max-w-full">
-            {(["All", "Partners", "Businesses", "Events", "Requirements"] as const).map((layer) => (
+            {(["All", "Partners", "Businesses", "Creators", "Events", "Requirements"] as const).map((layer) => (
               <button
                 key={layer}
                 onClick={() => setActiveLayer(layer)}
                 className={cn(
                   "px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all shrink-0",
                   activeLayer === layer 
-                    ? "bg-white text-black shadow-xl" 
+                    ? layer === 'Creators' ? "bg-[#E91E8C] text-white shadow-xl" : "bg-white text-black shadow-xl"
                     : "text-white/30 hover:text-white"
                 )}
               >
@@ -437,7 +515,7 @@ function MapContent() {
         </div>
 
         {/* STATUS OVERLAY */}
-        <div className="absolute bottom-8 left-8 p-8 bg-black/60 backdrop-blur-3xl border border-white/5 rounded-[2rem] shadow-4xl flex items-center gap-8 max-w-md z-40 group/status overflow-hidden">
+        <div className="absolute bottom-8 left-8 p-8 bg-black/60 backdrop-blur-3xl border border-white/5 rounded-2xl shadow-4xl flex items-center gap-8 max-w-md z-40 group/status overflow-hidden">
            <div className="absolute inset-0 bg-gradient-to-br from-[#E53935]/5 to-transparent opacity-0 group-hover/status:opacity-100 transition-opacity" />
            <div className="h-16 w-16 bg-[#E53935] rounded-2xl flex items-center justify-center shadow-2xl shadow-[#E53935]/20 animate-pulse relative z-10">
               <Sparkles size={32} className="text-white" />

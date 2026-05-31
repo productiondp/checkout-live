@@ -68,7 +68,7 @@ export default function NetworkPage() {
                 desc: "Network within your specific field. Find mentors, partners, or talent in your industry." 
               }
             ].map((item, i) => (
-              <div key={i} className="bg-[#FBFBFD] p-10 rounded-[2.5rem] border border-black/[0.05] hover:shadow-2xl hover:bg-white transition-all duration-500 group">
+              <div key={i} className="bg-[#FBFBFD] p-10 rounded-2xl border border-black/[0.05] hover:shadow-2xl hover:bg-white transition-all duration-500 group">
                 <div className="h-16 w-16 rounded-2xl bg-white text-[#E53935] flex items-center justify-center mb-8 shadow-sm group-hover:bg-[#E53935] group-hover:text-white transition-colors">
                   <item.icon size={32} />
                 </div>

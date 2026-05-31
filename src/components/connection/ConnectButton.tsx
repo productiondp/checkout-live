@@ -17,6 +17,8 @@ interface ConnectButtonProps {
 
 export function ConnectButton({ userId, userName = "this user", variant = "primary", className, label }: ConnectButtonProps) {
   const { getConnectionState, sendRequest } = useConnections();
+  const router = useRouter();
+  const state = getConnectionState(userId);
   const [showModal, setShowModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [intent, setIntent] = useState<'IDEA' | 'DETAILS' | 'HELP' | null>(null);
