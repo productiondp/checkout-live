@@ -7,7 +7,7 @@ CREATE EXTENSION IF NOT EXISTS "vector"; -- For Neural Match Engine
 
 -- 1. ENUMS
 DO $$ BEGIN
-    CREATE TYPE profile_role AS ENUM ('STUDENT', 'BUSINESS', 'PROFESSIONAL', 'ADVISOR');
+    CREATE TYPE profile_role AS ENUM ('STUDENT', 'BUSINESS', 'PROFESSIONAL', 'ADVISOR', 'CREATOR');
     CREATE TYPE post_type AS ENUM ('LEAD', 'HIRING', 'PARTNER', 'MEETUP', 'UPDATE');
     CREATE TYPE booking_status AS ENUM ('PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED');
 EXCEPTION
@@ -151,16 +151,19 @@ RETURNS trigger AS $$
 DECLARE
   v_role public.profile_role;
   v_name text;
+  v_raw_role text;
 BEGIN
   -- 1. Extract and sanitize metadata
   v_name := COALESCE(new.raw_user_meta_data->>'full_name', 'Business Partner');
+  v_raw_role := UPPER(TRIM(new.raw_user_meta_data->>'role'));
   
   -- 2. Defensive Role Parsing
-  BEGIN
-    v_role := UPPER(TRIM(new.raw_user_meta_data->>'role'))::public.profile_role;
-  EXCEPTION WHEN OTHERS THEN
-    v_role := 'PROFESSIONAL'::public.profile_role;
-  END;
+  IF v_raw_role = 'STUDENT' THEN v_role := 'STUDENT';
+  ELSIF v_raw_role = 'BUSINESS' THEN v_role := 'BUSINESS';
+  ELSIF v_raw_role = 'ADVISOR' THEN v_role := 'ADVISOR';
+  ELSIF v_raw_role = 'CREATOR' THEN v_role := 'CREATOR';
+  ELSE v_role := 'PROFESSIONAL';
+  END IF;
 
   -- 3. Atomic Insertion with Full Metadata
   INSERT INTO public.profiles (
@@ -174,7 +177,7 @@ BEGIN
   VALUES (
     new.id,
     v_name,
-    COALESCE(v_role, 'PROFESSIONAL'::public.profile_role),
+    v_role,
     new.raw_user_meta_data->>'avatar_url',
     COALESCE(new.raw_user_meta_data->>'city', 'Trivandrum'),
     COALESCE(new.raw_user_meta_data->>'location', 'Trivandrum')
