@@ -157,7 +157,7 @@ BEGIN
   v_name := COALESCE(new.raw_user_meta_data->>'full_name', 'Business Partner');
   v_raw_role := UPPER(TRIM(new.raw_user_meta_data->>'role'));
   
-  -- 2. Defensive Role Parsing
+  -- 2. Defensive Role Parsing (explicit whitelist, no cast)
   IF v_raw_role = 'STUDENT' THEN v_role := 'STUDENT';
   ELSIF v_raw_role = 'BUSINESS' THEN v_role := 'BUSINESS';
   ELSIF v_raw_role = 'ADVISOR' THEN v_role := 'ADVISOR';
@@ -165,13 +165,12 @@ BEGIN
   ELSE v_role := 'PROFESSIONAL';
   END IF;
 
-  -- 3. Atomic Insertion with Full Metadata
+  -- 3. Atomic Insertion (columns must match production schema exactly)
   INSERT INTO public.profiles (
     id, 
     full_name, 
     role, 
     avatar_url,
-    city, 
     location
   )
   VALUES (
@@ -179,14 +178,12 @@ BEGIN
     v_name,
     v_role,
     new.raw_user_meta_data->>'avatar_url',
-    COALESCE(new.raw_user_meta_data->>'city', 'Trivandrum'),
     COALESCE(new.raw_user_meta_data->>'location', 'Trivandrum')
   )
   ON CONFLICT (id) DO UPDATE SET
     full_name = EXCLUDED.full_name,
     role = EXCLUDED.role,
-    avatar_url = EXCLUDED.avatar_url,
-    city = EXCLUDED.city;
+    avatar_url = EXCLUDED.avatar_url;
 
   RETURN new;
 END;

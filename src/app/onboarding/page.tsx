@@ -211,6 +211,16 @@ function OnboardingContent() {
               updated_at: new Date().toISOString()
             });
 
+          if (onboardingData.role === 'CREATOR') {
+            await supabase
+              .from('creator_profiles')
+              .upsert({
+                id: userId,
+                category: 'INFLUENCER',
+                subcategories: finalIntents
+              }, { onConflict: 'id' });
+          }
+
           completeOnboardingLocally();
         }
       }
@@ -410,7 +420,7 @@ function OnboardingContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#1A1A1A] flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans selection:bg-[#FF3B30]/10">
+    <div className="h-[100dvh] lg:h-screen bg-[#FAFAFA] text-[#1A1A1A] flex flex-col items-center justify-center p-0 lg:p-4 relative overflow-hidden font-sans selection:bg-[#FF3B30]/10">
       <AnimatePresence>
         {isSaving && step === 3 && (
           <AuthSubmissionStatus 
@@ -421,7 +431,7 @@ function OnboardingContent() {
       </AnimatePresence>
 
       <div className="absolute inset-0 bg-grid opacity-50 pointer-events-none" />
-      <div className="relative w-full max-w-5xl bg-white lg:rounded-lg shadow-[0_40px_100px_rgba(0,0,0,0.05)] flex flex-col h-full lg:max-h-[85vh] overflow-hidden border-x border-slate-100">
+      <div className="relative w-full max-w-5xl bg-white lg:rounded-lg shadow-[0_40px_100px_rgba(0,0,0,0.05)] flex flex-col h-full lg:h-auto lg:max-h-[85vh] overflow-hidden lg:border-x border-slate-100">
         <div className="h-1.5 bg-slate-50 w-full flex p-0 relative z-50">
            <div 
              className="h-full bg-[#FF3B30] transition-all duration-1000 ease-out" 
